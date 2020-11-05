@@ -1,0 +1,43 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                if examPass
+                                    .card
+                                        .card-header
+                                            h5 Verification
+                                            span.d-block.m-t-5 Welcome #{student.firstName}. Please input your exampass to continue.
+                                        .card-body
+                                            .row.justify-content-center
+                                                .col-md-6
+                                                    if message
+                                                        p.red-color #[b #{message}]
+                                                    .form-field
+                                                        form(method="POST")
+                                                            label(class="label") Student ID:
+                                                            input(type="text" name="student" class="form-control mb-3")
+                                                            label(class="label") Your CBT Password:
+                                                            input(type="text" name="pass" class="form-control mb-3")
+                                                            .text-center
+                                                                input(type="submit" class="btn btn-info")
+                                                        
+                                else
+                                    .card
+                                        .card-header
+                                            h5 Verification
+                                            span.d-block.m-t-5 You don't have access to this Exam.
+                                    
+                        
+
+        include includes/footer.pug

@@ -1,0 +1,75 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .col-md-6
+                                    if success
+                                        if success.length != 0
+                                            .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                    span(aria-hidden="true") ×
+                                                span #{success}
+                                if !course.publish
+                                    p #[a(href="#" data-toggle="modal" data-target="#publish-exam" class="btn btn-info") Publish #[i(class="feather icon-check-circle")]]
+                                    div(id="publish-exam" class="modal fade")
+                                        div(class="modal-dialog" role="document")
+                                            div(class="modal-content")
+                                                div(class="modal-header")
+                                                    h4(class="modal-title") Are you sure?
+                                                    button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                        span(aria-hidden="true") &times;
+                                                div(class="modal-body")
+                                                    p Clicking on okay means you are done with setting your questions. Make sure you cross check before clicking on Ok.
+                                                div(class="modal-footer")
+                                                    - let publishUrl = '/staff/cbt/quick-one/' + pSubject + '/' + pClass + '/' + exam.examCode + '/publish'
+                                                    a(class="btn btn-info" href=publishUrl) Ok
+                                                    button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+                                .card
+                                    .card-header
+                                        h5 Questions
+                                    .card-body
+                    
+                                        if !course.publish
+                                            div(class="mt-2 mb-4")
+                                                - let setUrl = '/staff/cbt/quick-one/' + pSubject + '/' + pClass + '/' + exam.examCode + '/questions/new'
+                                                a(href=setUrl class="btn btn-info") Add a Question
+                                                hr
+                                        if questions
+                                            if questions.question.length > 1
+                                                p #{questions.question.length} questions created.
+                                            else
+                                                p 1 question created.
+                                            each question in questions.question
+                                                p(class="question") #[b #{question.questionNumber}. #{question.mainQuestion}]
+                                                p
+                                                    span.mr-2 (A) #{question.options.optionA}
+                                                    span.mr-2 (B) #{question.options.optionB}
+                                                    span.mr-2 (C) #{question.options.optionC}
+                                                    span (D) #{question.options.optionD} 
+                                                    span (Ans) #{question.correctOption}
+                                                       
+                                                if question.image
+                                                    p   
+                                                        - let imageUrl = "/uploads/schools/" + code + "/" + "/exam-" + exam.examCode + "/" + course.courseName + "-" + course.className + "/" + question.image
+                                                        a(href=imageUrl) #[img(src=imageUrl, alt="image" height="30px" width="50px")]
+                                                div
+                                                    span.mr-5 #[strong Mark:] #{question.mark}
+                                                    if !course.publish
+                                                        - const deleteUrl = '/staff/cbt/quick-one/' + pSubject + '/' + pClass + '/' + exam.examCode + '/questions/delete/' + question._id
+                                                        span.ml-1 #[a(href=deleteUrl class="red-color") #[i(class="feather icon-trash")]]
+                                                hr
+                                                
+                                        else
+                                            p You haven't set your questions.
+        include includes/footer.pug

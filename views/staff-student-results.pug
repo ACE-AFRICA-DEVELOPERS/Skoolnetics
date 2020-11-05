@@ -1,0 +1,70 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                if studentResults.length > 0
+                                    if courseSheet
+                                        if courseSheet.length > 0
+                                            p Sheet has been submitted.
+                                        else
+                                            .d-flex.justify-content-between
+                                                p #[a(href="#" class="btn btn-info" id="submitResult") Submit Result Sheet] #[span#displayMsg ]
+                                                - let uploadUrl = '/staff/upload-result/' + pSubject + '/' + pClass 
+                                                p #[a(href=uploadUrl class="btn btn-info") Upload a result]
+                                                span#courseName.d-none #{pSubject}
+                                                span#className.d-none #{pClass}
+                                    else 
+                                        .d-flex.justify-content-between
+                                            p #[a(href="#" class="btn btn-info" id="submitResult") Submit Result Sheet] #[span#displayMsg ]
+                                            - let uploadUrl = '/staff/upload-result/' + pSubject + '/' + pClass 
+                                            p #[a(href=uploadUrl class="btn btn-info") Upload a result]
+                                            span#courseName.d-none #{pSubject}
+                                            span#className.d-none #{pClass}
+                                else
+                                    - let uploadUrl = '/staff/upload-result/' + pSubject + '/' + pClass 
+                                    p #[a(href=uploadUrl class="btn btn-info") Upload a result]
+                                .col-xl-12
+                                    .card
+                                        if studentResults.length > 0
+                                            .card-header
+                                                h5 Spread Sheet for #{title}
+                                        
+                                            .card-block.table-border-style
+                                                .table-responsive
+                                                    table.table.table-striped
+                                                        thead
+                                                            tr
+                                                                th Name
+                                                                th Reg Number
+                                                                each e in firstCourseResult.results
+                                                                    th #{e.examType} (#{e.total})
+                                                                th Total
+                                                                th Grade
+                                                        tbody
+                                                            each student in studentResults
+                                                                tr(class="analytics-row")
+                                                                    td(class="sName" id=student.student) #{studentName[student.student]}
+                                                                    td#id #{regNo[student.student]} 
+                                                                    each result, index in student.results
+                                                                        td(id=result.examType) #{result.score}
+                                                                    each total in sumTotal
+                                                                        if student.student === total.id
+                                                                            td#total #{total.total}
+                                                                            td#grade #{total.grades}
+                                        else
+                                            .card-header
+                                                h5 Spread Sheet for #{title}
+                                                span.d-block.m-t-5 No result has been uploaded.
+        script(src="/javascripts/library/broadsheet.js" type="module")                                            
+        include includes/footer.pug

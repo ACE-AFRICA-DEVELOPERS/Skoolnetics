@@ -1,0 +1,35 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    if courses.length > 0
+                                        .card-header
+                                            h5 CBT
+                                            span.d-block.m-t-5 Select only one subject:
+                                        .card-body
+                                            .row
+                                                each course in courses
+                                                    .col-md-4
+                                                        - let courseUrl = '/student/cbt/' + exam.examCode + '/' + course.courseName + '/verify'
+                                                        a(href=courseUrl)
+                                                            div(class="box mb-2")
+                                                                p 
+                                                                    span #[i(class="fa fa-object-group mr-2")] #{course.courseName}
+                                    else
+                                        .card-header
+                                            h5 CBT
+                                            span.d-block.m-t-5 Looks like there's no subject available for you to write.           
+
+        include includes/footer.pug

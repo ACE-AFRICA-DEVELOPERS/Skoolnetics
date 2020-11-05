@@ -1,0 +1,41 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                div
+                                    -let viewUrl = '/staff/upload-result/' + pSubject + '/' + pClass + '/sheet'
+                                    p #[a(href=viewUrl class="btn btn-info") View Result Sheet]
+                                .row
+                                    .col-xl-12
+                                        .card
+                                            .card-header
+                                                h5 Upload results for #{title}
+                                            if students.length > 0
+                                                .card-block.table-border-style
+                                                    .table-responsive
+                                                        table.table.table-striped
+                                                            thead
+                                                                tr
+                                                                    th Name
+                                                                    th Reg Number
+                                                                    th Upload
+                                                            tbody
+                                                                each student in students
+                                                                    tr
+                                                                        td #{student.lastName} #{student.firstName}
+                                                                        td #{student.studentID} 
+                                                                        -let uploadUrl = '/staff/upload-result/' + pSubject + '/' + pClass + '/' + student._id
+                                                                        td #[a(href=uploadUrl) Upload]
+                                                    
+        include includes/footer.pug

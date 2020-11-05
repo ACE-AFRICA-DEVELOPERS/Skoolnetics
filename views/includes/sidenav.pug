@@ -1,0 +1,187 @@
+block content
+    nav.pcoded-navbar
+        .navbar-wrapper
+            .navbar-brand.header-logo
+                a.b-brand(href='')
+                    span.b-title Skoolnetics
+                a#mobile-collapse.mobile-menu(href='javascript:')
+                    span
+            .navbar-content.scroll-div
+                ul.nav.pcoded-inner-navbar
+                    if admin
+                        li.nav-item.pcoded-menu-caption
+                            label Basic
+                        li(class=`nav-item ${dash_active}`)
+                            a.nav-link(href='/admin/dashboard')
+                                span.pcoded-micon
+                                    i.feather.icon-home
+                                span.pcoded-mtext Dashboard
+                        li.nav-item.pcoded-menu-caption
+                            label Schools
+                        li(class=`nav-item ${new_active}`)
+                            a.nav-link(href='/admin/new-schools')
+                                span.pcoded-micon
+                                    i.feather.icon-tablet
+                                span.pcoded-mtext New Schools
+                        li(class=`nav-item ${approved_active}`)
+                            a.nav-link(href='/admin/approved-schools')
+                                span.pcoded-micon
+                                    i.feather.icon-tablet
+                                span.pcoded-mtext Approved Schools
+
+                    if schoolAdmin
+                        li.nav-item.pcoded-menu-caption
+                            label Basic
+                        li(class=`nav-item ${dash_active}`)
+                            a.nav-link(href='/school/dashboard')
+                                span.pcoded-micon
+                                    i.feather.icon-home
+                                span.pcoded-mtext Dashboard
+                        li.nav-item.pcoded-menu-caption
+                            label Setup and Config
+                        li(class=`nav-item pcoded-hasmenu ${session_active} ${opensession_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-settings
+                                span.pcoded-mtext Basic Setup
+                            ul.pcoded-submenu
+                                li(class=sessT_active)
+                                    a(href='/school/session') Session and Term
+                                li(class=logo_active)
+                                    a(href="/school/logo") Logo and Stamp
+                                li(class=roles_active)
+                                    a(href="/school/roles") Roles
+                                li(class=grade_active)
+                                    a(href='/school/grade-settings') Grading System
+                                li(class=ca_active)
+                                    a(href='/school/exam-settings') CA and Exam Total
+                                li(class=subject_active)
+                                    a(href='/school/subjects') Subjects
+                                li(class=class_active)
+                                    a(href='/school/class') Classes
+                                
+                        li(class=`nav-item pcoded-hasmenu ${users_active} ${openuser_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-users
+                                span.pcoded-mtext Users
+                            ul.pcoded-submenu
+                                li(class=staff_active)
+                                    a(href='/school/staff') Staffs
+                                li(class=student_active)
+                                    a(href='/school/new-student') New Student
+                                li
+                                    a(href='#') Parents
+                        li.nav-item.pcoded-menu-caption
+                            label Test and Exam
+                        li(class=`nav-item pcoded-hasmenu ${cbt_active} ${opencbt_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-tv
+                                span.pcoded-mtext CBT
+                            ul.pcoded-submenu
+                                li(class=setup_active)
+                                    a(href='/school/cbt-setup') Setup
+                                li(class=result_active)
+                                    a(href='/school/cbt-results') Results
+                        li.nav-item.pcoded-menu-caption
+                            label Broadsheet
+                        li(class=`nav-item ${broadsheet_active}`)
+                            a.nav-link(href='/school/broadsheet')
+                                span.pcoded-micon
+                                    i.feather.icon-folder
+                                span.pcoded-mtext Results
+                        li.nav-item.pcoded-menu-caption
+                            label For Classes
+                        li(class=`nav-item ${attendance_active}`)
+                            a.nav-link(href='/school/attendance')
+                                span.pcoded-micon
+                                    i.feather.icon-user-check
+                                span.pcoded-mtext Attendance
+                        li(class=`nav-item ${notes_active}`)
+                            a.nav-link(href='/school/lesson-notes')
+                                span.pcoded-micon
+                                    i.feather.icon-calendar
+                                span.pcoded-mtext Lesson Notes
+                       
+                                    
+                    if staff
+                        li.nav-item.pcoded-menu-caption
+                            label Basic
+                        li(class=`nav-item ${dash_active}`)
+                            a.nav-link(href='/staff/dashboard')
+                                span.pcoded-micon
+                                    i.feather.icon-home
+                                span.pcoded-mtext Dashboard
+                        li.nav-item.pcoded-menu-caption
+                            label Examination
+                        li(class=`nav-item ${upload_active}`)
+                            a.nav-link(href='/staff/upload-result')
+                                span.pcoded-micon
+                                    i.feather.icon-upload-cloud
+                                span.pcoded-mtext Upload Results
+                        li(class=`nav-item pcoded-hasmenu ${cbt_active} ${opencbt_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-tv
+                                span.pcoded-mtext CBT
+                            ul.pcoded-submenu
+                                li(class=quick_active)
+                                    a(href='/staff/cbt/quick-one') Quiz
+                                li(class=caschool_active)
+                                    a(href='/staff/cbt/school') Exam
+                                li(class=ca_active)
+                                    a(href='/staff/cbt/cbt-results') Results
+                               
+                        li.nav-item.pcoded-menu-caption
+                            label Personal
+                        li(class=`nav-item ${attendance_active}`)
+                            a.nav-link(href='/staff/attendance')
+                                span.pcoded-micon
+                                    i.feather.icon-edit-1
+                                span.pcoded-mtext Attendance
+                        li(class=`nav-item ${broadsheet_active}`)
+                            a.nav-link(href='/staff/broadsheet')
+                                span.pcoded-micon
+                                    i.feather.icon-file
+                                span.pcoded-mtext Broadsheet
+                        li(class=`nav-item`)
+                            a.nav-link(href='#')
+                                span.pcoded-micon
+                                    i.feather.icon-book
+                                span.pcoded-mtext Lesson Note
+                        li(class=`nav-item`)
+                            a.nav-link(href='#')
+                                span.pcoded-micon
+                                    i.feather.icon-airplay
+                                span.pcoded-mtext Assignment
+
+                    if student  
+                        li.nav-item.pcoded-menu-caption
+                            label Basic
+                        li(class=`nav-item ${dash_active}`)
+                            a.nav-link(href='/student/dashboard')
+                                span.pcoded-micon
+                                    i.feather.icon-home
+                                span.pcoded-mtext Dashboard    
+                        li.nav-item.pcoded-menu-caption
+                            label Personal
+                        li(class=`nav-item ${exam_active}`)
+                            a.nav-link(href='/student/cbt')
+                                span.pcoded-micon
+                                    i.feather.icon-tv
+                                span.pcoded-mtext CBT
+                        li(class=`nav-item pcoded-hasmenu ${result_active} ${openresult_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-tv
+                                span.pcoded-mtext Results
+                            ul.pcoded-submenu
+                                li(class=cbtR_active)
+                                    a(href='/student/cbt-result') CBT
+                                li(class=card_active)
+                                    a(href='#') Report Card
+                             
+                        
+                        
+                                

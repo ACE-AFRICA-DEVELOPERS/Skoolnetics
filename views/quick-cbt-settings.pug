@@ -1,0 +1,93 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .col-md-6
+                                    if success
+                                        if success.length != 0
+                                            .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                    span(aria-hidden="true") ×
+                                                span #{success}
+                                .card
+                                    .card-header
+                                        h5 Create a name for the CBT
+                                        span.d-block.m-t-5 You will be in charge of this. All results and password generation for students will be managed by you.
+                                    .card-body
+                                        .row.justify-content-center
+                                            .col-md-6.text-center
+                                                a(href="#" class="btn btn-info" data-toggle="modal" data-target="#add-exam") New CBT #[i(class="feather icon-plus")]
+                                            div(id="add-exam" class="modal fade")
+                                                div(class="modal-dialog" role="document")
+                                                    div(class="modal-content")
+                                                        div(class="modal-header")
+                                                            h4(class="modal-title") Add a CBT
+                                                            button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                                span(aria-hidden="true") &times;
+                                                        div(class="modal-body")
+                                                            form(method="POST")
+                                                                label(class="label") Exam Name: 
+                                                                input(type="text" class="form-control mb-2" name="name" required)
+                                                                label(class="label") Start Date: 
+                                                                input(type="date" class="form-control mb-2" name="startDate" required)
+                                                                label(class="label") End Date:
+                                                                input(type="date" class="form-control mb-3" name="endDate" required)
+                                                                div(class="text-center")
+                                                                    button(type="submit" class="btn btn-info") Create
+                                        if allExam.length > 0
+                                            .card-block.table-border-style
+                                                .table-responsive
+                                                    table.table.table-striped
+                                                        thead
+                                                            tr
+                                                                th Name
+                                                                th Start Date
+                                                                th End Date
+                                                                th View
+                                                                th Open
+                                                                th Close 
+                                                        tbody
+                                                            each exam in allExam
+                                                                - let startDateYear = exam.startDate.getFullYear()
+                                                                - let startDateMonth = exam.startDate.getMonth() + 1
+                                                                - let startDateDay = exam.startDate.getDate()
+                                                                - let endDateYear = exam.endDate.getFullYear()
+                                                                - let endDateMonth = exam.endDate.getMonth() + 1
+                                                                - let endDateDay = exam.endDate.getDate()
+                                                                - let viewUrl = '/staff/cbt/quick-one/' + pSubject + '/' + pClass + '/' + exam.examCode
+                                                                - let openUrl = '/staff/cbt/quick-one/' + pSubject + '/' + pClass + '/' + exam.examCode + '/open-exam'
+                                                                - let closeUrl = '#' 
+                                                                tr
+                                                                    td #{exam.name}
+                                                                    td #{startDateDay}/#{startDateMonth}/#{startDateYear}
+                                                                    td #{endDateDay}/#{endDateMonth}/#{endDateYear}
+                                                                    td #[a(href=viewUrl) View]
+                                                                    if !exam.available
+                                                                        td #[a(href="#" data-toggle="modal" data-target=`#o${exam._id}` class="small-btn") Open]
+                                                                        div(class="modal fade" id=`o${exam._id}` role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                            div(class="modal-dialog" role="document")
+                                                                                div(class="modal-content")
+                                                                                    div(class="modal-header")
+                                                                                        h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                        button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                            span(aria-hidden="true") ×
+                                                                                    div(class="modal-body") The exam questions will be available for release once you do this.
+                                                                                    div(class="modal-footer")
+                                                                                        a(class="btn btn-info" href=openUrl) Ok
+                                                                                        button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+                                                                    else
+                                                                        td Opened
+                                                                    td #[a(href=closeUrl) Close]
+
+        include includes/footer.pug

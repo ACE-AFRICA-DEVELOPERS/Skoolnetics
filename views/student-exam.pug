@@ -1,0 +1,35 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    if exams.length > 0
+                                        .card-header
+                                            h5 CBT
+                                        .card-body
+                                            .row
+                                                .col-md-4
+                                                    each ex in exams
+                                                        - let viewUrl = '/student/cbt/' + ex.examCode
+                                                        a(href=viewUrl class="text-dark")
+                                                            .field-box
+                                                                p #[b #{ex.name}]
+                                                                p #{ex.examCode}
+                                    else
+                                        .card-header
+                                            h5 CBT
+                                            span.d-block.m-t-5 No CBT available.
+                        
+
+        include includes/footer.pug

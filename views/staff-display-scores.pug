@@ -1,0 +1,50 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                if results.length > 0
+                                    if firstResult.released
+                                        - let unreleaseUrl = "#"
+                                        p #[a(href=unreleaseUrl class="btn btn-info") Recall]
+                                    else
+                                        - let releaseUrl = "/staff/cbt/cbt-results/" + exam.examCode + "/" + pSubject + "/" + pClass + "/release"
+                                        p #[a(href=releaseUrl class="btn btn-info") Release to Students]
+                                    .card
+                                        .card-header
+                                            h5 CBT Result sheet for #{pSubject}, #{pClass}
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead
+                                                        tr
+                                                            th Name
+                                                            th Student ID
+                                                            th Score
+                                                    tbody
+                                                        each result, index in results
+                                                            tr
+                                                                td #{studentName[result.student]}
+                                                                td #{studentID[result.student]}
+                                                                each res in result.result
+                                                                    if res.courseName == pSubject
+                                                                        td(id="score") #{res.score}                
+
+                                else
+                                    .card
+                                        .card-header
+                                            h5 CBT Result sheet for #{pSubject}, #{pClass}
+                                            span.d-block.m-t-5 No student has written this text/Exam.
+                                    
+
+        include includes/footer.pug

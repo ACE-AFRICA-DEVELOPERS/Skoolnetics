@@ -1,0 +1,575 @@
+include includes/header.pug
+block content
+    link(rel="stylesheet", href="/stylesheets/landing.css")
+    body
+        section#home
+            //- navigation bar 1
+            div.navbar.navbar-expand.ogg
+                .container
+                    .nav-bckg
+                    ul.navbar-nav.ml-auto.def-navbar1
+                        li.nave-item
+                            i(class="icofont-sign-in") 
+                            span  Sign In
+                                ul.drop-menu.menu-1
+                                    li
+                                        a(href="/school") School
+                                    li
+                                        a(href="/student") Student
+                                    li
+                                        a(href="/staff") Staff
+                                    //- li
+                                    //-     a(href="#") Parent Sign In
+                        li.nave-item
+                            a(href="/school/signup")
+                                i(class="icofont-unlock")
+                                span  Sign Up
+                                        
+                        li.nave-link 
+                            a(href="#")
+                                i(class="icofont-facebook")
+                            a(href="#")
+                                i(class="icofont-instagram")
+                            a(href="#")
+                                i(class="icofont-twitter")
+                            a(href="#")
+                                i(class="icofont-envelope")
+        
+            //- navigation bar2
+            nav(class="navbar navbar-expand-lg navbar-trans def-navbar" id="mainNav")
+                .container
+                    a(class="navbar-brand def-header ml-2" href="/") Skoolnetics
+                    button(class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#"
+                        aria-controls="navbarDefault" aria-expanded="false" aria-label="Toggle navigation")
+                        span
+                        span                
+                        span
+                    .nav-bckg-white-left
+                    .nav-bckg-white-right
+                    .navbar-collapse.collapse#navbarDefault.def-navbar-nav
+                        ul(class="navbar-nav ml-auto")
+                            li(class="nav-item")
+                                a(class="nav-link js-scroll active" href="#plan") Plans
+                            
+                            li(class="nav-item")
+                                a(class="nav-link js-scroll" href="#contact") Contact Us
+                            
+                            li(class="nav-item")
+                                a(class="nav-link js-scroll" href="#faq") FAQs
+                            li(class="nav-item")
+                                a(class="nav-link js-scroll btn nav-btn" href="#faq") Get Free Version
+                            
+            //- Nav End
+            //- Mobile nav
+            section.mobile-nav.hide
+                .container
+                    .row
+                        .col-md-12.text-center
+                            .text-center
+                                p.btn.close.text-center CLOSE X
+                        .col-3
+                            div
+                                p.social Social
+                                p
+                                    a(href="#")
+                                        i(class="icofont-facebook")
+                                p
+                                    a(href="#")
+                                        i(class="icofont-instagram")
+                                p
+                                    a(href="#")
+                                        i(class="icofont-twitter")
+                        .col-9
+                            div
+                                ul(class="")
+                                    li(class="nav-item")
+                                        a(class="nav-link js-scroll active" href="#plan") Plans
+                                    
+                                    li(class="nav-item")
+                                        a(class="nav-link js-scroll" href="#contact") Contact Us
+                                    
+                                    li(class="nav-item")
+                                        a(class="nav-link js-scroll" href="#faq") FAQs
+                                    li.nav-item
+                                        a(href="/school" class="nav-link js-scroll") School Login
+                                    li.nav-item
+                                        a(href="/staff" class="nav-link js-scroll") Staff Login
+                                    li.nav-item
+                                        a(href="/student" class="nav-link js-scroll") Student Login
+                                    li.nav-item.mb-3
+                                        a(href="/school/signup" class="nav-link js-scroll") Sign Up
+                                    li(class="nav-item")
+                                        a(class="nav-link js-scroll btn nav-btn" href="#faq") Get Free Version
+                    
+
+
+            //- Hero section
+            section
+                .container
+                    div.hero-head
+                        h2 Your Preferred All-In-One School Management Solution
+                        a(href="/school/signup" class="btn btn-white btn-text") Sign Up
+                        a(href="#plan" class="btn btn-grey btn-text") Get Free Version 
+        //- End of Hero and Home section
+
+        //- About Us Section
+        section#about
+            .container
+                .row
+                    .col-md-12
+                        .text-center.section-header
+                            h4 What Does ACESKOOL Do?
+                            hr
+                    .col-md-12
+                        div
+                            p Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ipsam cumque aliquid vitae atque obcaecati est quas rem et esse iusto mollitia cupiditate veniam nulla velit repellat perspiciatis praesentium itaque a fugit quos qui eius, culpa accusamus. Eaque adipisci magni explicabo?          
+        //- End of About Us Section
+
+        //- Slideshow Features
+        section#feature
+            .container
+                .circle1
+                .box1
+                .circle2
+                .row
+                    .col-md-12
+                        .text-center.section-header
+                            h4 Features
+                            hr
+                    .col-md-3.col-sm-6
+                        div.feature-box
+                            div.text-center.feature-icon
+                                i(class="icofont-macbook")
+                            p Customizable CBT Application
+                    .col-md-3.col-sm-6
+                        div.feature-box.b
+                            div.text-center.feature-icon
+                                i(class="icofont-monitor")
+                            p E-Learning Features
+                    .col-md-3.col-sm-6
+                        div.feature-box
+                            div.text-center.feature-icon
+                                i(class="icofont-certificate-alt-1")
+                            p Report Cards Generation
+                    .col-md-3.col-sm-6
+                        div.feature-box.b
+                            div.text-center.feature-icon
+                                i(class="icofont-files-stack")
+                            p Data Collection &amp; Storage
+        //- End of Slideshow Features
+
+        //- Why schools choose us
+        section#why
+            .container
+                .row
+                    .col-md-12
+                        div.text-center.section-header
+                            h4 See Why Many Schools Choose ACESKOOL
+                            hr
+                    .col-md-6.col-lg-4
+                        div.why-thumb.text-center
+                            h3 1
+                            div
+                                i(class="icofont-gears")
+                            h4 Functionality
+                            p We provide relevant features needed in seamlessly managing both academic and administrative processes for schools.
+                    .col-md-6.col-lg-4
+                        div.why-thumb.text-center
+                            h3 2
+                            div
+                                i(class="icofont-simple-smile")
+                            h4 User-Friendliness
+                            p The system is built with the user in mind. You will find it very easy-to-use.
+                    .col-md-6.col-lg-4
+                        div.why-thumb.text-center
+                            h3 3
+                            div
+                                i(class="icofont-automation")
+                            h4 Automation
+                            p Our solution eliminates boring routine processes, helping you accomplish tasks faster.
+                    .col-md-6.col-lg-4
+                        div.why-thumb.text-center
+                            h3 4
+                            div
+                                i(class="icofont-shield")
+                            h4 Reliability
+                            p Our users trust us to deliver a reliable, safe and secured system.
+                    .col-lg-4.col-md-6
+                        div.why-thumb.text-center
+                            h3 5
+                            div
+                                i(class="icofont-chart-histogram-alt")
+                            h4 Cost Effectiveness
+                            p You too could cut-down on unnecessary cost by ACESKOOL.
+                    .col-md-6.col-lg-4
+                        div.why-thumb.text-center
+                            h3 6
+                            div
+                                i(class="icofont-bill")
+                            h4 Affordability
+                            p Our pocket-friendly packages will help you maximize profit while gaining maximum utility.
+                    .col-lg-4.col-md-6.seventh
+                        div.why-thumb.text-center
+                            h3 7
+                            div
+                                i(class="icofont-live-support")
+                            h4 Support
+                            p We are always available to help.
+        //- End of Why schools choose us
+
+        //- Review section
+        section#review
+            .container
+                .row
+                    .col-md-12
+                        .text-center.section-header
+                            h4 See What Our Users Say About Us
+                            hr
+                        //- img(src="/landingAsset/diversity.png", alt="image of children" class="review-children")
+                    .owl-carousel.owl-client.owl-theme
+                        .col-md-12.mt-2
+                            .review-thumb
+                                div
+                                    img(src="/landingAsset/mm.jpg" class="" alt="")
+                                div
+                                    i(class="icofont-quote-left")
+                                p.review-text Lorem, ipsum dolor sit amet consectetur adipisicing elit. Itaque eos consequuntur dolorem optio quis totam blanditiis nobis eligendi dolor molestiae?
+                                h4 Marc Graves
+                                p.author-info Co-ordinator, OaksRoyal College, Yaba.                            
+                        .col-md-12.mt-2
+                            .review-thumb
+                                div
+                                    img(src="/landingAsset/mm.jpg" class="" alt="")
+                                div
+                                    i(class="icofont-quote-left")
+                                p.review-text Lorem, ipsum dolor sit amet consectetur adipisicing elit. Itaque eos consequuntur dolorem optio quis totam blanditiis nobis eligendi dolor molestiae?
+                                h4 Marc Graves
+                                p.author-info Co-ordinator, OaksRoyal College, Yaba.                            
+                        .col-md-12.mt-2
+                            .review-thumb
+                                div
+                                    img(src="/landingAsset/mm.jpg" class="" alt="")
+                                div
+                                    i(class="icofont-quote-left")
+                                p.review-text Lorem, ipsum dolor sit amet consectetur adipisicing elit. Itaque eos consequuntur dolorem optio quis totam blanditiis nobis eligendi dolor molestiae?
+                                h4 Marc Graves
+                                p.author-info Co-ordinator, OaksRoyal College, Yaba.                            
+                        .col-md-12.mt-2
+                            .review-thumb
+                                div
+                                    img(src="/landingAsset/mm.jpg" class="" alt="")
+                                div
+                                    i(class="icofont-quote-left")
+                                p.review-text Lorem, ipsum dolor sit amet consectetur adipisicing elit. Itaque eos consequuntur dolorem optio quis totam blanditiis nobis eligendi dolor molestiae?
+                                h4 Marc Graves
+                                p.author-info Co-ordinator, OaksRoyal College, Yaba.                            
+        //- End of Review section
+
+        //- Screenshot of the App section
+        section#screenshot
+            .container
+                .text-center.section-header
+                    h4 Screenshot Of The App
+                    hr
+                .row.row-mobile
+                    .col-lg-4.col-md-6.box
+                        div.screenshot-box
+                            a(href="/landingAsset/1.jpeg" data-lightbox="screenshot-mf")
+                                img(src="/landingAsset/1.jpeg" class="img-fluid screen-img" alt="")
+                                div.screenshot-eye
+                                    i(class="icofont-eye")
+                    .col-lg-4.col-md-6
+                        div.screenshot-box
+                            a(href="/landingAsset/2.jpeg" data-lightbox="screenshot-mf")
+                                img(src="/landingAsset/2.jpeg" class="img-fluid" alt="")
+                                div.screenshot-eye
+                                    i(class="icofont-eye")
+                    .col-lg-4.col-md-6
+                        div.screenshot-box
+                            a(href="/landingAsset/3.jpeg" data-lightbox="screenshot-mf")
+                                img(src="/landingAsset/3.jpeg" class="img-fluid" alt="")
+                                div.screenshot-eye
+                                    i(class="icofont-eye")
+                    .col-lg-4.col-md-6
+                        div.screenshot-box
+                            a(href="/landingAsset/4.jpeg" data-lightbox="screenshot-mf")
+                                img(src="/landingAsset/4.jpeg" class="img-fluid" alt="")
+                                div.screenshot-eye
+                                    i(class="icofont-eye")
+                    .col-lg-4.col-md-6
+                        div.screenshot-box
+                            a(href="/landingAsset/5.jpeg" data-lightbox="screenshot-mf")
+                                img(src="/landingAsset/5.jpeg" class="img-fluid" alt="")
+                                div.screenshot-eye
+                                    i(class="icofont-eye")
+                    .col-lg-4.col-md-6
+                        div.screenshot-box
+                            a(href="/landingAsset/6.jpeg" data-lightbox="screenshot-mf")
+                                img(src="/landingAsset/6.jpeg" class="img-fluid" alt="")    
+                                div.screenshot-eye
+                                    i(class="icofont-eye")
+        //- End of Screenshot of the App section
+
+        //- Plans section
+        section#plan
+            .container
+                .row
+                    .col-md-12
+                        .section-header.text-center
+                            h4 Choose One Of Our Packages
+                            hr
+                            p Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae impedit itaque odio doloribus quod nostrum, alias eveniet minima deserunt, repellat porro maxime velit aut suscipit neque vel possimus nulla. Natus.
+                    .col-lg-3.col-md-6
+                        div.text-center.plan-box
+                            div
+                                h4 Freemium
+                            sup.naira.gold &#8358;
+                            span.price.gold 0
+                            span.month /month
+                            ul.text-left.ml-2
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                            a(href="#" class="btn btn-gold") Buy Now
+                                    
+
+                    .col-lg-3.col-md-6
+                        div.text-center.plan-box
+                            div
+                                h4 Basic
+                            sup.naira.gold &#8358;
+                            span.price.gold 50,000
+                            span.month /month
+                            ul.text-left.ml-2
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span All features in Freemium.
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                            a(href="#" class="btn btn-gold") Buy Now
+
+                    .col-lg-3.col-md-6
+                        div.text-center.plan-box
+                            div
+                                h4 Premium
+                            sup.naira.gold &#8358;
+                            span.price.gold 90,000
+                            span.month /month
+                            ul.text-left.ml-2
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span All features in Basic.    
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                            a(href="#" class="btn btn-gold") Buy Now
+
+                    .col-lg-3.col-md-6
+                        div.text-center.plan-box
+                            div
+                                span.advanced Advanced
+                                h4 Premium Plus + Website
+                            sup.naira.gold &#8358;
+                            span.price.gold 90,000
+                            span.month /month
+                            p.month (+ cost of website)
+                            ul.text-left.ml-2
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span All features in Premium.    
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Lorem ipsum dolor. 
+                            a(href="#" class="btn btn-gold") Buy Now
+                                    
+                        //- .row
+                        //-     .col-md-3
+                        //-     .col-md-6
+                        //-         form(action="", method="post")
+                        //-             .row
+                        //-                 .col-md-12
+                        //-                     h4 Company Details
+                        //-                     label(for="companyName") Name of Educational Institution
+                        //-                     input(type="text" name="" id="" class="form-control" autocomplete="off" placeholder="")
+                        //-                 .col-md-12
+                        //-                     label(for="email") Email Address
+                        //-                     input(type="email" name="" id="" class="form-control" autocomplete="off" placeholder="")
+                        //-                 .col-md-12
+                        //-                     label(for="password") Password
+                        //-                     input(type="password" name="" id="" class="form-control" placeholder="")
+                        //-                 .col-md-12
+                        //-                     label(for="confirmPassword") Confirm Password
+                        //-                     input(type="password" name="" id="" class="form-control" placeholder="")
+                        //-                 .col-md-12
+                        //-                     h4 Card Details
+                        //-                     label(for="cardNumber") Card Number
+                        //-                     .input-group
+                        //-                         input(type="number" name="" id="" class="form-control" placeholder="")
+                        //-                         .input-group-append
+                        //-                             span
+                        //-                                 .input-group-text.btn
+                        //-                                     img(src="/landingAsset/cards.png", alt="card-icon")
+                        //-                 .col-md-12
+                        //-                     label(for="cardName") Name on Card
+                        //-                     input(type="text" class="form-control" name="" id="" )
+                        //-                 .col-md-12
+                        //-                     .row
+                        //-                         .col-sm-6
+                        //-                             label(for="expiryDate") Expiry Date
+                        //-                             input(type="text" name="" id="" class="form-control" placeholder="MM/YY")
+                        //-                         .col-sm-6
+                        //-                             label(for="cvv") CVV
+                        //-                             input(type="number" name="" id="" class="form-control" placeholder="")
+
+
+                        //-     .col-md-3
+
+        //- End of Plans section
+
+
+        //- Frequently Asked section
+        section#faq.faq
+            .container
+                .row
+                    .col-md-12
+                        div.text-center.section-header
+                            h4.text-white Frequently Asked Questions
+                            hr
+                            p.text-white  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Incidunt repellat illum velit repudiandae?
+                    .col-md-12
+                        .faq-list
+                            ul
+                                li(data-aos="fade-up")
+                                    i(class="icofont-question-circle icon-help")
+                                    a(data-toggle="collapse" class="collapse"  href="#faq1") 
+                                        span Lorem odo ipsum dolor sit amet, consectetur adipisicing elit?
+                                        i(class="icofont-caret-down icon-show")
+                                        i(class="icofont-caret-up icon-close")
+                                    div(id="faq1" class="collapse show" data-parent=".faq-list")
+                                        p Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim totam at deleniti consequuntur excepturi optio unde cupiditate illo eligendi maxime. Et quibusdam eligendi nam ipsa suscipit soluta est, cumque, sunt similique quasi necessitatibus ullam nemo vero, id non reiciendis ad.
+
+                                li(data-aos="fade-up" data-aos-delay="100")
+                                    i(class="icofont-question-circle icon-help")
+                                    a(data-toggle="collapse" class="collapsed"  href="#faq2") 
+                                        span Lorem odo ipsum dolor sit amet, consectetur adipisicing?
+                                        i(class="icofont-caret-down icon-show")
+                                        i(class="icofont-caret-up icon-close")
+                                    div(id="faq2" class="collapse" data-parent=".faq-list")
+                                        p Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim totam at deleniti consequuntur excepturi optio unde cupiditate illo eligendi maxime. Et quibusdam eligendi nam ipsa suscipit soluta est, cumque, sunt similique quasi necessitatibus ullam nemo vero, id non reiciendis ad.
+                                li(data-aos="fade-up" data-aos-delay="100")
+                                    i(class="icofont-question-circle icon-help")
+                                    a(data-toggle="collapse" class="collapsed"  href="#faq3") 
+                                        span Lorem make amet, consectetur adipisicing elit umque?
+                                        i(class="icofont-caret-down icon-show")
+                                        i(class="icofont-caret-up icon-close")
+                                    div(id="faq3" class="collapse" data-parent=".faq-list")
+                                        p Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim totam at deleniti consequuntur excepturi optio unde cupiditate illo eligendi maxime. Et quibusdam eligendi nam ipsa suscipit soluta est, cumque, sunt similique quasi necessitatibus ullam nemo vero, id non reiciendis ad.
+                                li(data-aos="fade-up" data-aos-delay="100")
+                                    i(class="icofont-question-circle icon-help")
+                                    a(data-toggle="collapse" class="collapsed"  href="#faq4") 
+                                        span Lorem odo ipsum dolor sit amet, consectetur?
+                                        i(class="icofont-caret-down icon-show")
+                                        i(class="icofont-caret-up icon-close")
+                                    div(id="faq4" class="collapse" data-parent=".faq-list")
+                                        p Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim totam at deleniti consequuntur excepturi optio unde cupiditate illo eligendi maxime. Et quibusdam eligendi nam ipsa suscipit soluta est, cumque, sunt similique quasi necessitatibus ullam nemo vero, id non reiciendis ad.
+        //- End of Frequently Asked section
+
+        //- Contact section
+        section#contact
+            .container
+                .row
+                    .col-md-2
+                    .col-md-8.form-body
+                        .text-center.section-header
+                            h4 Send Us A Message
+                            hr
+                            p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laborum, repellendus itaque expedita eum voluptatem nisi voluptate vitae aliquid nemo praesentium saepe suscipit deleniti iste neque inventore odit quis recusandae iure asperiores distinctio delectus. Explicabo, magni?
+                        div
+                            form(action="", method="post")
+                                .row
+                                    .col-md-12
+                                        input(type="text" placeholder="Your Name" name="" id="" class="form-control contact-form" autocomplete="off")
+                                    .col-md-12
+                                        input(type="email" placeholder="Your Email" name="" id="" class="form-control contact-form" autocomplete="off")
+                                    .col-md-12
+                                        input(type="password" name="" id="" class="form-control contact-form" placeholder="Subject")
+                                    .col-md-12
+                                        textarea(name="" placeholder="Message" cols="30" rows="5" class="form-control contact-form")
+                                    .col-md-12
+                                        div
+                                            button(type="submit" class="btn btn-gold" value="") Send 
+                    .col-md-2
+                                            
+
+        //- Contact section
+
+        //- Footer Section
+        section#footer
+            .container
+                .row
+                    .col-md-6.order-last.order-md-first
+                        div.copy
+                            p &copy; Copyright 
+                                a(href="#") AceSkool 2020. 
+                                span All Rights Reserved.
+                    .col-md-6.order-first.order-md-last
+                        div.footer-icon
+                            a(href="#" class="contact-icon")
+                                i(class="icofont-facebook")
+                            a(href="#" class="contact-icon")
+                                i(class="icofont-instagram")
+                            a(href="#" class="contact-icon")
+                                i(class="icofont-twitter")
+                            a(href="#" class="contact-icon")
+                                i(class="icofont-envelope")
+        //- End of Footer Section
+
+        //- Back To Top Button
+        a(href="#" class="back-to-top")
+            i(class="icofont-home")
+
+        script(src="/javascripts/jquery.min.js")
+        script(src="/javascripts/popper.min.js")
+        script(src="/plugins/bootstrap/js/bootstrap.min.js")
+        script(src="/landingAsset/lightbox/js/lightbox.min.js")
+        script(src="/landingAsset/easing/easing.min.js")
+        script(src="/landingAsset/owlcarousel/owl.carousel.min.js")
+        script(src="/landingAsset/wow/wow.min.js")
+        script(src="/javascripts/landing.js")
+
+
+

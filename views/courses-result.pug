@@ -1,0 +1,34 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 Subjects and Classes for #{exam.name}
+                                        span.d-block.m-t-5 Select one:
+                                    if courses.length > 0
+                                        .card-body
+                                            each course in courses
+                                                .col-md-4
+                                                    - let courseUrl = '/staff/cbt/cbt-results/' + exam.examCode + '/' + course.courseName + '/' + course.className
+                                                    a(href=courseUrl class="text-dark")
+                                                        .field-box
+                                                            p #[b #{course.courseName}]
+                                                            p (#{course.className})
+                                                            if course.release
+                                                                p #[b Result released]
+                                                            else
+                                                                p #[b Not yet released]
+
+        include includes/footer.pug

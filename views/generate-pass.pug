@@ -1,0 +1,54 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                if examPass.length > 0
+                                    p #[a(href="#" class="btn btn-info") Print #[i.feather.icon-printer]]
+                                    .card
+                                        .card-header
+                                            h5 Passwords generated for #{course.className}, #{course.courseName} (#{exam.name})
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead
+                                                        tr
+                                                            th Name
+                                                            th Student ID
+                                                            th Password
+                                                    tbody
+                                                        each exam in examPass
+                                                            tr
+                                                                td #{studentName[exam.student]}
+                                                                td #{studentReg[exam.student]}
+                                                                td #{exam.password}
+                                else
+                                    p #[a(href="#" class="btn btn-info" id="submit") Generate]
+                                    p#span-class.d-none #{course.courseName}/#{course.className}/#{exam.examCode}
+                                    p#displayMsg
+                                    .card
+                                        .card-header
+                                            h5 Generate Password for #{course.className}, #{course.courseName} (#{exam.name})
+                                            span.d-block.m-t-5 Click on "Generate" after selecting the students you want to generate passwords for.
+                                        .card-body
+                                            p  
+                                                input(type="checkbox" id="selectAll") 
+                                                label.ml-1 #[b Select All]
+                                            .row
+                                                each student in students
+                                                    .col-md-3
+                                                        input(type="checkbox" class='check' id=student._id)
+                                                        label.ml-1 #{student.firstName} #{student.lastName} #{student.otherName}
+        
+        script(src="/javascripts/library/generate-pass.js" type="module")
+        include includes/footer.pug

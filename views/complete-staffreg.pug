@@ -1,0 +1,38 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 Step 2
+                                        span.d-block.m-t-5 Upload an Image for #{getStaff.lastName} #{getStaff.firstName}
+                                    .card-body
+                                        .row.justify-content-center
+                                            .col-md-8
+                                                form(method='POST' enctype="multipart/form-data")
+                                                    div(class="text-center mt-2")
+                                                        label(class="btn-file") #[i(class="fa fa-camera pr-2")] 
+                                                            input(type="file" accept="image/*" name='picture' id='picture' required)
+                                                    div(class="text-center mt-2")
+                                                        input(type="submit" class="btn btn-info mr-4" value="Complete")
+                                                        - let skipUrl = "/school/staff/" + getStaff._id
+                                                        a(href=skipUrl class="btn btn-light") Skip
+                                                div(class="preview")
+                                                    div(class="boxImage" id="displayImage")
+                                                        p(class="hide mt-5") Preview 
+                                                    div(class="removePicture")
+                                                        a(href="#" id="removeImage") #[i(class="fa fa-times")]
+
+        script(src="/javascripts/library/handleImage.js")
+        include includes/footer.pug

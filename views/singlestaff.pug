@@ -1,0 +1,73 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 Profile
+                                    .card-body
+                                        .row.justify-content-center
+                                            .col-md-10
+                                                .row
+                                                    .col-md-4.mb-3
+                                                        if staffDB.profilePhoto
+                                                            - let imageUrl = "/uploads/schools/" + schoolAdmin.schoolCode + "/staffs/" + staffDB.profilePhoto
+                                                            img(src=imageUrl alt="" width="100%" height="300px")
+                                                        else
+                                                            if staffDB.gender == 'male'
+                                                                img(src="/images/user/avatar-4.jpg" alt="" width="100%" height="300px")
+                                                            else
+                                                                img(src="/images/user/avatar-3.jpg" alt="" width="100%" height="300px")  
+                                                        label(class="btn-file2 mt-4") #[i(class="fa fa-upload pr-2")] Change Image
+                                                            input(type="file" name='picture' id='picture')
+
+                                                    div(class="col-md-8")
+                                                        div(class="card-box")
+                                                            .row
+                                                                .col-3
+                                                                    label(for="ID" class="label") Staff ID:
+                                                                .col-9
+                                                                    input(type="text" value= staffDB.staffID class="profile-form mb-4" readonly)
+                                                                .col-3
+                                                                    label(for="firstname" class="label") First Name:
+                                                                .col-9
+                                                                    input(type="text" value= staffDB.firstName class="profile-form mb-4" name="firstName")
+                                                                .col-3
+                                                                    label(for="lastname" class="label") Last Name:
+                                                                .col-9
+                                                                    input(type="text" value= staffDB.lastName class="profile-form mb-4" name="lastName")
+                                                                .col-3
+                                                                    label(for="othername" class="label") Email:
+                                                                .col-9
+                                                                    input(type="text" value= staffDB.email class="profile-form mb-4" name="otherName")
+                                                                .col-3
+                                                                    label(for="gender" class="label") Role:
+                                                                .col-9
+                                                                    input(type="text" value= staffDB.role class="profile-form mb-4" name="gender")
+                                                                if staffDB.teaching.length > 0
+                                                                    each teach, index in staffDB.teaching
+                                                                        .col-3
+                                                                            label(class="label") Lecture (#{index + 1}):
+                                                                        .col-9
+                                                                            - let answer = teach.className + ", " + teach.subject
+                                                                            input(type="text" value=answer class="profile-form mb-4" readonly)
+                                                                
+                                                    div(class="col-md-12 mt-3 text-center")
+                                                        input(type="submit" class="btn btn-info"  value="Update")
+                                                hr
+                                                if staffDB.role == 'Teacher'
+                                                    -let assignUrl = '/school/staff/' + staffDB._id + '/assign'
+                                                    p #[a(href=assignUrl class="main-link") Assign Classes and Subjects to this teacher?]
+        
+        include includes/footer.pug

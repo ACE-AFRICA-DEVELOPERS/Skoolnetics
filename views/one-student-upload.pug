@@ -1,0 +1,74 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .row
+                                    .col-md-6
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
+                                    .col-xl-12
+                                        .card
+                                            .card-header
+                                                h5 #{title}
+                                                span.d-block.m-t-5 #{studentDB.studentID}
+                                            .card-body
+                                                .row
+                                                    .col-md-4.mb-3
+                                                        if studentDB.profilePhoto
+                                                            - let profileUrl = '/uploads/schools/' + code + '/' + pClass + '/' + studentDB.profilePhoto
+                                                            img(src=profileUrl width="150px" height="200px")
+                                                        else
+                                                            if studentDB.gender == 'male'
+                                                                img(src="/images/user/avatar-4.jpg" width="150px" height="200px")
+                                                            else
+                                                                img(src="/images/user/avatar-3.jpg" width="150px" height="200px")
+                                                        p.mt-3 #[b Subject:] #{pSubject}
+                                                        p #[b Class:] #{pClass}
+                                                        p #[b Total Attendance:] -
+                                                    .col-md-8.mb-3
+                                                        .row
+                                                            .col-md-6.mb-3
+                                                                .form-field
+                                                                    form(method="POST")
+                                                                        label(class="label") Select an Exam
+                                                                        select(name="examType" class="form-control mb-3" id="examSelect" required)
+                                                                            option(value="" selected disabled="disabled") ----
+                                                                            each compute in examCompute
+                                                                                option(value=compute.name) #{compute.name}
+                                                                        label(class="total") Total
+                                                                        input(type="number" readonly name="total" id="total" class="form-control mb-3")
+                                                                        label(class="score") Score
+                                                                        input(type="number" class="form-control mb-3" name="score" required)
+                                                                        input(type="submit" value="Upload" class="btn btn-info")
+                                                                        p#displayError
+                                                            .col-md-6.mb-3
+                                                                p #[b #[u Exam Uploaded]]
+                                                                if courseUploaded
+                                                                    each course in courseUploaded
+                                                                        p #[i(class="feather icon-check")] #{course.examType} - #{course.score}
+                                                                else
+                                                                    p None yet.
+                                                hr
+                                                div(class="d-flex justify-content-between")
+                                                    -let backUrl = '/staff/upload-result/' + pSubject + '/' + pClass
+                                                    -let sheetUrl = '/staff/upload-result/' + pSubject + '/' + pClass + '/sheet'
+                                                    a(href=backUrl class="btn btn-info") #[i(class="feather icon-arrow-left")] Go back
+                                                    a(href=sheetUrl class="btn btn-info") Check Result Sheet #[i(class="feather icon-arrow-right")]
+        
+        script(src="/javascripts/library/upload-result.js" type="module")
+        include includes/footer.pug

@@ -1,0 +1,34 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p #[a(href="#" class="btn btn-info") Print #[i.feather.icon-printer]]
+                                .card
+                                    if results
+                                        .card-header
+                                            h5 Your Results
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead
+                                                        tr 
+                                                            th Subject
+                                                            th Score
+                                                    tbody 
+                                                        each res, index in results.result
+                                                            tr
+                                                                td #{res.courseName}
+                                                                td(id="score") #{res.score}
+
+        include includes/footer.pug

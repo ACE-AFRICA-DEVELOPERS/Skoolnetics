@@ -1,0 +1,32 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    if classHead
+                                        .card-header
+                                            h5 Broadsheet
+                                            span.d-block.m-t-5 Click on the class to continue.
+                                        .card-body
+                                            .col-md-4.mb-3
+                                                - let viewUrl = '/staff/broadsheet/' + className[classHead.classHead]
+                                                a(href=viewUrl class="text-dark")
+                                                    .field-box
+                                                        p #[b #{className[classHead.classHead]}]
+                                    else
+                                        .card-header
+                                            h5 Attendance
+                                            span.d-block.m-t-5 You aren't a class head.
+
+        include includes/footer.pug

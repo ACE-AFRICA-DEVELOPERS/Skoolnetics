@@ -1,0 +1,74 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 Add a new Student
+                                        span.d-block.m-t-5 #[strong Note :] The Last name of the student will be the default password in Capslock. Student ID will be automatically generated.
+                                    .card-body
+                                        .row
+                                            .col-md-6
+                                                if error
+                                                    if error.length != 0
+                                                        .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                            button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                                span(aria-hidden="true") ×
+                                                            span #{error}
+                                        .row.justify-content-center
+                                            .col-md-8
+                                                .form-field
+                                                    form(method="POST")
+                                                        div(class="row ")
+                                                            div(class="col-md-6")
+                                                                label(class="label") First Name :
+                                                                input(type="text" class="form-control mb-3" name="firstName" required)
+                                                            div(class="col-md-6")
+                                                                label(class="label") Last Name :
+                                                                input(type="text" class="form-control mb-3" name="lastName" required)
+                                                            div(class="col-md-6")
+                                                                label(class="label") Other Name :
+                                                                input(type="text" class="form-control mb-3" name="otherName" required)
+                                                            div(class="col-md-6")
+                                                                label(class="label") Gender :
+                                                                select(class="form-control mb-3 custom-select" name="gender" required)
+                                                                    option(value="" selected disabled="disabled") ------------
+                                                                    option(value="male") Male
+                                                                    option(value="female") Female
+                                                            div(class="col-md-6")
+                                                                label(class="label") Class :
+                                                                select(class="form-control mb-3 custom-select" name="className" required)
+                                                                    option(value="" selected disabled="disabled") -------------
+                                                                    each classN in classchool
+                                                                        option(value=classN._id) #{classN.name}
+                                                            div(class="col-md-6")
+                                                                label(class="label") Date of birth :
+                                                                input(type="date" class="form-control mb-3" name="dob")
+                                                            div(class="col-md-4")
+                                                                label(class="label") Religion :
+                                                                select(class="form-control mb-3 custom-select" name="religion")
+                                                                    option(value="" selected disabled="disabled") ------------
+                                                                    option(value="Christian") Christian
+                                                                    option(value="Muslim") Muslim
+                                                            div(class="col-md-4")
+                                                                label(class="label") Blood Group :
+                                                                input(type="text" class="form-control mb-3" name="blood")
+                                                            div(class="col-md-4")
+                                                                label(class="label") Parents' Number :
+                                                                input(type="text" class="form-control mb-3" name="pNumber" required)
+                                                            
+                                                            div(class="col-md-12 text-center")
+                                                                button(type="submit" class="btn btn-info") Continue
+                        
+        include includes/footer.pug

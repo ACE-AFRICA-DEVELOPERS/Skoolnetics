@@ -1,0 +1,46 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p #[a(href=`/school/lesson-notes/${pClass}` class="btn btn-info") Check Unapproved Notes]
+                                .card
+                                    if lessonNotes.length > 0
+                                        .card-header
+                                            h5 Approved Lesson Notes
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light
+                                                        tr
+                                                            th Staff
+                                                            th Subject
+                                                            th Class
+                                                            th Week
+                                                            th View
+                                                    tbody
+                                                        each lessonNote in lessonNotes
+                                                            -let singleLessonNote = '/school/lesson-notes/' + pClass + '/' + lessonNote._id
+                                                            tr
+                                                                td #{staffName[lessonNote.staff]}
+                                                                td #{lessonNote.subject}
+                                                                td #{lessonNote.className}
+                                                                td #{lessonNote.week}
+                                                                td #[a(href=singleLessonNote class="main-link") view]
+                                    else
+                                        .card-header
+                                            h5 Approved Lesson Notes
+                                            span.d-block.m-t-5 No approved lesson notes was found.
+                                    
+
+        include includes/footer.pug

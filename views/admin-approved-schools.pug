@@ -1,0 +1,42 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    if approvedSchools.length > 0
+                                        .card-header
+                                            h5 New Schools
+                                            span.d-block.m-t-5 Click on view to see the school details.
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light
+                                                        tr
+                                                            th School ID
+                                                            th School Name
+                                                            th Email
+                                                            th Action
+                                                    tbody
+                                                        each school in approvedSchools
+                                                            - let name = school.schoolName
+                                                            - let email = school.schoolEmail
+                                                            - let code = school.schoolCode
+                                                            - let viewUrl = "/admin/school/" + school._id 
+                                                            tr
+                                                                td #{code}
+                                                                td #{name}
+                                                                td #{email}
+                                                                td #[a(href=viewUrl class="main-link") View]
+
+        include includes/footer.pug

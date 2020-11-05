@@ -1,0 +1,37 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    if mainResult
+                                        .card-header
+                                            h5 Exam
+                                        .card-body
+                                            span.d-block.m-t-5 You've written this exam already. Contact Admin if you have a problem with the exam.
+                                    else
+                                        .card-header
+                                            h5 Exam
+                                        .card-body
+                                            .form-field
+                                                h4.welcome-text.mb-4 #{exam.name}
+                                                p #[strong Subject]: #[i #{examQuestions.courseName}]
+                                                p #[strong Class] : #[i #{examQuestions.className}]
+                                                p #[strong Duration] : #[i #{examQuestions.duration} minutes]
+                                                p #[strong Instructions] : #[i #{examQuestions.instruction}]
+                                                p #[strong Note] : #[i You can't attempt this exam multiple times. Once you click on start exam, ensure you don't close your browser while writing your exam. If your time lapses, your answers are submitted automatically.]
+                                                - let examUrl = '/student/cbt/' + exam.examCode + '/' + examQuestions.courseName + '/running'
+                                                .p
+                                                    a(class="btn btn-info" href=examUrl) Start Exam
+
+        include includes/footer.pug

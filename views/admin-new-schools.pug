@@ -1,0 +1,45 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    if newSchools.length > 0
+                                        .card-header
+                                            h5 New Schools
+                                            span.d-block.m-t-5 Click on view to see the school details.
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light
+                                                        tr
+                                                            th School Name
+                                                            th Email
+                                                            th Mobile Number
+                                                            th Action
+                                                    tbody
+                                                        each school in newSchools
+                                                            - let name = school.schoolName
+                                                            - let email = school.schoolEmail
+                                                            - let number = school.schoolNumber
+                                                            - let viewUrl = "/admin/school/" + school._id 
+                                                            tr
+                                                                td #{name}
+                                                                td #{email}
+                                                                td #{number}
+                                                                td #[a(href=viewUrl class="main-link") View]
+                                    else
+                                        .card-header
+                                            h5 New Schools
+                                            span.d-block.m-t-5 No new school available.
+        include includes/footer.pug

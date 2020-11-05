@@ -1,0 +1,113 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .row
+                                    .col-xl-8.col-md-6
+                                        .card.Recent-Users
+                                            .card-header
+                                                h5 Profile
+                                            .card-block.px-0.py-3
+                                                .table-responsive
+                                                    table.table.table-hover
+                                                        tbody
+                                                            tr.unread
+                                                                td
+                                                                    if staff.profilePhoto
+                                                                        - let imageUrl = "/uploads/schools/" + code + "/staffs/" + staff.profilePhoto
+                                                                        img.rounded-circle(style='width:40px;' src=imageUrl alt='activity-user')
+                                                                    else
+                                                                        if staff.gender == 'male'
+                                                                            img.rounded-circle(style='width:40px;' src='/images/user/avatar-4.jpg' alt='activity-user')
+                                                                        else
+                                                                            img.rounded-circle(style='width:40px;' src='/images/user/avatar-3.jpg' alt='activity-user')
+                                                                td
+                                                                    h6.mb-1 #{staff.firstName} #{staff.lastName} #{staff.otherName}
+                                                                    p.m-0 #{staff.staffID}
+                                                                td
+                                                                    h6.text-muted
+                                                                        i.fas.fa-circle.text-c-green.f-10.m-r-15
+                                                                        | Online
+                                                                td
+                                                                    a.label.theme-bg2.text-white.f-12(href='#!') #[i.feather.icon-calendar]
+                                                                    a.label.theme-bg.text-white.f-12(href='#!') #[i.feather.icon-book]
+                                                            tr.unread
+                                                                td
+                                                                    h5.text-c-green
+                                                                        i.feather.icon-message-square
+                                                                td
+                                                                    h6.mb-1 #{staff.email}
+                                                                    p.m-0 Your Email...
+                                                                td
+                                                                    h6.text-muted
+                                                                        i.fas.fa-circle.text-c-green.f-10.m-r-15
+                                                                        | #[i.feather.icon-message-circle]
+                                                                td
+                                                                    a.label.theme-bg2.text-white.f-12(href='#!') #[i.feather.icon-calendar]
+                                                                    a.label.theme-bg.text-white.f-12(href='#!') #[i.feather.icon-book]
+                                                            tr.unread
+                                                                td
+                                                                    h5.text-c-green
+                                                                        i.feather.icon-phone
+                                                                td
+                                                                    h6.mb-1 0#{staff.mobile}
+                                                                    p.m-0 Your Mobile Number...
+                                                                td
+                                                                    h6.text-muted
+                                                                        i.fas.fa-circle.text-c-green.f-10.m-r-15
+                                                                        | #[i.feather.icon-phone-call]
+                                                                td
+                                                                    a.label.theme-bg2.text-white.f-12(href='#!') #[i.feather.icon-calendar]
+                                                                    a.label.theme-bg.text-white.f-12(href='#!') #[i.feather.icon-book]
+                                                            tr.unread
+                                                                td
+                                                                    h5.text-c-green
+                                                                        i.feather.icon-clipboard
+                                                                td
+                                                                    h6.mb-1 School
+                                                                    p.m-0 Name of school…
+                                                                td
+                                                                    h6.text-muted
+                                                                        i.fas.fa-circle.text-c-green.f-10.m-r-15
+                                                                        | #{schoolT.schoolName}
+                                                                td
+                                                                    a.label.theme-bg2.text-white.f-12(href='#!') #[i.feather.icon-calendar]
+                                                                    a.label.theme-bg.text-white.f-12(href='#!') #[i.feather.icon-book]
+                                    .col-xl-4.col-md-6
+                                        .card.daily-sales
+                                            .card-block
+                                                h6.mb-4 CBT Conducted
+                                                .row.d-flex.align-items-center
+                                                    .col-9
+                                                        h3.f-w-300.d-flex.align-items-center.m-b-0
+                                                            i.feather.icon-tv.text-c-green.f-30.m-r-10
+                                                            | #{exams}
+                                                    .col-3.text-right
+                                                        p.m-b-0 #[i.feather.icon-aperture]
+                                                .progress.m-t-30(style='height: 7px;')
+                                                    .progress-bar.progress-c-theme(role='progressbar' style='width: 50%;' aria-valuenow='50' aria-valuemin='0' aria-valuemax='100')
+                                        .card
+                                            .card.daily-sales
+                                            .card-block
+                                                h6.mb-4 Role
+                                                .row.d-flex.align-items-center
+                                                    .col-9
+                                                        h3.f-w-300.d-flex.align-items-center.m-b-0
+                                                            i.feather.icon-user.text-c-green.f-30.m-r-10
+                                                            | #{staff.role}
+                                                    .col-3.text-right
+                                                        p.m-b-0 #[i.feather.icon-aperture]
+                                                .progress.m-t-30(style='height: 7px;')
+                                                    .progress-bar.progress-c-theme(role='progressbar' style='width: 50%;' aria-valuenow='50' aria-valuemin='0' aria-valuemax='100')
+        include includes/footer.pug

@@ -1,0 +1,35 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    if exams.length > 0
+                                        .card-header
+                                            h5 School CBT
+                                            span.d-block.m-t-5 Select an exam:
+                                        .card-body
+                                            each e in exams
+                                                .col-md-4
+                                                    - let examUrl = '/staff/cbt/school/' + e.examCode
+                                                    a(href=examUrl class="text-dark")
+                                                        .field-box
+                                                            p #[b #{e.name}]
+                                                            p #{e.examCode}
+                                                            
+                                    else
+                                        .card-header
+                                            h5 School CBT
+                                            span.d-block.m-t-5 No CBT has been created by the school.
+
+        include includes/footer.pug
