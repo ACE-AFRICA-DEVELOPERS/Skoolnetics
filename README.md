@@ -4,7 +4,7 @@ A school management software
 This will be the launched version of the AceSkool software. It has been rebranded to have a new dashboard design and features not in the previous version. 
 
 ## Contributors
-You must have accepted a github invite to view this repository. This means you are a contributor. All contributions should be pushed to other branches. Please, stay away from the master branch for now.
+You must have accepted a github invite to view this repository. This means you are a contributor. All contributions should be pushed to other branches. Please, stay away from the master branch for now. You will find the source codes on the development branch.
 
 If you are woring on a specific module a user carries out, create a controller for it. Only cases where other users need to view things from the feature should be included in other controllers. 
 
