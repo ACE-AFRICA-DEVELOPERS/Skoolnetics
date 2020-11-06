@@ -51,6 +51,10 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.1);
   padding: 15px;
 }
+.report-field{
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
 .btn-file input[type="file"]{
   position: absolute;
   top: 0;

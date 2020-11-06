@@ -27,6 +27,9 @@ block content
                                                                 each cls in firstResult.result
                                                                     th(colspan="3" class="text-center") #{cls.courseName}
                                                                 th(colspan="2" class="text-center") Gross
+                                                                th Percentage
+                                                                th Position
+                                                                th Report Card
                                                             tr
                                                                 th -----
                                                                 th -----
@@ -34,8 +37,11 @@ block content
                                                                     th CA
                                                                     th Exam
                                                                     th Total
-                                                                th Obtainable
                                                                 th Obtained
+                                                                th Obtainable
+                                                                th -------
+                                                                th -------
+                                                                th -------
                                                         tbody
                                                             each result in broadsheet
                                                                 tr(class="analytics-row")
@@ -45,12 +51,14 @@ block content
                                                                             td #{res.ca}
                                                                             td #{res.exam}
                                                                             td.broad-total.data #{res.total} 
+                                                                    td(class="total") #{result.gTotal}
                                                                     td(class="obtainable") #{result.result.length * 100}
-                                                                    td(class="total") 
+                                                                    td(class="average") #{result.gAverage}
+                                                                    td(class="position") #{result.position}
+                                                                    td #[a(href="#") View] 
                                     else
                                         .card-header
                                             h5 #{title}
                                             span.d-block.m-t-5 No result has been uploaded for this class.
 
-        script(src="/javascripts/library/report-card.js" type="module")
         include includes/footer.pug

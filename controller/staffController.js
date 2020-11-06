@@ -807,7 +807,8 @@ class App {
                 pSubject: req.params.subject, upload_active: 'active', title: title, students: students,
                 pClass: req.params.className, examCompute: examCompute, studentResults: resultArray,
                 regNo: regNo, studentName: studentName, firstCourseResult: firstCourseResult,
-                sumTotal: sumTotal, courseSheet: courseSheet, sessS: session.name, termS: term.name})
+                sumTotal: sumTotal, courseSheet: courseSheet, sessS: session.name, termS: term.name,
+                })
                 
             }else{
                 res.redirect(303, '/staff')
@@ -1060,6 +1061,94 @@ class App {
             }
         }catch(err){
             res.render('error-page', {error : err})
+        }
+    }
+
+    transferReport = async (req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const session = await Session.findOne({school : staff.school, current : true})
+                const term = await Term.findOne({session : session._id, current: true})
+                const {getAllDataObjects} = req.body 
+                
+                console.log(getAllDataObjects)
+                console.log(req.params.className)
+                let count = getAllDataObjects.length 
+                while(count > 0){ 
+                    for (let student of getAllDataObjects){ 
+                        const broadsheet = await BroadSheet.findOne({
+                            student : student.studentID, session: session._id,
+                            term: term._id, className: req.params.className
+                        }) 
+                        if(broadsheet){
+                            await BroadSheet.findByIdAndUpdate(broadsheet._id, {
+                                gTotal: student.total,
+                                gAverage: student.average,
+                                position: student.position
+                                }, {
+                                    new : true, 
+                                    useFindAndModify : false
+                                }
+                            ) 
+                            console.log("Updated successfully")
+                        }
+                        count -= 1 
+                    }
+                }
+                res.json({message : "Broadsheet has been processed and sent!"})
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render('error-page', {error: err.message})
+        }
+    }
+
+    getStudentReport = async (req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const school = await SchoolAdmin.findOne({_id : staff.school})
+                const session = await Session.findOne({school: school._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const broadsheet = await BroadSheet.findOne({_id: req.params.cardID})
+                const student = await Student.findOne({_id: broadsheet.student})
+
+                res.render('create-student-report', {staff: staff, code : school.schoolCode,
+                broadsheet_active : "active", title: 'Broadsheet', sessS: session.name, schoolDB: school,
+                pClass: req.params.className, termS: term.name, studentDB: student, broadsheet: broadsheet
+                })
+
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    writeRemarks = async(req, res, next) => {
+        try{
+            if(req.session.staffCode){
+
+                BroadSheet.findByIdAndUpdate(req.params.cardID, {
+                    teacherRemark: req.body.remark
+                }, {new : true, useAndModify : false}, (err , item) => {
+                    if(err){
+                        res.status(500)
+                        return
+                    }else {
+                        req.flash('success', 'Result saved successfully')
+                        let redirectUrl = '/staff/broadsheet/' + req.params.className + '/' + req.params.cardID
+                        res.redirect(303, redirectUrl)
+                    }
+                })
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
         }
     }
 

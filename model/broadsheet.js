@@ -16,7 +16,12 @@ const BroadSheetSchema = new Schema ({
             ca : Number,
             exam: Number
         }
-    ]
+    ],
+    position: String,
+    gAverage: String,
+    gTotal: String,
+    teacherRemark: String,
+    principalRemark: String
 })
 
 module.exports = mongoose.model("BroadSheet" , BroadSheetSchema)
