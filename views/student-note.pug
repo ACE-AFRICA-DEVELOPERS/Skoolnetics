@@ -1,0 +1,55 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                
+                                div(class="card")
+                                    .card-header
+                                        h5 Lesson Note
+                                    div(class="card-body format")
+                                        .row
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Class : 
+                                            .col-sm-10
+                                                p #{singleLessonNote.className}
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Date : 
+                                            .col-sm-10
+                                                -let date = singleLessonNote.date.getDay() + '/' + (singleLessonNote.date.getMonth() + 1) + '/' + singleLessonNote.date.getFullYear()
+                                                p #{date}
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Week : 
+                                            .col-sm-10
+                                                p #{singleLessonNote.week}
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Subject : 
+                                            .col-sm-10
+                                                p #{singleLessonNote.subject}
+                                            if singleLessonNote.image 
+                                                .col-sm-10
+                                                    -let imageUrl = "/uploads/schools/" + school + "/lesson-note/" + staffs.staffID + "/" + singleLessonNote.image
+                                                    embed(src=imageUrl alt="" width="100%" height="600px")
+                                            else
+                                                .col-sm-2.text-lg-right
+                                                    p.font-weight-bold Topic : 
+                                                .col-sm-10
+                                                    p #{singleLessonNote.topic}
+                                                .col-sm-2.text-lg-right
+                                                    p.font-weight-bold Content : 
+                                                .col-sm-10
+                                                    p.text-danger.font-weight-bold #{singleLessonNote.content.contentTopic.toUpperCase()}
+                                                    p #{singleLessonNote.content.contentDetail}
+                                            .col-sm-12.text-center.mt-3
+                                                button.ace-btn.pl-5.pr-5 Print
+        include includes/footer.pug                      

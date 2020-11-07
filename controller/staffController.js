@@ -67,7 +67,7 @@ class App {
                 if(staff){
                     res.render('staff-dashboard' , { title  : "Dashboard", staff : staff, 
                     code : school.schoolCode, dash_active : "active", schoolT: school,
-                    termS: termS, sessS: sessionS, exams: exams.length })
+                    termS: termS, sessS: sessionS, exams: exams.length, term : term })
                 }else{
                     throw{
                         message : "No Staff"

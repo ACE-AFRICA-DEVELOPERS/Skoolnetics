@@ -1,0 +1,40 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-body
+                                        if assignments
+                                            .card-block.table-border-style
+                                                .table-responsive
+                                                    table.table.table-striped
+                                                        thead.thead-light
+                                                            tr
+                                                                th Staff
+                                                                th Subject
+                                                                th Release Date
+                                                                th View
+                                                        tbody
+                                                            each assignment in assignments
+                                                                -let singleAssignment = '/student/assignment/' + assignment._id
+                                                                -let release = assignment.releaseDate.getDay() + '/' + (assignment.releaseDate.getMonth() + 1) + '/' + assignment.releaseDate.getFullYear()
+                                                                tr
+                                                                    td #{staffName[assignment.staff]}
+                                                                    td #{assignment.subject}
+                                                                    td #{release}
+                                                                    td #[a(href=singleAssignment class="main-link") view]
+
+                                        else
+                                            p.text-small #{noAssignment}
+        include includes/footer.pug
