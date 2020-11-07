@@ -85,18 +85,32 @@ block content
                                                                     a.label.theme-bg2.text-white.f-12(href='#!') #[i.feather.icon-calendar]
                                                                     a.label.theme-bg.text-white.f-12(href='#!') #[i.feather.icon-book]
                                     .col-xl-4.col-md-6
-                                        .card.daily-sales
-                                            .card-block
-                                                h6.mb-4 CBT Conducted
-                                                .row.d-flex.align-items-center
-                                                    .col-9
-                                                        h3.f-w-300.d-flex.align-items-center.m-b-0
-                                                            i.feather.icon-tv.text-c-green.f-30.m-r-10
-                                                            | #{exams}
-                                                    .col-3.text-right
-                                                        p.m-b-0 #[i.feather.icon-aperture]
-                                                .progress.m-t-30(style='height: 7px;')
-                                                    .progress-bar.progress-c-theme(role='progressbar' style='width: 50%;' aria-valuenow='50' aria-valuemin='0' aria-valuemax='100')
+                                        if staff.role == 'Teacher'
+                                            .card.daily-sales
+                                                .card-block
+                                                    h6.mb-4 CBT Conducted
+                                                    .row.d-flex.align-items-center
+                                                        .col-9
+                                                            h3.f-w-300.d-flex.align-items-center.m-b-0
+                                                                i.feather.icon-tv.text-c-green.f-30.m-r-10
+                                                                | #{exams}
+                                                        .col-3.text-right
+                                                            p.m-b-0 #[i.feather.icon-aperture]
+                                                    .progress.m-t-30(style='height: 7px;')
+                                                        .progress-bar.progress-c-theme(role='progressbar' style='width: 50%;' aria-valuenow='50' aria-valuemin='0' aria-valuemax='100')
+                                        else 
+                                            .card.daily-sales
+                                                .card-block
+                                                    h6.mb-4 Finance
+                                                    .row.d-flex.align-items-center
+                                                        .col-9
+                                                            h3.f-w-300.d-flex.align-items-center.m-b-0
+                                                                i.feather.icon-layers.text-c-green.f-30.m-r-10
+                                                                | --
+                                                        .col-3.text-right
+                                                            p.m-b-0 #[i.feather.icon-aperture]
+                                                    .progress.m-t-30(style='height: 7px;')
+                                                        .progress-bar.progress-c-theme(role='progressbar' style='width: 50%;' aria-valuenow='50' aria-valuemin='0' aria-valuemax='100')
                                         .card
                                             .card.daily-sales
                                             .card-block
@@ -104,8 +118,12 @@ block content
                                                 .row.d-flex.align-items-center
                                                     .col-9
                                                         h3.f-w-300.d-flex.align-items-center.m-b-0
-                                                            i.feather.icon-user.text-c-green.f-30.m-r-10
-                                                            | #{staff.role}
+                                                            if staff.role == 'Teacher'
+                                                                i.feather.icon-user.text-c-green.f-30.m-r-10
+                                                                | #{staff.role}
+                                                            else
+                                                                i.feather.icon-user.text-c-green.f-30.m-r-10
+                                                                | #{roleName[staff.role]} 
                                                     .col-3.text-right
                                                         p.m-b-0 #[i.feather.icon-aperture]
                                                 .progress.m-t-30(style='height: 7px;')

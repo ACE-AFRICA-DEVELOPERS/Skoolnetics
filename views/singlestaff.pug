@@ -13,6 +13,7 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
+                                p #[a(href='/school/staff' class="btn btn-info") All Staffs]
                                 .card
                                     .card-header
                                         h5 Profile
@@ -52,9 +53,12 @@ block content
                                                                 .col-9
                                                                     input(type="text" value= staffDB.email class="profile-form mb-4" name="otherName")
                                                                 .col-3
-                                                                    label(for="gender" class="label") Role:
+                                                                    label(for="role" class="label") Role:
                                                                 .col-9
-                                                                    input(type="text" value= staffDB.role class="profile-form mb-4" name="gender")
+                                                                    if staffDB.role == 'Teacher'
+                                                                        input(type="text" value= staffDB.role class="profile-form mb-4" name="role" readonly)
+                                                                    else
+                                                                        input(type="text" value= roleName[staffDB.role] class="profile-form mb-4" name="role" readonly)
                                                                 if staffDB.teaching.length > 0
                                                                     each teach, index in staffDB.teaching
                                                                         .col-3
@@ -68,6 +72,6 @@ block content
                                                 hr
                                                 if staffDB.role == 'Teacher'
                                                     -let assignUrl = '/school/staff/' + staffDB._id + '/assign'
-                                                    p #[a(href=assignUrl class="main-link") Assign Classes and Subjects to this teacher?]
+                                                    p #[a(href=assignUrl) Assign Classes and Subjects to this teacher?]
         
         include includes/footer.pug

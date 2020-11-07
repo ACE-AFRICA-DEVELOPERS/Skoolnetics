@@ -2,7 +2,16 @@ import {sendData , selector} from "./api.js"
 
 const submit = selector("#submit")
 const classHead = selector("#classHead")
+const role = selector("#role")
 const displayError = selector(".err-msg")
+
+role.addEventListener("change", event => {
+    if(event.target.value != 'Teacher'){
+        classHead.style.display = "none"
+    }else{
+        classHead.style.display = "block"
+    }
+})
 
 classHead.addEventListener("change" , event => { 
     event.preventDefault()

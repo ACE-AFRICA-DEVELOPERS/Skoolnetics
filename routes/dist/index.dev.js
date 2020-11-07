@@ -29,6 +29,12 @@ var AttendanceController = require('../controller/attendanceController');
 var TransactionController = require('../controller/transactionController');
 
 var ParentController = require('../controller/parentController');
+
+var RoleController = require('../controller/roleController');
+
+var LessonNoteController = require("../controller/lessonNoteController");
+
+var AssignmentController = require("../controller/assignmentContoller");
 /*--------------Home and Admin Routes--------------*/
 
 
@@ -61,9 +67,15 @@ router.post('/school/session/:sessionID', SessionController.postTerm);
 router.get('/school/session/current/:sessionID', SessionController.makeCurrent);
 router.get('/school/session/:sessionID/current/:termID', SessionController.currentTerm);
 router.get('/school/logo', BasicSetupController.getLogo);
-router.post('/school/logo', BasicSetupController.postLogo);
+router.post('/school/logo', FileController.adminUpload.fields([{
+  name: 'logo',
+  maxCount: 1
+}, {
+  name: 'stamp',
+  maxCount: 1
+}]), BasicSetupController.postLogo);
 router.get('/school/roles', BasicSetupController.getRoles);
-router.post('/school/roles', BasicSetupController.postRoles);
+router.post('/school/assign-roles', BasicSetupController.createRole);
 router.get('/school/exam-settings', BasicSetupController.getExamComputations);
 router.post('/school/exam-settings', BasicSetupController.postExamComputations);
 router.get('/school/grade-settings', BasicSetupController.getGradeComputations);
@@ -88,6 +100,7 @@ router.get('/school/staff/:staffID', SchoolAdminController.getSingleStaff);
 router.post('/school/staff/:staffID', FileController.staffUpload.single('picture'), SchoolAdminController.updateSingleStaff);
 router.get('/school/staff/:staffID/assign', SchoolAdminController.getAssignPage);
 router.post('/school/staff/:staffID/assign', SchoolAdminController.postAssignPage);
+router.get('/school/students', SchoolAdminController.getStudentsPage);
 router.get('/school/new-student', SchoolAdminController.getNewStudent);
 router.post('/school/new-student', SchoolAdminController.postStudents);
 router.get('/school/new-student/:studentID/complete', SchoolAdminController.getComplete);
@@ -170,8 +183,25 @@ router.get('/staff/attendance/:className', AttendanceController.attendancePage);
 router.get('/staff/attendance/:className/:week', AttendanceController.getAttendance);
 router.get('/staff/mark-attendance/:className', AttendanceController.getMarkAttendance);
 router.post('/staff/mark-attendance/:className', AttendanceController.postMarkAttendance);
+router.get('/staff/lesson-notes', LessonNoteController.getLessonNotePage);
+router.get('/staff/lesson-note/create', LessonNoteController.makeLessonNote);
+router.post('/staff/lesson-note/create', LessonNoteController.postLessonNote);
+router.get('/staff/lesson-note/upload', LessonNoteController.getUploadNote);
+router.post('/staff/lesson-note/upload', FileController.staffUpload.single("picture"), LessonNoteController.postUploadNote);
+router.get('/staff/lesson-note/all', LessonNoteController.getAllLessonNote);
+router.get('/staff/lesson-note/:lessonNote', LessonNoteController.getSingleLessonNote);
+router.get('/staff/assignment', AssignmentController.getAssignmentPage);
+router.get('/staff/assignment/create', AssignmentController.makeAssignment);
+router.post('/staff/assignment/create', AssignmentController.postAssignment);
+router.get('/staff/assignment/upload', AssignmentController.uploadAssignment);
+router.post('/staff/assignment/upload', FileController.staffUpload.single("picture"), AssignmentController.postUploadAssignment);
+router.get('/staff/assignment/all', AssignmentController.getAllAssignment);
+router.get('/staff/assignment/:assignment', AssignmentController.getSingleAssignment);
 router.get('/staff/broadsheet', StaffController.getBroadSheetClass);
 router.get('/staff/broadsheet/:className', StaffController.getBroadSheet);
+router.post('/staff/transfer-report/:className', StaffController.transferReport);
+router.get('/staff/broadsheet/:className/:cardID', StaffController.getStudentReport);
+router.post('/staff/broadsheet/:className/:cardID', StaffController.writeRemarks);
 /**---------------Finance Routes--------------------- */
 
 router.get('/school/fees/payment-type', TransactionController.createPaymentType);
@@ -204,6 +234,10 @@ router.get('/student/cbt/:examCode/:courseName/running', StudentController.examR
 router.post('/student/cbt/:examCode/:courseName/running', StudentController.markExam);
 router.get('/student/exam/congrats', StudentController.getCompletePage);
 router.get('/student/cbt-result', StudentController.getResults);
+router.get('/student/lesson-notes', LessonNoteController.getLessonNotes);
+router.get('/student/lesson-notes/:lessonNoteID', LessonNoteController.getSingleNote);
+router.get('/student/assignment', AssignmentController.getAssignments);
+router.get('/student/assignment/:assignmentId', AssignmentController.getChildAssignment);
 router.get('/student/cbt-result/:resultID', StudentController.displayResults);
 router.get('/student/logout', StudentController.getLogout);
 module.exports = router;

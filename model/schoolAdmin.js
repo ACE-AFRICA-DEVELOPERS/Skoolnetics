@@ -13,6 +13,7 @@ const SchoolAdminSchema = new Schema({
     state : String,
     country : String,
     logo : String,
+    stamp: String,
     verified : {type : Boolean , default : false},
     token : String,
     approved : {type : Boolean , default : false}

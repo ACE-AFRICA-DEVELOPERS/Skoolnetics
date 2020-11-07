@@ -1,8 +1,12 @@
+
+const FileHandler = require('./file')
+
 const SchoolAdmin = require('../model/schoolAdmin')
 const Session = require('../model/session')
 const Term = require('../model/term')
 const ExamCompute = require('../model/exam-settings')
 const Grade = require('../model/grade')
+const Role = require('../model/role')
 
 class App {
 
@@ -19,7 +23,7 @@ class App {
                     }else{
                         res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Logo and Stamp',
                         logo_active: 'active', opensession_active: "pcoded-trigger",
-                        session_active: 'active'})
+                        session_active: 'active', success: req.flash('success')})
                     }
                 }else{
                     res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
@@ -38,7 +42,39 @@ class App {
         try{
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode: req.session.schoolCode})
-                res.render('school-logo', {schoolAdmin: schoolAdmin})
+                FileHandler.createDirectory("./public/uploads/schools/" + req.session.schoolCode + "/logo/")
+                if(req.files){
+                    FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/logo/" + schoolAdmin.logo) 
+                    FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/logo/" + schoolAdmin.stamp) 
+                    let logoName, stampName
+                    if(req.files.logo){
+                        logoName = req.files.logo[0].filename
+                    }else{
+                        logoName = schoolAdmin.logo
+                    }
+                    if(req.files.stamp){
+                        stampName = req.files.stamp[0].filename
+                    }else{
+                        stampName = schoolAdmin.stamp
+                    }
+                    SchoolAdmin.findByIdAndUpdate(schoolAdmin._id, {
+                        logo : logoName,
+                        stamp: stampName
+                    }, {new : true, useFindAndModify : false}, (err , item) => {
+                        if(err){
+                            console.log(err)
+                        }else{
+                            if(req.files.logo){
+                                FileHandler.moveFile(req.files.logo[0].filename , "./public/uploads/profile" , "./public/uploads/schools/" + req.session.schoolCode + "/logo/") 
+                            }
+                            if(req.files.stamp){
+                                FileHandler.moveFile(req.files.stamp[0].filename , "./public/uploads/profile" , "./public/uploads/schools/" + req.session.schoolCode + "/logo/") 
+                            }
+                            req.flash('success', 'Saved successfully.')
+                            res.redirect(303, '/school/logo')
+                        }
+                    })
+                }
             }else{
                 res.redirect(303, '.school')
             }
@@ -55,8 +91,11 @@ class App {
                 if(session){
                     const term = await Term.findOne({school: schoolAdmin._id, session: session._id, current: true})
                     if(term){
+                        const role1 = await Role.findOne({school: schoolAdmin._id, role: 'r-1'})
+                        const role2 = await Role.findOne({school: schoolAdmin._id, role: 'r-2'})
                         res.render('school-roles', {schoolAdmin: schoolAdmin, roles_active: 'active', opensession_active: "pcoded-trigger",
-                        session_active: 'active', sessS: session.name, termS: term.name})
+                        session_active: 'active', sessS: session.name, termS: term.name, role1: role1,
+                        role2: role2})
                     }else{
                         res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Logo and Stamp',
                         roles_active: 'active', opensession_active: "pcoded-trigger",
@@ -75,18 +114,34 @@ class App {
         }
     }
 
-    postRoles = async (req, res, next) => {
+    createRole = async (req , res , next) => {
         try{
             if(req.session.schoolCode){
-                const schoolAdmin = await SchoolAdmin.findOne({schoolCode: req.session.schoolCode})
-                res.render('school-logo', {schoolAdmin: schoolAdmin})
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const role = await Role.findOne({school: schoolAdmin._id, name: req.body.name})
+                if(role){
+                    res.json({message: 'Name already chosen'})
+                }else{
+                    const newRole = await new Role({
+                        school : schoolAdmin._id ,  
+                        name : req.body.name, 
+                        role: req.body.role 
+                    })
+                    const saveRole = await newRole.save()
+                    if ( saveRole ) { 
+                        res.json({message: 'Role has been activated'})
+                    }else{
+                        throw 'Unable to save this.'
+                    }
+                }
             }else{
-                res.redirect(303, '.school')
+                res.redirect(303, '/school')
             }
         }catch(err){
             res.render('error-page', {error: err})
         }
     }
+
 
     getGradeComputations = async (req, res, next) => {
         try{

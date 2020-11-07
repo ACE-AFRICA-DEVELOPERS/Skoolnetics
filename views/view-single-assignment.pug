@@ -1,0 +1,67 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                
+                                div(class="card")
+                                    .card-header
+                                        h5 Assignment
+                                    div(class="card-body format")
+                                        .row
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Staff's Name: 
+                                            .col-sm-10
+                                                p #{staff.firstName.toUpperCase()} #{staff.lastName.toUpperCase()}
+                                            
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Class : 
+                                            .col-sm-10
+                                                each st in staff.teaching
+                                                    p #{st.className}
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Session : 
+                                            .col-sm-10
+                                                p #{session.name}
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Term : 
+                                            .col-sm-10
+                                                p #{term.name}
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Release Date : 
+                                            .col-sm-10
+                                                -let release = singleAssignment.releaseDate.getDay() + '/' + (singleAssignment.releaseDate.getMonth() + 1) + '/' + singleAssignment.releaseDate.getFullYear()
+                                                p #{release}
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold To Be Submitted : 
+                                            .col-sm-10
+                                                -let submission = singleAssignment.submissionDate.getDay() + '/' + (singleAssignment.submissionDate.getMonth() + 1) + '/' + singleAssignment.submissionDate.getFullYear()
+                                                p #{submission}
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Subject : 
+                                            .col-sm-10
+                                                each st in staff.teaching
+                                                    p #{st.subject}
+                                            if singleAssignment.image
+                                                .col-sm-10
+                                                    -let imageUrl = "/uploads/schools/" + school + "/assignment/" + staff.staffID + "/" + singleAssignment.image
+                                                    embed(src=imageUrl alt="" width="100%" height="600px")
+                                            else
+                                                .col-sm-2.text-lg-right
+                                                    p.font-weight-bold Content : 
+                                                .col-sm-10
+                                                    p #{singleAssignment.content.contentDetail}
+                                            .col-sm-12.text-center.mt-3
+                                                button.ace-btn.pl-5.pr-5 Print
+
+        include includes/footer.pug                      

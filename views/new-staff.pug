@@ -54,9 +54,11 @@ block content
                                                                     option(value="female") Female
                                                             div(class="col-md-6")
                                                                 label(class="label") Role :
-                                                                select(class="form-control custom-select mb-3" name="role" required)
+                                                                select(class="form-control custom-select mb-3" name="role" required id="role")
                                                                     option(value="" selected disabled="disabled") ---------
                                                                     option(value="Teacher") Teacher
+                                                                    each role in roles
+                                                                        option(value=role.role) #{role.name}
 
                                                             div(class="col-lg-6")
                                                                 label(for="subjects" class="label") Class teacher :
