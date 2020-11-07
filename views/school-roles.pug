@@ -24,17 +24,53 @@ block content
                                 .card
                                     .card-header
                                         h5 Roles
-                                        span.d-block.m-t-5 Select one or more actions to create a role:
+                                        span.d-block.m-t-5 Activate one or all of the following roles. Staffs assigned these roles can perform the actions stated here.
                                     .card-body
-                                        form(method="POST")
-                                            .row
-                                                .col-md-6
+                                        .row
+                                            .col-md-6.form-field.mb-3
+                                                label Role Name:
+                                                span.ml-1 #[b Teacher]
+                                                p Actions:
+                                                p #[i.feather.icon-check] #[span Upload results of students based on classes assigned.]
+                                                p #[i.feather.icon-check] #[span Create and manage CBT questions.]
+                                                p #[i.feather.icon-check] #[span Mark attendance and submit broadsheets if selected as a classhead.]
+                                                p #[i.feather.icon-check] #[span Create and manage lesson note.]
+                                                p #[i.feather.icon-check] #[span Create and manage assignments.]
+                                                p #[button(class="btn btn-light" disabled=true) #[i.feather.icon-check-circle] Activated]
+                                            .col-md-6.form-field.mb-3
+                                                if role1
                                                     label Role Name:
-                                                    input(type="text" class="form-control mb-3" name="role")
-                                                    p Actions:
-                                                    input(type="checkbox" name="finance")
-                                                    label(class="label") Manage Finances
-                                                    input(type="checkbox" name="finance")
-                                                    label(class="label") Approve Lesson Notes
-    
+                                                    span.ml-1 #[b #{role1.name}]
+                                                else
+                                                    input(type="text" class="form-control mb-3" name="role" id="r-1-form" placeholder="Role Name")
+                                                p Actions:
+                                                p #[i.feather.icon-check] #[span Create and Manage timetables. ]
+                                                p #[i.feather.icon-check] #[span Give principal remarks in report cards.]
+                                                p #[i.feather.icon-check] #[span Mark staffs' attendance.]
+                                                p #[i.feather.icon-check] #[span Approve lesson notes.]
+                                                p #[i.feather.icon-check] #[span Graduate/Suspend/Revoke a Student.]
+                                                if role1
+                                                    p #[button(class="btn btn-light" disabled=true) #[i.feather.icon-check-circle] Activated]
+                                                else
+                                                    p #[button(class="btn btn-light" id="r-2") Activate]  
+                                                p#r-1-display
+                                            .col-md-6.form-field.mb-3
+                                                if role2
+                                                    label Role Name:
+                                                    span.ml-1 #[b #{role2.name}]
+                                                else
+                                                    input(type="text" class="form-control mb-3" id="r-2-form" name="role" placeholder="Role Name")
+                                                p Actions:
+                                                p #[i.feather.icon-check] #[span Create and manage payment fees.]
+                                                p #[i.feather.icon-check] #[span Approve proof of payment and generate receipts.]
+                                                p #[i.feather.icon-check] #[span Manage every financial transactions on the app.]
+                                                if role2
+                                                    p #[button(class="btn btn-light" disabled=true) #[i.feather.icon-check-circle] Activated]
+                                                else
+                                                    p #[button(class="btn btn-light" id="r-2") Activate]   
+                                                p#r-2-display
+                                        hr
+                                        p #[a(href="#" class="btn btn-info") Request for a specific role and actions]
+
+        script(src="/javascripts/library/roles.js" type="module")
         include includes/footer.pug

@@ -13,6 +13,7 @@ const BasicSetupController = require('../controller/basicSetupController')
 const ClassController = require('../controller/classController')
 const CbtController = require('../controller/cbtController')
 const AttendanceController = require('../controller/attendanceController')
+const RoleController = require('../controller/roleController')
 
 /*--------------Home and Admin Routes--------------*/
 router.get('/', IndexController.getIndex)
@@ -49,7 +50,7 @@ router.get('/school/logo', BasicSetupController.getLogo)
 router.post('/school/logo', FileController.adminUpload.fields([{name : 'logo', maxCount : 1}, {name : 'stamp', maxCount : 1}]), 
             BasicSetupController.postLogo)
 router.get('/school/roles', BasicSetupController.getRoles)
-router.post('/school/roles', BasicSetupController.postRoles)
+router.post('/school/assign-roles', BasicSetupController.createRole)
 
 router.get('/school/exam-settings', BasicSetupController.getExamComputations)
 router.post('/school/exam-settings', BasicSetupController.postExamComputations)
@@ -78,6 +79,7 @@ router.post('/school/staff/:staffID',  FileController.staffUpload.single('pictur
 router.get('/school/staff/:staffID/assign', SchoolAdminController.getAssignPage)
 router.post('/school/staff/:staffID/assign', SchoolAdminController.postAssignPage)
 
+router.get('/school/students', SchoolAdminController.getStudentsPage)
 router.get('/school/new-student', SchoolAdminController.getNewStudent)
 router.post('/school/new-student', SchoolAdminController.postStudents)
 router.get('/school/new-student/:studentID/complete', SchoolAdminController.getComplete)

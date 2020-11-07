@@ -23,6 +23,7 @@ const LessonNotes = require('../model/lessonNote')
 const ExamCompute = require('../model/exam-settings')
 const Grade = require('../model/grade')
 const Broadsheet = require('../model/broadsheet')
+const Role = require('../model/role')
 
 class App {
 
@@ -232,9 +233,39 @@ class App {
                     schoolAdmin : schoolAdmin, success : req.flash('success')})
                 }
             }else{
-                res.redirect(303, '/student')
+                res.redirect(303, '/school')
             }
         }catch(err) {
+            res.render('error-page', {error : err})
+        }
+    }
+
+    getStudentsPage = async (req , res , next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                if(session){
+                    const term = await Term.findOne({session: session._id, current: true})
+                    if(term){
+                        res.render("admin-student-page", {title : "New Student", schoolAdmin : schoolAdmin,
+                        error : req.flash('error'), success : req.flash('success'), student_active : "active",
+                        users_active: 'active', openuser_active: "pcoded-trigger",
+                        sessS: session.name, termS: term.name}) 
+                    }else{
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                        users_active: 'active', openuser_active: "pcoded-trigger",
+                        student_active : "active"})
+                    }
+                }else{
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                    users_active: 'active', openuser_active: "pcoded-trigger",
+                    student_active : "active"})
+                }
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
             res.render('error-page', {error : err})
         }
     }
@@ -474,6 +505,11 @@ class App {
                     const term = await Term.findOne({school: schoolAdmin._id, session: session._id, current: true})
                     if(term){
                         const staff= await Staff.find({school : schoolAdmin._id})
+                        const roles = await Role.find({school: schoolAdmin._id})
+
+                        let roleName = {}
+                        roles.map(r => roleName[r.role] = r.name)
+
                         res.render("admin-staff" , {
                             staffs : staff ,
                             title : "Staffs",
@@ -483,7 +519,8 @@ class App {
                             users_active: 'active',
                             openuser_active: "pcoded-trigger",
                             sessS: session.name,
-                            termS: term.name
+                            termS: term.name,
+                            roleName : roleName
                         })
                     }else{
                         res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
@@ -511,10 +548,11 @@ class App {
                 const subjects = await Subject.findOne({school : schoolAdmin._id})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
+                const roles = await Role.find({school: schoolAdmin._id})
                 res.render('new-staff', {title : 'New Staff', schoolAdmin : schoolAdmin, className : classchool,
                 error : req.flash('error'), staff_active : "active", subjects : subjects,
                 staff_active : "active", users_active: 'active', sessS: session.name,
-                openuser_active: "pcoded-trigger", termS: term.name})
+                openuser_active: "pcoded-trigger", termS: term.name, roles: roles})
             }else{
                 res.redirect(303, '/school')
             }
@@ -657,11 +695,15 @@ class App {
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
+                const roles = await Role.find({school: schoolAdmin._id})
+
+                let roleName = {}
+                roles.map(r => roleName[r.role] = r.name)
                 if(validStaff){
                     res.render('singlestaff' , { title  : "Staff", staffDB: validStaff, 
                     schoolAdmin : schoolAdmin, success : req.flash('success'), staff_active : "active",
                     users_active: 'active', openuser_active: "pcoded-trigger",
-                    sessS: session.name, termS: term.name})
+                    sessS: session.name, termS: term.name, roleName: roleName})
                 }else{
                     throw{
                         message : "Staff not found"

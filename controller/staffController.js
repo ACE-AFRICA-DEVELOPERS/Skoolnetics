@@ -17,6 +17,7 @@ const ExamCompute = require('../model/exam-settings')
 const StudentResult = require('../model/studentResults')
 const Grade = require('../model/grade')
 const BroadSheet = require('../model/broadsheet')
+const Role = require('../model/role')
 
 const FileHandler = require('./file')
 
@@ -53,6 +54,9 @@ class App {
                 const session = await Session.findOne({school : staff.school, current : true})
                 const term = await Term.findOne({session: session._id, current: true})
                 const exams = await Exam.find({quick: true, school: school._id, examiner: staff._id})
+                const roles = await Role.find({school: school._id})
+                let roleName = {}
+                roles.map(r => roleName[r.role] = r.name)
                 let sessionS, termS
                 if(session){
                     sessionS = session.name
@@ -67,7 +71,7 @@ class App {
                 if(staff){
                     res.render('staff-dashboard' , { title  : "Dashboard", staff : staff, 
                     code : school.schoolCode, dash_active : "active", schoolT: school,
-                    termS: termS, sessS: sessionS, exams: exams.length })
+                    termS: termS, sessS: sessionS, exams: exams.length, roleName: roleName })
                 }else{
                     throw{
                         message : "No Staff"

@@ -27,10 +27,10 @@ block content
                                 if staffs.length > 0
                                     .card
                                         .card-header
-                                            h5 Classes
+                                            h5 Staffs
                                         .card-block.table-border-style
                                             .table-responsive
-                                                table.table.table-striped#dataTable
+                                                table.table.table-striped
                                                     thead.thead-light 
                                                         tr 
                                                             th Staff ID
@@ -47,8 +47,11 @@ block content
                                                             tr 
                                                                 td #{id}
                                                                 td #{name}
-                                                                td #{role}
-                                                                td #[a(href=staffUrl class="main-link") Check Profile]
+                                                                if role == 'Teacher'
+                                                                    td #{role}
+                                                                else
+                                                                    td #{roleName[role]}
+                                                                td #[a(href=staffUrl) Check Profile]
                                 else
                                     .card
                                         .card-header

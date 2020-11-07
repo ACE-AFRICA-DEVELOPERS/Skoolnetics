@@ -1,0 +1,48 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p #[a(href="/school/new-student" class="btn btn-info") New Student #[i.feather.icon-plus]]
+                                .card
+                                    .card-header
+                                        h5 Students
+                                        
+                                    .card-body
+                                        .row
+                                            .col-md-3.mb-3
+                                                a(href='/school/class' class="text-dark")
+                                                    .field-box
+                                                        p #[b All Students]
+                                            .col-md-3.mb-3
+                                                a(href='#' class="text-dark")
+                                                    .field-box
+                                                        p #[b Suspended Students]
+                                            .col-md-3.mb-3
+                                                a(href='#' class="text-dark")
+                                                    .field-box
+                                                        p #[b Revoked Students]
+                                            .col-md-3.mb-3
+                                                a(href='#' class="text-dark")
+                                                    .field-box
+                                                        p #[b Graduated Students]
+                                            .col-md-3.mb-3
+                                                a(href='#' class="text-dark")
+                                                    .field-box
+                                                        p #[b Import Students]
+                                            .col-md-3.mb-3
+                                                a(href='/student' target="_blank" class="text-dark")
+                                                    .field-box
+                                                        p #[b Student Dashboard]
+
+        include includes/footer.pug
