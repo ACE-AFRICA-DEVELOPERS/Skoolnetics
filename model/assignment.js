@@ -1,26 +1,19 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const LessonNoteSchema = new Schema({
+const AssignmentSchema = new Schema({
     school : {type : Schema.Types.ObjectId, ref : 'schoolAdmin'},
     staff : {type : Schema.Types.ObjectId, ref : 'staff'},
     session : {type : Schema.Types.ObjectId, ref : 'SchoolSession'},
     term : {type : Schema.Types.ObjectId, ref : 'Term'},
     subject : { type : String},
-    week : { type : Number},
     className : { type : String},
-    date : {type : Date},
-    topic : {type : String},
-    materials : {type : String},
+    releaseDate : {type : Date},
+    submissionDate : {type : Date},
     content :{
-        contentTopic: String,
         contentDetail: String
     },
-    image : {type : String},
-    presentation : {type : String},
-    evaluation : {type : String},
-    conclusion : {type : String},
-    status: {type : String, default: "Pending"}
+    image : {type : String}
 })
 
-module.exports = mongoose.model("LessonNote" , LessonNoteSchema)
+module.exports = mongoose.model("Assignment" , AssignmentSchema)

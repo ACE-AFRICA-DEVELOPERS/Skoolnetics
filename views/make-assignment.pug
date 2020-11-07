@@ -1,0 +1,46 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                        div(class="card-header")
+                                            h5 Create Assignment
+                                        div(class="card-body")
+                                            p #{message}
+                                            form(action="", method="post" class="form-field")
+                                                .row
+                                                    .col-md-3.col-sm-6.mt-2
+                                                        label(class="label") Subject
+                                                        select(name="subject" class="form-control custom-select")
+                                                            option(value="" selected disabled="disabled") ------
+                                                            each st in staff.teaching 
+                                                                option(value=st.subject) #{st.subject}
+                                                    .col-md-3.col-sm-6.mt-2
+                                                        label(class="label") Class
+                                                        select(name="className" class="form-control custom-select")
+                                                            option(value="" selected disabled="disabled") ------
+                                                            each ct in staff.teaching 
+                                                                option(value=ct.className) #{ct.className}
+                                                    .col-md-3.col-sm-6.mt-2
+                                                        label(class="label") Released Date
+                                                        input(type="date", name="releaseDate" class="form-control")
+                                                    .col-md-3.col-sm-6.mt-2
+                                                        label(class="label") Submission Date
+                                                        input(type="date", name="submissionDate" class="form-control")
+                                                    .col-md-12.mt-2
+                                                        label(class="label") Content
+                                                        textarea(name="contentDetail", cols="30", rows="10" class="form-control" placeholder="Notes")
+                                                    .col-md-6
+                                                        button(type="submit").btn.main-btn.mt-3.pl-5.pr-5 Send Assignment
+        include includes/footer.pug

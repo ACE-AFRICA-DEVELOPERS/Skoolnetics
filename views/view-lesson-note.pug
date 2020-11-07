@@ -1,0 +1,44 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                div(class="card")
+                                    .card-header
+                                        h5 All Lesson Notes
+                                    div(class="card-body")    
+                                        if lessonNotes
+                                            .card-block.table-border-style
+                                                .table-responsive
+                                                    table.table.table-striped
+                                                        thead.thead-light
+                                                            tr
+                                                                th Subject
+                                                                th Week
+                                                                th Action
+                                                                th Status
+                                                        tbody
+                                                            each lessonNote in lessonNotes
+                                                                -let singleLessonNote = '/staff/lesson-note/' + lessonNote._id
+                                                                tr
+                                                                    td #{lessonNote.subject}
+                                                                    td #{lessonNote.week}
+                                                                    td #[a(href=singleLessonNote) view]
+                                                                    if lessonNote.status == 'Pending'
+                                                                        td.text-danger Pending
+                                                                    else    
+                                                                        td.text-success Approved
+                                            if noNote
+                                            p.text-small #{noNote}
+
+        include includes/footer.pug

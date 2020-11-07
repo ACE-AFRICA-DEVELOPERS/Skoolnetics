@@ -72,6 +72,7 @@ class App {
                     res.render('staff-dashboard' , { title  : "Dashboard", staff : staff, 
                     code : school.schoolCode, dash_active : "active", schoolT: school,
                     termS: termS, sessS: sessionS, exams: exams.length, roleName: roleName })
+                   
                 }else{
                     throw{
                         message : "No Staff"

@@ -159,6 +159,40 @@ block content
                         if staff.role == 'r-2'
                             li.nav-item.pcoded-menu-caption
                                 label Finance
+                        li.nav-item.pcoded-menu-caption
+                            label Personal
+                        li(class=`nav-item ${attendance_active}`)
+                            a.nav-link(href='/staff/attendance')
+                                span.pcoded-micon
+                                    i.feather.icon-edit-1
+                                span.pcoded-mtext Attendance
+                        li(class=`nav-item ${broadsheet_active}`)
+                            a.nav-link(href='/staff/broadsheet')
+                                span.pcoded-micon
+                                    i.feather.icon-file
+                                span.pcoded-mtext Broadsheet
+                        li(class=`nav-item pcoded-hasmenu ${lessonNote_active} ${note_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-book
+                                span.pcoded-mtext Lesson Note
+                            ul.pcoded-submenu
+                                li(class=make_active)
+                                    a(href='/staff/lesson-notes') Make Lesson Notes
+                                li(class=all_active)
+                                    a(href=`/staff/lesson-note/all`) View All Lesson Notes
+                        li(class=`nav-item pcoded-hasmenu ${assignment_active} ${assign_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-airplay
+                                span.pcoded-mtext Assignment
+                            ul.pcoded-submenu
+                                li(class=make_active)
+                                    a(href='/staff/assignment') Make Assignments
+                                li(class=all_active)
+                                    a(href=`/staff/assignment/all`) View All Assignments
+                                
+
                     if student  
                         li.nav-item.pcoded-menu-caption
                             label Basic
@@ -184,6 +218,16 @@ block content
                                     a(href='/student/cbt-result') CBT
                                 li(class=card_active)
                                     a(href='#') Report Card
+                        li(class=`nav-item ${lessonNote_active} ${note_active}`)
+                            a.nav-link(href='/student/lesson-notes')
+                                span.pcoded-micon
+                                    i.feather.icon-home
+                                span.pcoded-mtext Lesson Notes
+                        li(class=`nav-item ${assignment_active} ${assign_active}`)
+                            a.nav-link(href='/student/assignment')
+                                span.pcoded-micon
+                                    i.feather.icon-home
+                                span.pcoded-mtext Assignments
                              
                         
                         

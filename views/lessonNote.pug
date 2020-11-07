@@ -1,0 +1,32 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 Lesson Note
+                                    .card-body
+                                        .col-md-4.mb-3
+                                            
+                                            a(href=`/staff/lesson-note/create` class="text-dark")
+                                                .field-box
+                                                    p Create Lesson Note
+                                        
+                                        .col-md-4.mb-3
+                                            
+                                            a(href=`/staff/lesson-note/upload` class="text-dark")
+                                                .field-box
+                                                    p Upload Lesson Note
+
+        include includes/footer.pug
