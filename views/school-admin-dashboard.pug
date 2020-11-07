@@ -43,7 +43,7 @@ block content
                                     .col-md-6.col-xl-4
                                         .card.daily-sales
                                             .card-block
-                                                h6.mb-4 Total Staffs
+                                                h6.mb-4 Total Staff
                                                 .row.d-flex.align-items-center
                                                     .col-9
                                                         h3.f-w-300.d-flex.align-items-center.m-b-0
@@ -71,10 +71,8 @@ block content
                                                                 td
                                                                     h6.text-muted
                                                                         i.fas.fa-circle.text-c-green.f-10.m-r-15
-                                                                        if session
-                                                                            span #{session.name}
-                                                                        else
-                                                                            span Not set...
+                                                                        span #{sessS}
+                                                                        
                                                                 td
                                                                     a.label.theme-bg2.text-white.f-12(href='#!') #[i.feather.icon-calendar]
                                                                     a.label.theme-bg.text-white.f-12(href='#!') #[i.feather.icon-book]
@@ -116,7 +114,7 @@ block content
                                                                 td
                                                                     h6.text-muted
                                                                         i.fas.fa-circle.text-c-green.f-10.m-r-15
-                                                                        | 0
+                                                                        | #{roles}
                                                                 td
                                                                     a.label.theme-bg2.text-white.f-12(href='#!') #[i.feather.icon-calendar]
                                                                     a.label.theme-bg.text-white.f-12(href='#!') #[i.feather.icon-book]
@@ -152,12 +150,12 @@ block content
                                         .card
                                             .card.daily-sales
                                             .card-block
-                                                h6.mb-4 Financial Records
+                                                h6.mb-4 Payment Types
                                                 .row.d-flex.align-items-center
                                                     .col-9
                                                         h3.f-w-300.d-flex.align-items-center.m-b-0
                                                             i.feather.icon-layers.text-c-green.f-30.m-r-10
-                                                            | 0
+                                                            | #{paymentType}
                                                     .col-3.text-right
                                                         p.m-b-0 #[i.feather.icon-aperture]
                                                 .progress.m-t-30(style='height: 7px;')

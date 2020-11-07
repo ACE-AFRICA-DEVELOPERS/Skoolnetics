@@ -146,7 +146,7 @@ class App {
                     sessS = "Session not set."
                 }
                 const term = await Term.find({session : session._id})
-                res.render('school-term', {title : "Sessions", session_active : "active",  opensession_active: "pcoded-trigger",
+                res.render('school-term', {title : "Term", session_active : "active",  opensession_active: "pcoded-trigger",
                 schoolAdmin : schoolAdmin, term : term, session : session, 
                 success : req.flash('success'), sessT_active: 'active', termS: termS,
                 sessS: sessS})

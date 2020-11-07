@@ -5,15 +5,15 @@ const ParentSchema = new Schema ({
     school : {type : Schema.Types.ObjectId, ref : 'SchoolAdmin'},
     parentID : {type : String},
     name : {type : String},
+    surname: String,
+    title: String,
     password : {type : String},
     email : {type : String},
     number : {type: String},
     gender : {type : String},
-    role : {type : String},
+    relationship : {type : String},
     ward :[
-        
         {type : Schema.Types.ObjectId, ref : 'Student'}
-        
     ],
     profilePhoto : {type : String},
 })

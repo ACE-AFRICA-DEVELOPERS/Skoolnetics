@@ -25,6 +25,7 @@ const Grade = require('../model/grade')
 const Broadsheet = require('../model/broadsheet')
 const Parent = require('../model/parent')
 const Role = require('../model/role')
+const PaymentType = require('../model/paymentType')
 
 class App {
 
@@ -125,7 +126,9 @@ class App {
                 const exams = await Exam.find({school : schoolAdmin._id})
                 const progress = await Course.find({school : schoolAdmin._id, release : true})
                 const session = await Session.findOne({school : schoolAdmin._id, current : true})
-                
+                const paymentType = await PaymentType.find({school: schoolAdmin._id})
+                const roles = await Role.find({school: schoolAdmin._id})
+
                 let sessionS, termS
                 if(session){
                     sessionS = session.name
@@ -139,10 +142,11 @@ class App {
                     sessionS = "Session not set."
                 }
                
-                res.render('school-admin-dashboard' , { title  : "Admin", schoolAdmin : schoolAdmin, students : student.length,
+                res.render('school-admin-dashboard' , { title  : "Admin Dashboard", schoolAdmin : schoolAdmin, students : student.length,
                 classes : classchool.length, exams : exams.length, sessS : sessionS,
                 progress : progress.length, staffs : staff.length, dash_active : "active",
-                termS: termS})
+                termS: termS, paymentType: paymentType.length, roles: roles.length})
+
             }else{
                 res.redirect(303, '/school')
             }
@@ -788,25 +792,32 @@ class App {
         try{ 
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                const parent= await Parent.find({school : schoolAdmin._id})
-                if(parent.length != 0){
-                    res.render("admin-parent" , {
-                        parents : parent ,
-                        title : "Parents",
-                        schoolAdmin : schoolAdmin,
-                        success : req.flash('success'),
-                        parent_active : "active"
-                    })
-                    return 
-                }
-                else{
-                    res.render("admin-parent", {
-                        noParent : "No Parents has been created." ,
-                        title : "Parents",
-                        schoolAdmin : schoolAdmin,
-                        success : req.flash('success'),
-                        parent_active : "active"
-                    })
+                
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                if(session){
+                    const term = await Term.findOne({session: session._id, current: true})
+                    if(term){
+                        const parent= await Parent.find({school : schoolAdmin._id})
+                        res.render("admin-parent" , {
+                            parents : parent ,
+                            title : "Parents",
+                            schoolAdmin : schoolAdmin,
+                            success : req.flash('success'),
+                            parent_active : "active",
+                            users_active: 'active', 
+                            openuser_active: "pcoded-trigger",
+                            sessS: session.name, 
+                            termS: term.name
+                        })
+                    }else{
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Parents',
+                        users_active: 'active', openuser_active: "pcoded-trigger",
+                        parent_active : "active"})
+                    }
+                }else{
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Parents',
+                    users_active: 'active', openuser_active: "pcoded-trigger",
+                    parent_active : "active"})
                 }
             }else{
                 res.redirect(303, '/school')
@@ -820,12 +831,25 @@ class App {
         try{ 
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                const student = await Student.find({school : schoolAdmin._id, parent : false})
-
-                console.log(student)
-
+                const student = await Student.find({school : schoolAdmin._id})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({current: true, session: session._id})
+                const parents = await Parent.find({school: schoolAdmin._id})
+                
+                let foundStudent = []
+                if(parents.length > 0){
+                    parents.map(p => {
+                        p.ward.map(w => foundStudent.push(String(w)))
+                    })
+                }
+                
+                let filterStudents = student.filter(s => !foundStudent.includes(s.id))
+                console.log(filterStudents)
+                
                 res.render('new-parent', {title : 'New Parent', schoolAdmin : schoolAdmin,
-                        error : req.flash('error'), parent_active : "active", students : student})
+                error : req.flash('error'), parent_active : "active", students : filterStudents,
+                users_active: 'active', openuser_active: "pcoded-trigger", sessS: session.name,
+                termS: term.name})
             }else{
                 res.redirect(303, '/school')
             }
@@ -838,25 +862,24 @@ class App {
         try{ 
 		    if(req.session.schoolCode){	 
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                const {name, gender, email, number, role, ward} = req.body
+                const {name, surname, title, email, number, relationship, ward} = req.body
                 const totalParent = await Parent.find({school : schoolAdmin._id})
-                
+               
                 let start = req.session.schoolCode + "001"
                 let code = `P${GenerateAccount(totalParent, start, "parentID", 1, 6)}`
-                const parentPass = await bcrypt.hash(email , 10)
+                const parentPass = await bcrypt.hash(surname.toUpperCase() , 10)
                 
                 const parent = await new Parent({
                     name : name , 
+                    surname: surname,
+                    title : title,
                     email :email,  
                     password : parentPass, 
-                    gender  : gender,
                     parentID : code,
                     school : schoolAdmin._id,
                     number : number,
-                    role : role,
-                    ward : [
-                        ward
-                    ]
+                    relationship : relationship,
+                    ward : ward
                 })
                 const saveParent = await parent.save()
                 if ( saveParent ) { 
@@ -867,7 +890,7 @@ class App {
                             res.status(500)
                             return
                         }else{
-                            let redirectUrl = "/school/parent/" + saveParent._id + "/complete"
+                            let redirectUrl = "/school/parent"
                             res.redirect(redirectUrl)
                             return
                         }
@@ -886,73 +909,23 @@ class App {
         }
     }
 
-    getParentComplete = async (req, res, next) => {
-        try{ 
-            if(req.session.schoolCode){
-                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                const parent = await Parent.findOne({_id : req.params.parentID})
-                if(parent){
-                    res.render("complete-parentreg", {title : "Upload Image", parents : parent, 
-                    schoolAdmin : schoolAdmin, parent_active : "active"})
-                }else{
-                    throw {
-                        message : "You can't access this page. No Registration Number to access it."
-                    }
-                }
-            }else{
-                res.redirect('303', '/school')
-            }
-        }catch(err){
-            res.render("error-page", {error: err})
-        }
-    }
-
-    completeParentReg = async(req, res, next) => {
-        try{ 
-            if(req.session.schoolCode){
-                const confirmParent= await Parent.findOne({_id : req.params.parentID})
-                if (req.file) {  
-                    const ID = req.params.parentID
-                    const originalName = ID + "-" + req.file.originalname 
-                    Parent.findByIdAndUpdate(ID , {
-                        profilePhoto : originalName
-                    } ,{new : true, useAndModify : false}, (err , item) => {
-                        if(err){
-                            res.status(500)
-                            return
-                        }else{
-                            FileHandler.moveFile(originalName , "./public/uploads/profile" , "./public/uploads/schools/" + req.session.schoolCode + "/parents/") 
-                            
-                            req.flash('success', "The Parent has been added successfully.")
-                            let redirectUrl = '/school/parent/' + req.params.parentID  
-                            res.redirect(303, redirectUrl)
-                        }
-                    })
-                }else {
-                    throw{
-                        name : "File Error",
-                        message : "File not found."
-                    }
-                }
-            }else {
-                res.redirect(303, '/school')
-            }
-        }catch(err){
-            res.render("error-page", {error: err})
-        }    
-    }
-
     getSingleParent = async (req , res , next) => {
         try{ 
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 let validParent = await Parent.findOne({_id : req.params.parentID})
                 const student = await Student.find({school : schoolAdmin._id})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                let studentName = {}
+                student.map(s => studentName[s._id] = s.firstName + " " + s.lastName)
 
                 if(validParent){
-                    console.log(validParent)
-                    res.render('singleparent' , { title  : "Parent", parentDB: validParent, students: student,
-                        schoolAdmin : schoolAdmin, success : req.flash('success'), parent_active : "active"})
+                  
+                    res.render('singleparent' , { title  : "Parent", parentDB: validParent, studentName: studentName,
+                    schoolAdmin : schoolAdmin, success : req.flash('success'), sessS: session.name, 
+                    parent_active : "active", termS: term.name, users_active: 'active', openuser_active: "pcoded-trigger"})
+
                 }else{
                     throw{
                         message : "Parents not found"

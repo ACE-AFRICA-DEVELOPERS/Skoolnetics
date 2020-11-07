@@ -113,12 +113,12 @@ class App {
                         session_active: 'active', opensession_active: "pcoded-trigger",
                         sessS: session.name, termS: term.name})
                     }else{
-                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Classes',
                         session_active: 'active', opensession_active: "pcoded-trigger",
                         class_active: 'active'})
                     }
                 }else{
-                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Classes',
                     session_active: 'active', opensession_active: "pcoded-trigger",
                     class_active: 'active'})
                 }

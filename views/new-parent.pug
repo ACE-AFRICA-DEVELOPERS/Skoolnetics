@@ -16,7 +16,7 @@ block content
                                 .card
                                     .card-header
                                         h5 Add a New Parent
-                                        p(class="font-itali") #[strong Note :] The Email of the Parent will be the default password. Parent ID will be automatically generated.
+                                        p(class="font-itali") #[strong Note :] The surname of the Parent will be the default password. Parent ID will be automatically generated.
 
                                     .card-body
                                         .row
@@ -32,34 +32,40 @@ block content
                                                 .form-field
                                                     form(method="POST")
                                                         div(class="row ")
-                                                            div(class="col-md-4")
-                                                                label(class="label") Name :
+                                                            div(class="col-md-6")
+                                                                label Title :
+                                                                select(class="form-control mb-3 custom-select" name="title")
+                                                                    option(selected disabled="disabled") ------
+                                                                    option(value="Mr") Mr
+                                                                    option(value="Mrs") Mrs
+                                                                    option(value="Miss") Miss
+                                                            div(class="col-md-6")
+                                                                label Surname :
+                                                                input(type="text" class="form-control mb-3" name="surname")
+                                                            div(class="col-md-6")
+                                                                label Name(s) :
                                                                 input(type="text" class="form-control mb-3" name="name")
-                                                            div(class="col-md-4")
-                                                                label(class="label") Email :
+                                                            div(class="col-md-6")
+                                                                label Email :
                                                                 input(type="email" class="form-control mb-3" name="email")
-                                                            div(class="col-md-4")
-                                                                label(class="label") Mobile Number :
+                                                            div(class="col-md-6")
+                                                                label Mobile Number :
                                                                 input(type="tel" class="form-control mb-3" name="number")
-                                                            div(class="col-md-4")
-                                                                label(class="label") Gender :
-                                                                select(class="form-control custom-select mb-3" name="gender")
-                                                                    option(value="" selected disabled="disabled") ---------
-                                                                    option(value="male") Male
-                                                                    option(value="female") Female
-                                                            div(class="col-md-4")
-                                                                label(class="label") Role :
-                                                                select(class="role form-control custom-select mb-3" name="role")
-                                                                    option(value="" selected disabled="disabled") ---------
-                                                                    option(value="father") Father
-                                                                    option(value="mother") Mother
-                                                            div(class="col-md-4")
-                                                                label(for="wards" class="label") Child(ren) :
-                                                                select(class="form-control mb-3 multiple-select" name="ward" id="confirmParent" multiple size="3")
+                                                            div(class="col-md-6")
+                                                                label Relationship with child(ren) :
+                                                                select(class="role form-control custom-select mb-3" name="relationship")
+                                                                    option(value="" selected disabled="disabled") -------
+                                                                    option(value="Father") Father
+                                                                    option(value="Mother") Mother
+                                                                    option(value="Guardian") Guardian
+                                                            div(class="col-md-6")
+                                                                label Child(ren) :
+                                                                select(class="multiple-selecting form-control" multiple="multiple" name="ward")
                                                                     each student in students
-                                                                        option(value=student._id) #{student.firstName} #{student.lastName}
+                                                                        option(value=student._id) #{student.lastName} #{student.firstName} #{student.otherName} 
                                                                 p.err-msg
                                                                 
                                                             div(class="col-md-12 text-center")
-                                                                button(type="submit" class="btn btn-info") Continue
+                                                                button(type="submit" class="btn btn-info") Create
+        
         include includes/footer.pug

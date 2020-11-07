@@ -19,14 +19,14 @@ class App {
                     const term = await Term.findOne({school: schoolAdmin._id, session: session._id, current: true})
                     if(term){
                         res.render('school-logo', {schoolAdmin: schoolAdmin, logo_active: 'active', opensession_active: "pcoded-trigger",
-                        session_active: 'active', sessS: session.name, termS: term.name})
+                        session_active: 'active', sessS: session.name, termS: term.name, title: 'Logo and Stamp'})
                     }else{
-                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Logo and Stamp',
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin,
                         logo_active: 'active', opensession_active: "pcoded-trigger",
-                        session_active: 'active', success: req.flash('success')})
+                        session_active: 'active', success: req.flash('success'), title: 'Logo and Stamp'})
                     }
                 }else{
-                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Logo and Stamp',
                     logo_active: 'active', opensession_active: "pcoded-trigger",
                     session_active: 'active'})
                 }
@@ -94,15 +94,15 @@ class App {
                         const role1 = await Role.findOne({school: schoolAdmin._id, role: 'r-1'})
                         const role2 = await Role.findOne({school: schoolAdmin._id, role: 'r-2'})
                         res.render('school-roles', {schoolAdmin: schoolAdmin, roles_active: 'active', opensession_active: "pcoded-trigger",
-                        session_active: 'active', sessS: session.name, termS: term.name, role1: role1,
+                        session_active: 'active', sessS: session.name, termS: term.name, role1: role1, title: 'Roles',
                         role2: role2})
                     }else{
-                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Logo and Stamp',
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Roles',
                         roles_active: 'active', opensession_active: "pcoded-trigger",
                         session_active: 'active'})
                     }
                 }else{
-                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Roles',
                     roles_active: 'active', opensession_active: "pcoded-trigger",
                     session_active: 'active'})
                 }
@@ -156,12 +156,12 @@ class App {
                         grade_active: 'active', opensession_active: "pcoded-trigger",
                         sessS: session.name, termS: term.name, session_active: 'active'})
                     }else{
-                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Grade Settings',
                         grade_active: 'active', opensession_active: "pcoded-trigger",
                         session_active: 'active'})
                     }
                 }else{
-                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Grade Settings',
                     grade_active: 'active', opensession_active: "pcoded-trigger",
                     session_active: 'active'})
                 }

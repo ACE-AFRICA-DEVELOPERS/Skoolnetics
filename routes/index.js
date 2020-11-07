@@ -94,12 +94,8 @@ router.post('/school/new-student/:studentID', FileController.studentUpload.singl
 router.get("/school/parent", SchoolAdminController.getParents)
 router.get('/school/parent/new', SchoolAdminController.getNewParent)
 router.post('/school/parent/new', SchoolAdminController.postParents)
-router.get('/school/parent/:parentID/complete', SchoolAdminController.getParentComplete)
-router.post('/school/parent/:parentID/complete', FileController.parentUpload.single('picture'), SchoolAdminController.completeParentReg)
 router.get('/school/parent/:parentID', SchoolAdminController.getSingleParent)
 router.post('/school/parent/:parentID',  FileController.parentUpload.single('picture'), SchoolAdminController.updateSingleParent)
-
-
 
 router.get('/school/cbt-setup', SchoolAdminController.getExams)
 router.post('/school/cbt-setup', SchoolAdminController.postExams)

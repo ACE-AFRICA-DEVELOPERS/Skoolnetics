@@ -9,13 +9,30 @@ const ClassSchool = require('../model/classchool')
 
 
 class App {
+
     createPaymentType = async (req , res , next) => {
         try {
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const paymentTypes = await PaymentType.find({school : schoolAdmin._id})
-                res.render('payment-type' , {title : "Payment Type" , schoolAdmin : schoolAdmin , openfinance_active : 'pcoded-trigger',
-                finance_active : 'active', payment_active : 'active', paymentTypes : paymentTypes})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                if(session){
+                    const term = await Term.findOne({session: session._id, current: true})
+                    if(term){
+
+                        res.render('payment-type' , {title : "Payment Type" , schoolAdmin : schoolAdmin , 
+                        openfinance_active : 'pcoded-trigger', sessS: session.name, termS: term.name,
+                        finance_active : 'active', payment_active : 'active', paymentTypes : paymentTypes})
+                    }else{
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Payment Type',
+                        finance_active: 'active', openfinance_active: "pcoded-trigger",
+                        payment_active : "active"})
+                    }
+                }else{
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Payment Type',
+                    finance_active: 'active', openfinance_active: "pcoded-trigger",
+                    payment_active : "active"})
+                }
             }else {
                 res.redirect(303, '/school/fees')
             }
@@ -57,11 +74,23 @@ class App {
             if( req.session.schoolCode ){
                 const schoolAdmin = await SchoolAdmin.findOne({ schoolCode : req.session.schoolCode })
                 const classes = await ClassSchool.find({school : schoolAdmin._id})
-                
-
-                res.render('all-classes' , { title : 'All Payment Classes' , schoolAdmin : schoolAdmin, 
-                classes : classes , openfinance_active : 'pcoded-trigger',
-                finance_active : 'active', amount_active : 'active',})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                if(session){
+                    const term = await Term.findOne({session: session._id, current: true})
+                    if(term){
+                        res.render('all-classes' , { title : 'Classes' , schoolAdmin : schoolAdmin, 
+                        classes : classes , openfinance_active : 'pcoded-trigger',
+                        finance_active : 'active', amount_active : 'active', sessS: session.name, termS: term.name})
+                    }else{
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Classes',
+                        finance_active: 'active', openfinance_active: "pcoded-trigger",
+                        amount_active : "active"})
+                    }
+                }else{
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Classes',
+                        finance_active: 'active', openfinance_active: "pcoded-trigger",
+                        amount_active : "active"})
+                }
             }else{
                 res.redirect(303, '/school/fees')
             }
@@ -74,18 +103,17 @@ class App {
         try {
             if( req.session.schoolCode ){
                 const schoolAdmin = await SchoolAdmin.findOne({ schoolCode : req.session.schoolCode })
-                const session = await Session.find({ school : schoolAdmin._id , current : true})
-                const term = await Term.find({ school : schoolAdmin._id   , current : true})
-                const paymentTypes = await PaymentType.find({})
+                const session = await Session.findOne({ school : schoolAdmin._id , current : true})
+                const term = await Term.findOne({ session : session._id   , current : true})
+                const paymentTypes = await PaymentType.find({school: schoolAdmin._id})
                 const singleClass = await ClassSchool.findOne({ _id : req.params.classID , school: schoolAdmin._id})
                 const payments = await Payment.findOne({ class: req.params.classID , school: schoolAdmin._id, })
                 
-
                 let paymentName = {}
                 paymentTypes.map(pay => paymentName[pay._id] = pay.paymentFor)
 
                 res.render('single-class' , { title : "Single Class Payment Details" , schoolAdmin : schoolAdmin , 
-                term : term , session : session , paymentTypes : paymentTypes , singleClass : singleClass , 
+                termS : term.name , sessS : session.name , paymentTypes : paymentTypes , singleClass : singleClass , 
                 payments : payments , classDB : singleClass , paymentName : paymentName})
             }else {
                 res.redirect(303, '/school')

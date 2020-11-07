@@ -71,9 +71,9 @@ block content
                                                                     td #{classN.name}
                                                                     td #[a(href=subjectUrl) View]
                                                                     td #[a(href=studentUrl) View]
-                                                                    td #[a(href="#" data-toggle="modal" data-target="#deleteModal" class="red-color") #[i(class="feather icon-trash")]]
+                                                                    td #[a(href="#" data-toggle="modal" data-target=`#d${classN._id}` class="red-color") #[i(class="feather icon-trash")]]
                                                     
-                                                                div(class="modal fade" id="deleteModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                div(class="modal fade" id=`d${classN._id}` role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
                                                                     div(class="modal-dialog" role="document")
                                                                         div(class="modal-content")
                                                                             div(class="modal-header")
@@ -83,8 +83,8 @@ block content
                                                                             div(class="modal-body") Deleting this will delete this class permanently.
                                                                             div(class="modal-footer")
                                                                                 - let deleteUrl = "/school/class/" + classN.name + "/delete"
-                                                                                a(class="ace-btn" href=deleteUrl) Ok
-                                                                                button(class="cancel-btn" type="button" data-dismiss="modal") Cancel
+                                                                                a(class="btn btn-info" href=deleteUrl) Ok
+                                                                                button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
                                     else
                                         .card
                                             .card-header

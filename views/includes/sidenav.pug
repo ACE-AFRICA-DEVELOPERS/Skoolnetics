@@ -3,8 +3,7 @@ block content
         .navbar-wrapper
             .navbar-brand.header-logo
                 a.b-brand(href='')
-                    //- span.b-title Skoolnetics
-                    span.text-white SKOOLNETICS
+                    span.b-title Skoolnetics
                 a#mobile-collapse.mobile-menu(href='javascript:')
                     span
             .navbar-content.scroll-div
@@ -71,7 +70,7 @@ block content
                                     a(href='/school/staff') Staffs
                                 li(class=student_active)
                                     a(href='/school/students') Students
-                                li
+                                li(class=parent_active)
                                     a(href='/school/parent') Parents
                         li.nav-item.pcoded-menu-caption
                             label Test and Exam
@@ -104,16 +103,18 @@ block content
                                 span.pcoded-micon
                                     i.feather.icon-calendar
                                 span.pcoded-mtext Lesson Notes
+                        li.nav-item.pcoded-menu-caption
+                            label Finance
                         li(class=`nav-item pcoded-hasmenu ${finance_active} ${openfinance_active}`)
                             a.nav-link(href='javascript:')
                                 span.pcoded-micon
-                                    i.feather.icon-tv
+                                    i.feather.icon-layers
                                 span.pcoded-mtext Finance
                             ul.pcoded-submenu
                                 li(class=payment_active)
-                                    a(href='/school/fees/payment-type') Paymet Type
+                                    a(href='/school/fees/payment-type') Payment Type
                                 li(class=amount_active)
-                                    a(href='/school/fees/all-classes') Amount Per Class
+                                    a(href='/school/fees/all-classes') Class Bills
                                 li(class=invoice_active)
                                     a(href='/school/fees/payment-invoice') Generate Invoice
                         
