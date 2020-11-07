@@ -1,0 +1,67 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                div
+                                    h5 Parent
+                                    p #[a(href="/school/parent/new" class="btn btn-info") New Parent #[i(class="fa fa-plus ml-1")]]
+                                
+                                .row.justify-content-center
+                                    .col-md-8
+                                        if error
+                                            if error.length != 0
+                                                .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{error}
+
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
+                                
+                                if noParent
+                                    .card
+                                        p.text-small #{noParent}
+                                if parents
+                                    div(class="mt-2")
+                                        .card
+                                            .card-header
+                                                h5 Parent
+                                            .card-block.table-border-style
+                                                .table-responsive
+                                                    table.table.table-striped
+                                                        thead.thead-light
+                                                            tr
+                                                                th S/N 
+                                                                th Parent ID
+                                                                th Full Name
+                                                                th View
+                                                            tbody 
+                                                                each parent , index in parents
+                                                                    - let id = parent.parentID
+                                                                    - let name = `${parent.name}`
+                                                                    - let parentUrl = "/school/parent/" + parent._id
+                                                                    - i++ 
+                                                                    tr 
+                                                                        td #{index + 1} 
+                                                                        td #{id}
+                                                                        td #{name}
+                                                                        td #[a(href=parentUrl class="main-link") Check Profile]
+            
+
+
+            include includes/footer.pug

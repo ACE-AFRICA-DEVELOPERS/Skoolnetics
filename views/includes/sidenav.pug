@@ -3,7 +3,8 @@ block content
         .navbar-wrapper
             .navbar-brand.header-logo
                 a.b-brand(href='')
-                    span.b-title Skoolnetics
+                    //- span.b-title Skoolnetics
+                    span.text-white SKOOLNETICS
                 a#mobile-collapse.mobile-menu(href='javascript:')
                     span
             .navbar-content.scroll-div
@@ -71,7 +72,7 @@ block content
                                 li(class=student_active)
                                     a(href='/school/new-student') New Student
                                 li
-                                    a(href='#') Parents
+                                    a(href='/school/parent') Parents
                         li.nav-item.pcoded-menu-caption
                             label Test and Exam
                         li(class=`nav-item pcoded-hasmenu ${cbt_active} ${opencbt_active}`)
@@ -103,6 +104,19 @@ block content
                                 span.pcoded-micon
                                     i.feather.icon-calendar
                                 span.pcoded-mtext Lesson Notes
+                        li(class=`nav-item pcoded-hasmenu ${finance_active} ${openfinance_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-tv
+                                span.pcoded-mtext Finance
+                            ul.pcoded-submenu
+                                li(class=payment_active)
+                                    a(href='/school/fees/payment-type') Paymet Type
+                                li(class=amount_active)
+                                    a(href='/school/fees/all-classes') Amount Per Class
+                                li(class=invoice_active)
+                                    a(href='/school/fees/payment-invoice') Generate Invoice
+                        
                        
                                     
                     if staff
@@ -181,6 +195,20 @@ block content
                                     a(href='/student/cbt-result') CBT
                                 li(class=card_active)
                                     a(href='#') Report Card
+                    
+                    if parent
+                        li(class=`nav-item ${dash_active}`)
+                            a.nav-link(href='/parent/dashboard')
+                                span.pcoded-micon
+                                    i.feather.icon-home
+                                span.pcoded-mtext Dashboard
+                        li(class=`nav-item ${card_active}`)
+                            a.nav-link(href='/parent/student')
+                                span.pcoded-micon
+                                    i.feather.icon-folder
+                                span.pcoded-mtext Ward(s)
+                        
+
                              
                         
                         

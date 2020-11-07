@@ -36,6 +36,17 @@ const studentStorage = multer.diskStorage({
 	}
 }) 
 
+const parentStorage = multer.diskStorage({
+    destination : function(req , file , cb) {
+		cb(null ,  path.join(directoryName, '/public/uploads/profile/'))
+	} , 
+	filename : function(req , file , cb) {  
+		let date = new Date().getDate() 
+	    let fileName =   req.params.studentID + "-" + file.originalname 
+		cb(null , fileName) 
+	}
+}) 
+
 const questionStorage = multer.diskStorage({
     destination : function(req , file , cb) {
 		cb(null ,  path.join(directoryName, '/public/uploads/profile/'))
@@ -50,4 +61,5 @@ const questionStorage = multer.diskStorage({
 exports.adminUpload  = multer({storage : adminStorage}) 
 exports.staffUpload  = multer({storage : staffStorage})
 exports.studentUpload  = multer({storage : studentStorage})
+exports.parentUpload  = multer({storage : parentStorage})
 exports.questionUpload  = multer({storage : questionStorage})

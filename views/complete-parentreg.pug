@@ -1,0 +1,40 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 Add Parent Photo to continue
+
+                                    div(class="container")
+                                        h4.mt-4 Step 2
+                                        .row.justify-content-center
+                                            .col-md-10.card
+                                                h6 Upload an Image for #{parents.name}
+                                                form(method='POST' enctype="multipart/form-data")
+                                                    div(class="text-center mt-2")
+                                                        label(class="btn-file") #[i(class="fa fa-camera pr-2")] 
+                                                            input(type="file" accept="image/*" name='picture' id='picture' required)
+                                                    div(class="text-center mt-2")
+                                                        input(type="submit" class="btn btn-info mr-4" value="Complete")
+                                                        - let skipUrl = "/school/parent/" + parents._id
+                                                        a(href=skipUrl class="btn btn-dark") Skip
+                                                div(class="preview")
+                                                    div(class="boxImage" id="displayImage")
+                                                        p(class="hide mt-5") Preview 
+                                                    div(class="removePicture")
+                                                        a(href="#" id="removeImage") #[i(class="fa fa-times")]
+
+
+        include includes/footer.pug

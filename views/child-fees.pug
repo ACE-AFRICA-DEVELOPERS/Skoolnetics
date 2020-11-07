@@ -1,0 +1,80 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            button(class="btn btn-primary ml-3 mb-2 mt-2" id="download") Download PDF
+                            .page-wrapper
+                                
+                                div(class="container")
+                                    .row.justify-content-between
+                                        
+                                        .col-md-12
+                                            .card.mt-5
+                                                #invoice.card
+                                                    .card-body
+                                                        .text-center
+                                                            img(src='/images/babcock.jpg' width='300px' class='mb-5')
+                                                        .card-block.table-border-style
+                                                            .row
+                                                                .col-md-6
+                                                                    h5
+                                                                        b #{school.schoolName}
+                                                                    p.invoice #{school.address}
+                                                                    p.invoice #{school.state}.
+                                                                .col-md-6.text-right
+                                                                    
+                                                                    p.invoice Session: #{session.name}
+                                                                    p.invoice Term: #{term.name}
+                                                                    p.invoice Payment Invoice for: #{singleClass.name}
+                                                                    p Student: #{students.firstName} #{students.lastName} #{students.otherName}
+                                                        .table-responsive
+                                                            table.table.table-striped
+                                                                thead.thead-light
+                                                                    tr
+                                                                        th Select
+                                                                        th Description
+                                                                        th Amount
+                                                                tbody
+                                                                    if payments
+                                                                        each pay, index in payments.fees
+                                                                            tr  
+                                                                                td
+                                                                                    input(type="checkbox" class="check" id=pay.amount)
+                                                                                td.invoice #{paymentName[pay.paymentFor]}
+                                                                                td.invoice #{pay.amount}
+                                                                            
+                                                                    
+                                                            .card-body
+                                                                .d-md-flex.flex-md-wrap
+                                                                    .pt-2.mb-3.wmin-md-400.ml-auto
+                                                                        .table-responsive
+                                                                            table.table
+                                                                                tbody
+                                                                                    th.text-left.invoice Total:
+                                                                                    td.text-right.text-primary
+                                                                                        h5.font-weight-semibold.invoice#totalPayment 
+                                                                a(href="")
+                                        
+                                                                            hr
+                                        
+                                        .text-right
+                                            a(href="#" class="btn btn-primary mr-5 mb-5 mt-5" id="total-paid") proccess
+                                        
+                                        .text-center
+                                            button(class="submit mr-5 mb-5 mt-5 btn btn-primary") Proceed With Payment
+
+        script(src="/javascripts/library/deduction.js" type="module")
+        script(src='/javascripts/pdf.js')
+
+
+        include includes/footer.pug

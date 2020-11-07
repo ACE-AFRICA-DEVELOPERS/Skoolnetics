@@ -1,0 +1,69 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 Bill Generated for #{singleClass.name}
+                                    #invoice.mt-5
+                                        .text-center
+                                            img(src='/images/babcock.jpg' width='200px' class='mb-5')
+                                        .card-block.table-border-style
+                                            .row
+                                                .col-md-6
+                                                    h5.pl-3
+                                                        b #{schoolAdmin.schoolName}
+                                                    p.invoice.pl-3 #{schoolAdmin.address}
+                                                    p.invoice.pl-3 #{schoolAdmin.state}.
+                                                .col-md-6.text-right
+                                                    each sess in session
+                                                        p.invoice.pr-3 Session: #{sess.name}
+                                                    each ter in term
+                                                        p.invoice.pr-3 Term: #{ter.name}
+                                                    p.invoice.pr-3 Payment Invoice for: #{singleClass.name}
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light
+                                                        tr
+                                                            th S/N
+                                                            th Description
+                                                            th Amount
+                                                    tbody
+                                                        if payments
+                                                            each pay, index in payments.fees
+                                                                tr  
+                                                                    td.invoice #{index + 1}
+                                                                    td.invoice #{paymentName[pay.paymentFor]}
+                                                                    td.invoice #{pay.amount}
+                                                                
+                                            .row
+                                                .col-md-6  
+                                                    .text-center
+                                                        img(src='/images/approved.jpeg' width='120px' class='mb-5')
+                                                .col-md-6     
+                                                    .card-body
+                                                        .d-md-flex.flex-md-wrap
+                                                            .pt-2.pr-5.mb-3.wmin-md-400.ml-auto
+                                                                .table-responsive
+                                                                    table.table
+                                                                        tbody
+                                                                            th.text-left.invoice Total:
+                                                                            td.text-right.text-primary
+                                                                                h5.font-weight-semibold.invoice ##{sum.toLocaleString()}
+                                                                    hr
+                                button(class="btn btn-primary float-right mr-5 mb-5" id="download") Download PDF
+                        
+
+    script(src='/javascripts/pdf.js')
+    include includes/footer.pug

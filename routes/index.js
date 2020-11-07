@@ -13,6 +13,8 @@ const BasicSetupController = require('../controller/basicSetupController')
 const ClassController = require('../controller/classController')
 const CbtController = require('../controller/cbtController')
 const AttendanceController = require('../controller/attendanceController')
+const TransactionController = require('../controller/transactionController')
+const ParentController = require('../controller/parentController')
 
 /*--------------Home and Admin Routes--------------*/
 router.get('/', IndexController.getIndex)
@@ -83,6 +85,16 @@ router.get('/school/new-student/:studentID/complete', SchoolAdminController.getC
 router.post('/school/new-student/:studentID/complete', FileController.studentUpload.single('picture'), SchoolAdminController.completeStudentReg)
 router.get('/school/new-student/:studentID', SchoolAdminController.getSingleStudent)
 router.post('/school/new-student/:studentID', FileController.studentUpload.single('picture'), SchoolAdminController.updateSingleStudent)
+
+router.get("/school/parent", SchoolAdminController.getParents)
+router.get('/school/parent/new', SchoolAdminController.getNewParent)
+router.post('/school/parent/new', SchoolAdminController.postParents)
+router.get('/school/parent/:parentID/complete', SchoolAdminController.getParentComplete)
+router.post('/school/parent/:parentID/complete', FileController.parentUpload.single('picture'), SchoolAdminController.completeParentReg)
+router.get('/school/parent/:parentID', SchoolAdminController.getSingleParent)
+router.post('/school/parent/:parentID',  FileController.parentUpload.single('picture'), SchoolAdminController.updateSingleParent)
+
+
 
 router.get('/school/cbt-setup', SchoolAdminController.getExams)
 router.post('/school/cbt-setup', SchoolAdminController.postExams)
@@ -165,6 +177,27 @@ router.post('/staff/mark-attendance/:className', AttendanceController.postMarkAt
 
 router.get('/staff/broadsheet', StaffController.getBroadSheetClass)
 router.get('/staff/broadsheet/:className', StaffController.getBroadSheet)
+
+
+/**---------------Finance Routes--------------------- */
+router.get('/school/fees/payment-type' , TransactionController.createPaymentType)
+router.post('/school/fees/payment-type' , TransactionController.postPaymentType)
+router.get('/school/fees/all-classes' , TransactionController.getAllClass)
+router.get('/school/fees/all-classes/:classID' , TransactionController.getSingleClass)
+router.post('/school/fees/all-classes/:classID' , TransactionController.postSingleClass)
+router.get('/school/fees/all-classes/:classID/:feeID/delete', TransactionController.deleteSinglePayment)
+router.get('/school/fees/payment-invoice' , TransactionController.getInvoicePage)
+router.get('/school/fees/payment-invoice/:classID' , TransactionController.getSingleClassInvoice)
+
+
+/**---------------Parent Routes------------------ */
+router.get('/parent', IndexController.getParentPage)
+router.post('/parent', ParentController.postParentLogin)
+router.get('/parent/dashboard', ParentController.getDashboard)
+router.get("/parent/student", ParentController.getChildren)
+router.get('/parent/new-student/:studentID', ParentController.getSingleChild)
+router.get('/parent/new-student/:studentID/child-fees', ParentController.getFinancialRecords)
+
 
 /*--------------Student Routes--------------*/
 router.get('/student', IndexController.getStudentPage)

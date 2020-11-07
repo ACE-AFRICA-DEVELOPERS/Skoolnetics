@@ -23,6 +23,7 @@ const LessonNotes = require('../model/lessonNote')
 const ExamCompute = require('../model/exam-settings')
 const Grade = require('../model/grade')
 const Broadsheet = require('../model/broadsheet')
+const Parent = require('../model/parent')
 
 class App {
 
@@ -738,6 +739,256 @@ class App {
             }
         }catch(err){
             res.render('error-page', {error : err})
+        }
+    }
+
+    getParents = async (req , res , next) => {
+        try{ 
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const parent= await Parent.find({school : schoolAdmin._id})
+                if(parent.length != 0){
+                    res.render("admin-parent" , {
+                        parents : parent ,
+                        title : "Parents",
+                        schoolAdmin : schoolAdmin,
+                        success : req.flash('success'),
+                        parent_active : "active"
+                    })
+                    return 
+                }
+                else{
+                    res.render("admin-parent", {
+                        noParent : "No Parents has been created." ,
+                        title : "Parents",
+                        schoolAdmin : schoolAdmin,
+                        success : req.flash('success'),
+                        parent_active : "active"
+                    })
+                }
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    getNewParent = async (req, res, next) => {
+        try{ 
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const student = await Student.find({school : schoolAdmin._id, parent : false})
+
+                console.log(student)
+
+                res.render('new-parent', {title : 'New Parent', schoolAdmin : schoolAdmin,
+                        error : req.flash('error'), parent_active : "active", students : student})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    postParents = async (req , res , next) => { 
+        try{ 
+		    if(req.session.schoolCode){	 
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const {name, gender, email, number, role, ward} = req.body
+                const totalParent = await Parent.find({school : schoolAdmin._id})
+                
+                let start = req.session.schoolCode + "001"
+                let code = `P${GenerateAccount(totalParent, start, "parentID", 1, 6)}`
+                const parentPass = await bcrypt.hash(email , 10)
+                
+                const parent = await new Parent({
+                    name : name , 
+                    email :email,  
+                    password : parentPass, 
+                    gender  : gender,
+                    parentID : code,
+                    school : schoolAdmin._id,
+                    number : number,
+                    role : role,
+                    ward : [
+                        ward
+                    ]
+                })
+                const saveParent = await parent.save()
+                if ( saveParent ) { 
+                    Student.findByIdAndUpdate(ward, {
+                        parent : true
+                    }, {new : true, useAndModify : false}, (err , item) => {
+                        if(err){
+                            res.status(500)
+                            return
+                        }else{
+                            let redirectUrl = "/school/parent/" + saveParent._id + "/complete"
+                            res.redirect(redirectUrl)
+                            return
+                        }
+                    }) 
+                }else {
+                    throw {
+                        message : "Unable to save this Parent"
+                    }
+                    return 
+                }
+            }else {
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    getParentComplete = async (req, res, next) => {
+        try{ 
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const parent = await Parent.findOne({_id : req.params.parentID})
+                if(parent){
+                    res.render("complete-parentreg", {title : "Upload Image", parents : parent, 
+                    schoolAdmin : schoolAdmin, parent_active : "active"})
+                }else{
+                    throw {
+                        message : "You can't access this page. No Registration Number to access it."
+                    }
+                }
+            }else{
+                res.redirect('303', '/school')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    completeParentReg = async(req, res, next) => {
+        try{ 
+            if(req.session.schoolCode){
+                const confirmParent= await Parent.findOne({_id : req.params.parentID})
+                if (req.file) {  
+                    const ID = req.params.parentID
+                    const originalName = ID + "-" + req.file.originalname 
+                    Parent.findByIdAndUpdate(ID , {
+                        profilePhoto : originalName
+                    } ,{new : true, useAndModify : false}, (err , item) => {
+                        if(err){
+                            res.status(500)
+                            return
+                        }else{
+                            FileHandler.moveFile(originalName , "./public/uploads/profile" , "./public/uploads/schools/" + req.session.schoolCode + "/parents/") 
+                            
+                            req.flash('success', "The Parent has been added successfully.")
+                            let redirectUrl = '/school/parent/' + req.params.parentID  
+                            res.redirect(303, redirectUrl)
+                        }
+                    })
+                }else {
+                    throw{
+                        name : "File Error",
+                        message : "File not found."
+                    }
+                }
+            }else {
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }    
+    }
+
+    getSingleParent = async (req , res , next) => {
+        try{ 
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                let validParent = await Parent.findOne({_id : req.params.parentID})
+                const student = await Student.find({school : schoolAdmin._id})
+
+                if(validParent){
+                    console.log(validParent)
+                    res.render('singleparent' , { title  : "Parent", parentDB: validParent, students: student,
+                        schoolAdmin : schoolAdmin, success : req.flash('success'), parent_active : "active"})
+                }else{
+                    throw{
+                        message : "Parents not found"
+                    }
+                }
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    updateSingleParent = async(req, res, next) => {
+        try{ 
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const parent = await Parent.findOne({_id : req.params.parentID})
+                if(parent){	
+                    if(req.file){
+                        
+                        FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/parents/" + parent.profilePhoto) 
+                        
+                        let originalName = req.params.parentID + "-" + req.file.originalname
+                        Parent.findByIdAndUpdate(req.params.parentID, {
+                            profilePhoto : originalName,
+                            name : req.body.name,
+                            gender : req.body.gender,
+                            email : req.body.email,
+                            number : req.body.number
+                        }, {new : true, useAndModify : false}, (err , item) => {
+                            if(err){
+                                res.status(500)
+                                return
+                            }else {
+                                req.flash('success', "Update was successful.")
+                                let redirectUrl = "/school/parent/" + req.params.parentID
+                                res.redirect(303, redirectUrl)
+
+                                const source = "../public/uploads/profile/" + originalName
+                                const destination = "../public/uploads/schools/" + req.session.schoolCode + '/parents/' + originalName
+                                fs.rename((path.join(dirName , source)) , (path.join(dirName , destination)), err => {
+                                    if(err){
+                                        console.error(err)
+                                    }else{
+                                        console.log("File Moved")
+                                    }
+                                })
+                            }
+                        })	
+                    }else{
+                        Parent.findByIdAndUpdate(req.params.parentID, {
+                            name : req.body.name,
+                            gender : req.body.gender,
+                            email : req.body.email,
+                            number : req.body.number
+                        }, {new : true, useAndModify : false}, (err , item) => {
+                            if(err){
+                                res.status(500)
+                                return
+                            }else {
+                                req.flash('success', "Update was successful.")
+                                let redirectUrl = "/school/parent/" + req.params.parentID
+                                res.redirect(303, redirectUrl)
+                            }
+                        })	
+                    }				   
+                }else {
+                    throw {
+                        message : 'Parent not found'
+                    }
+                    return
+                }
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
         }
     }
 

@@ -16,6 +16,9 @@ class App {
     getStaffPage = (req, res, next) => {
         res.render('staff-page', {title : "Staff Page"})
     }
+    getParentPage = (req, res, next) => {
+        res.render('parent-page', {title : "Parent Page"})
+    }
 }
 
 

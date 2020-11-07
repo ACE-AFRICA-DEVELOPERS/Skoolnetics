@@ -14,7 +14,9 @@ const StudentSchema = new Schema ({
     dateOfBirth : Date,
     religion : String,
     bloodGroup : String,
-    parentsNumber : String
+    parentsNumber : String,
+    parent : { type : Boolean , default : false}
+
 })
 
 StudentSchema.virtual('student').get(function() {
