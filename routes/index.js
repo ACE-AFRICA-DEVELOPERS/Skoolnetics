@@ -48,7 +48,8 @@ router.get('/school/session/current/:sessionID', SessionController.makeCurrent)
 router.get('/school/session/:sessionID/current/:termID', SessionController.currentTerm)
 
 router.get('/school/logo', BasicSetupController.getLogo)
-router.post('/school/logo', BasicSetupController.postLogo)
+router.post('/school/logo', FileController.adminUpload.fields([{name : 'logo', maxCount : 1}, {name : 'stamp', maxCount : 1}]), 
+            BasicSetupController.postLogo)
 router.get('/school/roles', BasicSetupController.getRoles)
 router.post('/school/roles', BasicSetupController.postRoles)
 
@@ -183,6 +184,9 @@ router.get('/staff/assignment/:assignment', AssignmentController.getSingleAssign
 
 router.get('/staff/broadsheet', StaffController.getBroadSheetClass)
 router.get('/staff/broadsheet/:className', StaffController.getBroadSheet)
+router.post('/staff/transfer-report/:className', StaffController.transferReport)
+router.get('/staff/broadsheet/:className/:cardID', StaffController.getStudentReport)
+router.post('/staff/broadsheet/:className/:cardID', StaffController.writeRemarks)
 
 /*--------------Student Routes--------------*/
 router.get('/student', IndexController.getStudentPage)

@@ -24,6 +24,17 @@ block content
                                 .card
                                     .card-header
                                         h5 Roles
-                                        
-
+                                        span.d-block.m-t-5 Select one or more actions to create a role:
+                                    .card-body
+                                        form(method="POST")
+                                            .row
+                                                .col-md-6
+                                                    label Role Name:
+                                                    input(type="text" class="form-control mb-3" name="role")
+                                                    p Actions:
+                                                    input(type="checkbox" name="finance")
+                                                    label(class="label") Manage Finances
+                                                    input(type="checkbox" name="finance")
+                                                    label(class="label") Approve Lesson Notes
+    
         include includes/footer.pug

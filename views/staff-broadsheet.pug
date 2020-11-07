@@ -13,6 +13,8 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
+                                p #[a(href="#" class="btn btn-info" id="transferReport") Process] #[span#displayMsg ]
+                                p.d-none#className #{pClass}
                                 .card
                                     if broadsheet.length > 0
                                         .card-header
@@ -27,6 +29,9 @@ block content
                                                                 each cls in firstResult.result
                                                                     th(colspan="3" class="text-center") #{cls.courseName}
                                                                 th(colspan="2" class="text-center") Gross
+                                                                th Percentage
+                                                                th Position
+                                                                th Report Card
                                                             tr
                                                                 th -----
                                                                 th -----
@@ -36,10 +41,13 @@ block content
                                                                     th Total
                                                                 th Obtainable
                                                                 th Obtained
+                                                                th ------
+                                                                th ------
+                                                                th ------
                                                         tbody
                                                             each result in broadsheet
                                                                 tr(class="analytics-row")
-                                                                    td #{studentName[result.student]}
+                                                                    td.studentID(id=`${result.student}`) #{studentName[result.student]}
                                                                     td #{studentID[result.student]}
                                                                         each res in result.result
                                                                             td #{res.ca}
@@ -47,6 +55,10 @@ block content
                                                                             td.broad-total.data #{res.total} 
                                                                     td(class="obtainable") #{result.result.length * 100}
                                                                     td(class="total") 
+                                                                    td(class="average")
+                                                                    td(class="position") #{result.position}
+                                                                    - let cardUrl = '/staff/broadsheet/' + pClass + '/' + result._id
+                                                                    td #[a(href=cardUrl) View]
                                     else
                                         .card-header
                                             h5 #{title}

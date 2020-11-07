@@ -1,3 +1,6 @@
+
+const FileHandler = require('./file')
+
 const SchoolAdmin = require('../model/schoolAdmin')
 const Session = require('../model/session')
 const Term = require('../model/term')
@@ -19,7 +22,7 @@ class App {
                     }else{
                         res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Logo and Stamp',
                         logo_active: 'active', opensession_active: "pcoded-trigger",
-                        session_active: 'active'})
+                        session_active: 'active', success: req.flash('success')})
                     }
                 }else{
                     res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
@@ -38,7 +41,39 @@ class App {
         try{
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode: req.session.schoolCode})
-                res.render('school-logo', {schoolAdmin: schoolAdmin})
+                FileHandler.createDirectory("./public/uploads/schools/" + req.session.schoolCode + "/logo/")
+                if(req.files){
+                    FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/logo/" + schoolAdmin.logo) 
+                    FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/logo/" + schoolAdmin.stamp) 
+                    let logoName, stampName
+                    if(req.files.logo){
+                        logoName = req.files.logo[0].filename
+                    }else{
+                        logoName = schoolAdmin.logo
+                    }
+                    if(req.files.stamp){
+                        stampName = req.files.stamp[0].filename
+                    }else{
+                        stampName = schoolAdmin.stamp
+                    }
+                    SchoolAdmin.findByIdAndUpdate(schoolAdmin._id, {
+                        logo : logoName,
+                        stamp: stampName
+                    }, {new : true, useFindAndModify : false}, (err , item) => {
+                        if(err){
+                            console.log(err)
+                        }else{
+                            if(req.files.logo){
+                                FileHandler.moveFile(req.files.logo[0].filename , "./public/uploads/profile" , "./public/uploads/schools/" + req.session.schoolCode + "/logo/") 
+                            }
+                            if(req.files.stamp){
+                                FileHandler.moveFile(req.files.stamp[0].filename , "./public/uploads/profile" , "./public/uploads/schools/" + req.session.schoolCode + "/logo/") 
+                            }
+                            req.flash('success', 'Saved successfully.')
+                            res.redirect(303, '/school/logo')
+                        }
+                    })
+                }
             }else{
                 res.redirect(303, '.school')
             }
