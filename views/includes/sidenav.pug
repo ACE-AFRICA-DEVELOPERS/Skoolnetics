@@ -115,9 +115,6 @@ block content
                                     a(href='/school/fees/payment-type') Payment Type
                                 li(class=amount_active)
                                     a(href='/school/fees/all-classes') Class Bills
-                                li(class=invoice_active)
-                                    a(href='/school/fees/payment-invoice') Generate Invoice
-                        
                        
                                     
                     if staff
@@ -148,29 +145,7 @@ block content
                                         a(href='/staff/cbt/school') Exam
                                     li(class=ca_active)
                                         a(href='/staff/cbt/cbt-results') Results
-                               
-                            li.nav-item.pcoded-menu-caption
-                                label Personal
-                            li(class=`nav-item ${attendance_active}`)
-                                a.nav-link(href='/staff/attendance')
-                                    span.pcoded-micon
-                                        i.feather.icon-edit-1
-                                    span.pcoded-mtext Attendance
-                            li(class=`nav-item ${broadsheet_active}`)
-                                a.nav-link(href='/staff/broadsheet')
-                                    span.pcoded-micon
-                                        i.feather.icon-file
-                                    span.pcoded-mtext Broadsheet
-                            li(class=`nav-item`)
-                                a.nav-link(href='#')
-                                    span.pcoded-micon
-                                        i.feather.icon-book
-                                    span.pcoded-mtext Lesson Note
-                            li(class=`nav-item`)
-                                a.nav-link(href='#')
-                                    span.pcoded-micon
-                                        i.feather.icon-airplay
-                                    span.pcoded-mtext Assignment
+
                         if staff.role == 'r-2'
                             li.nav-item.pcoded-menu-caption
                                 label Finance

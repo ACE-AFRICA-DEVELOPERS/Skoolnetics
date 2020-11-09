@@ -16,9 +16,6 @@ class App {
                 const school = await SchoolAdmin.findOne({_id : staff.school})
                 const session = await Session.findOne({school : school._id, current : true})
                 const term = await Term.findOne({session : session._id, current: true})
-
-                console.log(term)
-
                 res.render('lessonNote', {title: "Lesson Notes", staff: staff, code : school.schoolCode, session: session,
                     term: term, notes_active : "active", sessS: session.name, termS: term.name, lessonNote_active : "active",
                     note_active : "pcoded-trigger", make_active : "active"})

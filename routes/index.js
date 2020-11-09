@@ -205,9 +205,8 @@ router.post('/school/fees/payment-type' , TransactionController.postPaymentType)
 router.get('/school/fees/all-classes' , TransactionController.getAllClass)
 router.get('/school/fees/all-classes/:classID' , TransactionController.getSingleClass)
 router.post('/school/fees/all-classes/:classID' , TransactionController.postSingleClass)
+router.get('/school/fees/all-classes/:classID/bill' , TransactionController.getClassBill)
 router.get('/school/fees/all-classes/:classID/:feeID/delete', TransactionController.deleteSinglePayment)
-router.get('/school/fees/payment-invoice' , TransactionController.getInvoicePage)
-router.get('/school/fees/payment-invoice/:classID' , TransactionController.getSingleClassInvoice)
 
 
 /**---------------Parent Routes------------------ */

@@ -34,10 +34,10 @@ class App {
                     payment_active : "active"})
                 }
             }else {
-                res.redirect(303, '/school/fees')
+                res.redirect(303, '/school')
             }
         } catch (err) {
-            res.json(err)
+            res.render("error-page", {error: err})
         }
     }
 
@@ -62,10 +62,10 @@ class App {
                     return 
                 }  
             }else{
-                res.redirect(303, '/school/fees')
+                res.redirect(303, '/school')
             }
-        } catch (err) {
-            res.json( err )
+        }catch (err) {
+            res.render("error-page", {error: err})
         }
     }
 
@@ -92,10 +92,10 @@ class App {
                         amount_active : "active"})
                 }
             }else{
-                res.redirect(303, '/school/fees')
+                res.redirect(303, '/school')
             }
-        } catch (err) {
-            res.json(err)
+        }catch (err) {
+            res.render("error-page", {error: err})
         }
     }
 
@@ -114,12 +114,14 @@ class App {
 
                 res.render('single-class' , { title : "Single Class Payment Details" , schoolAdmin : schoolAdmin , 
                 termS : term.name , sessS : session.name , paymentTypes : paymentTypes , singleClass : singleClass , 
-                payments : payments , classDB : singleClass , paymentName : paymentName})
+                payments : payments , classDB : singleClass , paymentName : paymentName,
+                finance_active: 'active', openfinance_active: "pcoded-trigger",
+                amount_active : "active"})
             }else {
                 res.redirect(303, '/school')
             }
-        } catch (err) {
-            res.json(err)
+        }catch (err) {
+            res.render("error-page", {error: err})
         }
     }
 
@@ -128,12 +130,16 @@ class App {
             if( req.session.schoolCode ){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const paymentt = await Payment.findOne({ class: req.params.classID , school: schoolAdmin._id })
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
                 const { paymentFor , amount } = req.body
                 if(!paymentt) {
                     
                     const payment = new Payment ({
                         school : schoolAdmin._id ,
                         class : req.params.classID ,
+                        session: session._id,
+                        term: term._id,
                         fees : [
                             {
                                 paymentFor : paymentFor ,
@@ -207,38 +213,20 @@ class App {
                     }
                 })
             }else{
-                res.redirect(303, '/school/fees')
+                res.redirect(303, '/school')
             }
         } catch (err) {
-            res.render('error', {error : err})
+            res.render("error-page", {error: err})
         }
     }
 
-    getInvoicePage = async ( req , res , next ) => {
-        try {
-            if( req.session.schoolCode ){
-                const schoolAdmin = await SchoolAdmin.findOne({ schoolCode : req.session.schoolCode })
-                const classes = await ClassSchool.find({school : schoolAdmin._id})
-                
-
-                res.render('payment-invoice' , { title : 'All Payment Classes' , schoolAdmin : schoolAdmin, 
-                classes : classes , openfinance_active : 'pcoded-trigger',
-                finance_active : 'active', invoice_active : 'active',})
-            }else{
-                res.redirect(303, '/school/fees')
-            }
-        } catch (err) {
-            res.json(err)
-        }
-    }
-
-    getSingleClassInvoice = async ( req , res , next ) => {
+    getClassBill = async ( req , res , next ) => {
         try {
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({ schoolCode : req.session.schoolCode })
                 const classes = await ClassSchool.find({school : schoolAdmin._id})
-                const session = await Session.find({ school : schoolAdmin._id , current : true})
-                const term = await Term.find({ school : schoolAdmin._id  })
+                const session = await Session.findOne({ school : schoolAdmin._id , current : true})
+                const term = await Term.findOne({session: session._id, current: true})
                 const payments = await Payment.findOne({ class : req.params.classID , school : schoolAdmin._id })
                 
                 let paymentFees = payments.fees
@@ -248,30 +236,21 @@ class App {
                 const paymentTypes = await PaymentType.find({ school : schoolAdmin._id })
                 const singleClass = await ClassSchool.findOne({ _id : req.params.classID , school: schoolAdmin._id})
 
-                let title = `Generate Invoice for ${singleClass.name}`
-
-                let sessionName = {}
-                session.map(sess => sessionName[sess._id] = sess.name)
-
-                let termName = {}
-                term.map(ter => termName[ter._id] = ter.name)
-
-                let className = {}
-                classes.map(clas => className[clas._id] = clas.name)
+                let title = `Bill for ${singleClass.name}`
 
                 let paymentName = {}
                 paymentTypes.map(pay => paymentName[pay._id] = pay.paymentFor)
 
                 res.render('single-class-bill' , { title : title , schoolAdmin : schoolAdmin , 
-                session : session , term : term , payments : payments , paymentTypes : paymentTypes,
-                sessionName : sessionName , termName : termName , className : className , paymentName : paymentName,
-                classes : classes , singleClass : singleClass, sum: sum , openfinance_active : 'pcoded-trigger',
-                finance_active : 'active', invoice_active : 'active',})
+                sessS: session.name , termS : term.name , payments : payments , paymentTypes : paymentTypes,
+                paymentName : paymentName, openfinance_active : 'pcoded-trigger',
+                classes : classes , singleClass : singleClass, sum: sum , 
+                finance_active : 'active', amount_active : 'active',})
             }else{
-                res.rendirect('/school/fees/payment-invoice')
+                res.redirect('/school')
             }
-        } catch (err) {
-            res.render('error', {error : err})
+        }catch (err) {
+            res.render("error-page", {error: err})
         }
     }
 }
