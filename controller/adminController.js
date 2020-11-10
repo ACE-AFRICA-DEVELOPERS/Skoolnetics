@@ -34,7 +34,7 @@ class App {
                 let validAdmin = await bcrypt.compare(req.body.password , admin.password)
                 if(validAdmin){
                     req.session.adminEmail = admin.email
-                    res.redirect('/admin/dashboard')
+                    res.redirect('/202007/admin/dashboard')
                 }else{
                     res.render('admin' , {error : "Invalid Credentials"}) 
                     return
@@ -50,15 +50,17 @@ class App {
 
     postNewAdmin = async (req , res , next) => { 
         try{
-            const {email, password, c_password} = req.body
+            const {email, password, c_password, username} = req.body
             if(password != c_password){
                 res.render('admin-signup', {title: 'Admin Portal', message: 'Passwords does not match.'})
                 return
             }
             const adminPass = await bcrypt.hash(password , 10)
             const admin = await new Admin({
+                username: username,
                 email: email,
-                password: adminPass
+                password: adminPass,
+                superAdmin: true
             })
             const saveAdmin = await admin.save()
             if ( saveAdmin ) { 
@@ -74,8 +76,8 @@ class App {
     }
 
     getAdminDashboard = async (req , res , next) => {
-        if(req.session.adminEmail){
-            try{
+        try{
+            if(req.session.adminEmail){
                 const validAdmin = await Admin.findOne({email : req.session.adminEmail})
                 if(validAdmin){
                     const newSchools = await SchoolAdmin.find({approved : false})
@@ -87,51 +89,50 @@ class App {
                         message: "Session not found or expired"
                     }
                 }
-            }catch(err){
-                res.json(err.message)
+            }else{
+                res.redirect(303, '/202007/admin')
             }
-        }else{
-            res.redirect(303, '/202007/admin')
+        }catch(err){
+            res.render("error-page", {error: err})
         }
     }
 
     getNewSchool = async (req , res , next) => {
-        if(req.session.adminEmail){
-            try{
+        try{
+            if(req.session.adminEmail){
                 const validAdmin = await Admin.findOne({email : req.session.adminEmail})
                 const newSchools = await SchoolAdmin.find({approved : false})
                     
                 res.render('admin-new-schools', {admin : validAdmin, title : "New Schools", 
                 newSchools : newSchools, new_active : "active"})
-                
-            }catch(err){
-                res.json(err.message)
+            }else{
+                res.redirect(303, '/202007/admin')
             }
-        }else{
-            res.redirect(303, '/202007/admin')
+        }catch(err){
+            res.render("error-page", {error: err})
         }
     }
 
     getApprovedSchool = async (req , res , next) => {
-        if(req.session.adminEmail){
-            try{
+        try{
+            if(req.session.adminEmail){
                 const validAdmin = await Admin.findOne({email : req.session.adminEmail})
                 const approvedSchools = await SchoolAdmin.find({approved : true})
 
                 res.render('admin-approved-schools', {admin : validAdmin, title : "Approved Schools", 
                 approvedSchools : approvedSchools, approved_active : "active"})
                     
-            }catch(err){
-                res.json(err.message)
+            }else{
+                res.redirect(303, '/202007/admin')
             }
-        }else{
-            res.redirect(303, '/202007/admin')
+        }catch(err){
+            res.render("error-page", {error: err})
         }
     }
 
     getSingleSchool = async (req , res , next) => {
-        if(req.session.adminEmail){
-            try{
+        try{
+            if(req.session.adminEmail){
                 if(req.params.schoolID){
                     const validAdmin = await Admin.findOne({email : req.session.adminEmail})
                     const school = await SchoolAdmin.findOne({_id : req.params.schoolID})
@@ -142,17 +143,17 @@ class App {
                         message: "You can't access this page."
                     }
                 }
-            }catch(err){
-                res.json({message : err.message})
+            }else{
+                res.redirect(303, '/202007/admin')
             }
-        }else{
-            res.redirect(303, '/202007/admin')
+        }catch(err){
+            res.render("error-page", {error: err})
         }
     }
 
     approveSchool = async (req, res, next) => {
-        if(req.session.adminEmail){
-            try{
+        try{
+            if(req.session.adminEmail){
                 const totalSchool = await SchoolAdmin.find({approved : true})
                 const code = GenerateAccount(totalSchool, "001", "schoolCode", 1, 3)
                 SchoolAdmin.findByIdAndUpdate(req.params.schoolID , {
@@ -183,11 +184,61 @@ class App {
                         res.redirect(303, redirectUrl)
                     }
                 })
-            }catch(err){
-                res.send(err)
+            
+            }else{
+                res.redirect(303, '/202007/admin')
             }
-        }else{
-            res.redirect(303, '/202007/admin')
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    getAllAdmins = async (req , res , next) => {
+        try{
+            if(req.session.adminEmail){
+                const validAdmin = await Admin.findOne({email : req.session.adminEmail})
+                if(validAdmin.superAdmin){
+                    const allAdmins = await Admin.find({})
+                    res.render('all-admins', {title: 'All Admins', success : req.flash('success'),
+                    allAdmins: allAdmins, admin: validAdmin})
+                }else{
+                    res.redirect(303, '/202007/admin')
+                }
+            }else{
+                res.redirect(303, '/202007/admin')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    createNewAdmin = async (req , res , next) => {
+        try{
+            if(req.session.adminEmail){
+                const validAdmin = await Admin.findOne({email : req.session.adminEmail})
+                if(validAdmin.superAdmin){
+                    const {username, email} = req.body
+
+                    const adminPass = await bcrypt.hash(username.toUpperCase() , 10)
+                    const admin = await new Admin({
+                        username: username,
+                        email: email,
+                        password: adminPass
+                    })
+                    const saveAdmin = await admin.save()
+                    if ( saveAdmin ) {
+                        res.redirect(303, '/202007/admin/new-admin')
+                    }else{
+                        throw 'Unable to save.'
+                    }
+                }else{
+                    res.redirect(303, '/202007/admin')
+                }
+            }else{
+                res.redirect(303, '/202007/admin')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
         }
     }
 

@@ -253,17 +253,17 @@ class App {
                 if(session){
                     const term = await Term.findOne({session: session._id, current: true})
                     if(term){
-                        res.render("admin-student-page", {title : "New Student", schoolAdmin : schoolAdmin,
+                        res.render("admin-student-page", {title : "Students", schoolAdmin : schoolAdmin,
                         error : req.flash('error'), success : req.flash('success'), student_active : "active",
                         users_active: 'active', openuser_active: "pcoded-trigger",
                         sessS: session.name, termS: term.name}) 
                     }else{
-                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Students',
                         users_active: 'active', openuser_active: "pcoded-trigger",
                         student_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Students',
                     users_active: 'active', openuser_active: "pcoded-trigger",
                     student_active : "active"})
                 }
@@ -289,12 +289,12 @@ class App {
                         users_active: 'active', openuser_active: "pcoded-trigger",
                         sessS: session.name, termS: term.name}) 
                     }else{
-                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'New Student',
                         users_active: 'active', openuser_active: "pcoded-trigger",
                         student_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'New Student',
                     users_active: 'active', openuser_active: "pcoded-trigger",
                     student_active : "active"})
                 }
@@ -528,12 +528,12 @@ class App {
                             roleName : roleName
                         })
                     }else{
-                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Staffs',
                         users_active: 'active', openuser_active: "pcoded-trigger",
                         staff_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Staffs',
                     users_active: 'active', openuser_active: "pcoded-trigger",
                     staff_active : "active"})
                 }
@@ -1088,12 +1088,12 @@ class App {
                         cbt_active: 'active', opencbt_active: "pcoded-trigger",
                         sessS: session.name, termS: term.name})
                     }else{
-                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exams',
                         setup_active: 'active', opencbt_active: "pcoded-trigger",
                         cbt_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exams',
                     setup_active: 'active', opencbt_active: "pcoded-trigger",
                     cbt_active : "active"})
                 }
@@ -1252,12 +1252,12 @@ class App {
                         cbt_active: 'active', opencbt_active: "pcoded-trigger", 
                         exams : exam, title : "CBT Results", sessS: session.name, termS: term.name})
                     }else{
-                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'CBT Results',
                         result_active: 'active', opencbt_active: "pcoded-trigger",
                         cbt_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'CBT Results',
                     result_active: 'active', opencbt_active: "pcoded-trigger",
                     cbt_active : "active"})
                 }    
@@ -1387,10 +1387,20 @@ class App {
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const classchool = await ClassSchool.find({school : schoolAdmin._id})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                res.render('broadsheet-class', {title : 'Broadsheet', schoolAdmin : schoolAdmin,
-                classSchool : classchool, broadsheet_active: "active", sessS: session.name,
-                termS: term.name})
+                if(session){
+                    const term = await Term.findOne({session: session._id, current: true})
+                    if(term){
+                        res.render('broadsheet-class', {title : 'Broadsheet', schoolAdmin : schoolAdmin,
+                        classSchool : classchool, broadsheet_active: "active", sessS: session.name,
+                        termS: term.name})
+                    }else{
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Broadsheet',
+                        broadsheet_active: "active"})
+                    }
+                }else{
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Broadsheet',
+                    broadsheet_active: "active"})
+                }
             }else{
                 res.redirect(303, '/school')
             }
@@ -1445,10 +1455,20 @@ class App {
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const classchool = await ClassSchool.find({school : schoolAdmin._id})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                res.render('admin-attendance-session', {title : 'School Attendance', schoolAdmin : schoolAdmin,
-                classSchool : classchool, attendance_active: "active", sessS: session.name,
-                termS: term.name})
+                if(session){
+                    const term = await Term.findOne({session: session._id, current: true})
+                    if(term){
+                        res.render('admin-attendance-session', {title : 'School Attendance', schoolAdmin : schoolAdmin,
+                        classSchool : classchool, attendance_active: "active", sessS: session.name,
+                        termS: term.name})
+                    }else{
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Broadsheet',
+                        attendance_active: "active"})
+                    }
+                }else{
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Broadsheet',
+                    attendance_active: "active"})
+                }
             }else{
                 res.redirect(303, '/school')
             }
@@ -1531,10 +1551,20 @@ class App {
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const classchool = await ClassSchool.find({school : schoolAdmin._id})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                res.render('admin-notes-session', {title : 'School Attendance', schoolAdmin : schoolAdmin,
-                classSchool : classchool, notes_active: "active", sessS: session.name,
-                termS: term.name})
+                if(session){
+                    const term = await Term.findOne({session: session._id, current: true})
+                    if(term){
+                        res.render('admin-notes-session', {title : 'School Attendance', schoolAdmin : schoolAdmin,
+                        classSchool : classchool, notes_active: "active", sessS: session.name,
+                        termS: term.name})
+                    }else{
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Lesson Notes',
+                        notes_active: "active"})
+                    }
+                }else{
+                    res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Lesson Notes',
+                    notes_active: "active"})
+                }
             }else{
                 res.redirect(303, '/school')
             }

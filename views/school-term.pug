@@ -24,11 +24,15 @@ block content
                                                         span(aria-hidden="true") &times;
                                                 div(class="modal-body")
                                                     form(method="POST")
-                                                        label(class="label") Name: 
-                                                        input(type="text" class="form-control mb-2" name="name" placeholder="(E.G : First Term)")
-                                                        label(class="label") Start: 
+                                                        label Term: 
+                                                        select(name="name" class="form-control mb-2 custom-select")
+                                                            option(disabled="disabled" selected value="") -----
+                                                            option(value="First Term") First Term
+                                                            option(value="Second Term") Second Term
+                                                            option(value="Third Term") Third Term
+                                                        label Start: 
                                                         input(type="date" class="form-control mb-2" name="startDate" placeholder="Start Date")
-                                                        label(class="label") End:
+                                                        label End:
                                                         input(type="date" class="form-control mb-2" name="endDate" placeholder="End Date")
                                                         div(class="text-center")
                                                             button(type="submit" class="btn btn-info") Create

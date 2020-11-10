@@ -12,19 +12,19 @@ block content
                         li.nav-item.pcoded-menu-caption
                             label Basic
                         li(class=`nav-item ${dash_active}`)
-                            a.nav-link(href='/admin/dashboard')
+                            a.nav-link(href='/202007/admin/dashboard')
                                 span.pcoded-micon
                                     i.feather.icon-home
                                 span.pcoded-mtext Dashboard
                         li.nav-item.pcoded-menu-caption
                             label Schools
                         li(class=`nav-item ${new_active}`)
-                            a.nav-link(href='/admin/new-schools')
+                            a.nav-link(href='/202007/admin/new-schools')
                                 span.pcoded-micon
                                     i.feather.icon-tablet
                                 span.pcoded-mtext New Schools
                         li(class=`nav-item ${approved_active}`)
-                            a.nav-link(href='/admin/approved-schools')
+                            a.nav-link(href='/202007/admin/approved-schools')
                                 span.pcoded-micon
                                     i.feather.icon-tablet
                                 span.pcoded-mtext Approved Schools
@@ -129,9 +129,6 @@ block content
                                     a(href='/school/fees/payment-type') Payment Type
                                 li(class=amount_active)
                                     a(href='/school/fees/all-classes') Class Bills
-                                li(class=invoice_active)
-                                    a(href='/school/fees/payment-invoice') Generate Invoice
-                        
                        
                                     
                     if staff
@@ -162,75 +159,42 @@ block content
                                         a(href='/staff/cbt/school') Exam
                                     li(class=ca_active)
                                         a(href='/staff/cbt/cbt-results') Results
-                               
+
+                        if staff.role == 'r-2'
                             li.nav-item.pcoded-menu-caption
-                                label Personal
-                            li(class=`nav-item ${attendance_active}`)
-                                a.nav-link(href='/staff/attendance')
-                                    span.pcoded-micon
-                                        i.feather.icon-edit-1
-                                    span.pcoded-mtext Attendance
-                            li(class=`nav-item ${broadsheet_active}`)
-                                a.nav-link(href='/staff/broadsheet')
-                                    span.pcoded-micon
-                                        i.feather.icon-file
-                                    span.pcoded-mtext Broadsheet
-                            li(class=`nav-item`)
-                                a.nav-link(href='#')
-                                    span.pcoded-micon
-                                        i.feather.icon-book
-                                    span.pcoded-mtext Lesson Note
-                            li(class=`nav-item`)
-                                a.nav-link(href='#')
-                                    span.pcoded-micon
-                                        i.feather.icon-airplay
-                                    span.pcoded-mtext Assignment
-                            li(class=`nav-item ${time_active}`)
-                                a.nav-link(href='/staff/timetable')
-                                    span.pcoded-micon
-                                        i.feather.icon-clipboard
-                                    span.pcoded-mtext Timetable
-                            li(class=`nav-item ${examtime_active}`)
-                                a.nav-link(href='/staff/exam-timetable')
-                                    span.pcoded-micon
-                                        i.feather.icon-file-text
-                                    span.pcoded-mtext Exam Timetable
-                        //- if staff.role == 'r-2'
-                        //-     li.nav-item.pcoded-menu-caption
-                        //-         label Finance
-                        //- li.nav-item.pcoded-menu-caption
-                        //-     label Personal
-                        //- li(class=`nav-item ${attendance_active}`)
-                        //-     a.nav-link(href='/staff/attendance')
-                        //-         span.pcoded-micon
-                        //-             i.feather.icon-edit-1
-                        //-         span.pcoded-mtext Attendance
-                        //- li(class=`nav-item ${broadsheet_active}`)
-                        //-     a.nav-link(href='/staff/broadsheet')
-                        //-         span.pcoded-micon
-                        //-             i.feather.icon-file
-                        //-         span.pcoded-mtext Broadsheet
-                        //- li(class=`nav-item pcoded-hasmenu ${lessonNote_active} ${note_active}`)
-                        //-     a.nav-link(href='javascript:')
-                        //-         span.pcoded-micon
-                        //-             i.feather.icon-book
-                        //-         span.pcoded-mtext Lesson Note
-                        //-     ul.pcoded-submenu
-                        //-         li(class=make_active)
-                        //-             a(href='/staff/lesson-notes') Make Lesson Notes
-                        //-         li(class=all_active)
-                        //-             a(href=`/staff/lesson-note/all`) View All Lesson Notes
-                        //- li(class=`nav-item pcoded-hasmenu ${assignment_active} ${assign_active}`)
-                        //-     a.nav-link(href='javascript:')
-                        //-         span.pcoded-micon
-                        //-             i.feather.icon-airplay
-                        //-         span.pcoded-mtext Assignment
-                        //-     ul.pcoded-submenu
-                        //-         li(class=make_active)
-                        //-             a(href='/staff/assignment') Make Assignments
-                        //-         li(class=all_active)
-                        //-             a(href=`/staff/assignment/all`) View All Assignments
-                        
+                                label Finance
+                        li.nav-item.pcoded-menu-caption
+                            label Personal
+                        li(class=`nav-item ${attendance_active}`)
+                            a.nav-link(href='/staff/attendance')
+                                span.pcoded-micon
+                                    i.feather.icon-edit-1
+                                span.pcoded-mtext Attendance
+                        li(class=`nav-item ${broadsheet_active}`)
+                            a.nav-link(href='/staff/broadsheet')
+                                span.pcoded-micon
+                                    i.feather.icon-file
+                                span.pcoded-mtext Broadsheet
+                        li(class=`nav-item pcoded-hasmenu ${lessonNote_active} ${note_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-book
+                                span.pcoded-mtext Lesson Note
+                            ul.pcoded-submenu
+                                li(class=make_active)
+                                    a(href='/staff/lesson-notes') Make Lesson Notes
+                                li(class=all_active)
+                                    a(href=`/staff/lesson-note/all`) View All Lesson Notes
+                        li(class=`nav-item pcoded-hasmenu ${assignment_active} ${assign_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-airplay
+                                span.pcoded-mtext Assignment
+                            ul.pcoded-submenu
+                                li(class=make_active)
+                                    a(href='/staff/assignment') Make Assignments
+                                li(class=all_active)
+                                    a(href=`/staff/assignment/all`) View All Assignments
                                 
 
                     if student  

@@ -40,14 +40,14 @@ block content
                             .dropdown-menu.dropdown-menu-right.profile-notification
                                 .pro-head
                                     img.img-radius(src='/images/user/avatar-4.jpg' alt='User')
-                                    span AceSkool Admin
-                                    a.dud-logout(href='/admin/logout' title='Logout')
+                                    span #{admin.username}
+                                    a.dud-logout(href='/202007/admin/logout' title='Logout')
                                         i.feather.icon-log-out
                                 ul.pro-body
                                     li
-                                        a.dropdown-item(href='#')
+                                        a.dropdown-item(href='/202007/admin/new-admin')
                                             i.feather.icon-settings
-                                            |  Settings
+                                            |  New Admin
                                     li
                                         a.dropdown-item(href='#')
                                             i.feather.icon-user
@@ -57,7 +57,7 @@ block content
                                             i.feather.icon-mail
                                             |  My Messages
                                     li
-                                        a.dropdown-item(href='/admin/logout')
+                                        a.dropdown-item(href='/202007/admin/logout')
                                             i.feather.icon-lock
                                             |  Lock Screen
 
