@@ -13,5 +13,21 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
-
+                                .card
+                                    .card-header
+                                        h5#title All Students
+                                        span.d-block.m-t-5 Select a class to show the students in it.
+                                    .card-body
+                                        .row
+                                            .col-md-6
+                                                select(name="className" class="form-control custom-select mb-3" id="selectClass")
+                                                    option(value="" selected disabled="disabled") Select a class
+                                                    if classchool.length > 0 
+                                                        each clas in classchool
+                                                            option(value=clas._id) #{clas.name}
+                                        hr
+                                        div(id="displayClasses")
+                                            p Nothing to display...
+        
+        script(src="/javascripts/library/view-students.js" type="module")
         include includes/footer.pug

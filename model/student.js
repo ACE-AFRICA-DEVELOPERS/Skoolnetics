@@ -14,7 +14,9 @@ const StudentSchema = new Schema ({
     dateOfBirth : Date,
     religion : String,
     bloodGroup : String,
-    parentsNumber : String
+    parentsNumber : String,
+    address: String,
+    status: {type: String, enum: ['Revoked', 'Suspended', 'Graduate', 'Active'], default: 'Active'}
 })
 
 StudentSchema.virtual('student').get(function() {

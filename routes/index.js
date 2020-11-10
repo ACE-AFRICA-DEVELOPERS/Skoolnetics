@@ -88,6 +88,11 @@ router.post('/school/staff/:staffID/assign', SchoolAdminController.postAssignPag
 
 router.get('/school/students', SchoolAdminController.getStudentsPage)
 router.get('/school/students/all', SchoolAdminController.getAllStudents)
+router.get('/school/students/suspended', SchoolAdminController.getSuspendedStudents)
+router.get('/school/students/promote', SchoolAdminController.getPromotedStudents)
+router.get('/school/students/promote/:classID', SchoolAdminController.promoteEachClass)
+router.post('/school/students/promote/:classID', SchoolAdminController.postPromote)
+router.post('/school/get-students', SchoolAdminController.fetchClassStudents)
 router.get('/school/new-student', SchoolAdminController.getNewStudent)
 router.post('/school/new-student', SchoolAdminController.postStudents)
 router.get('/school/new-student/:studentID/complete', SchoolAdminController.getComplete)

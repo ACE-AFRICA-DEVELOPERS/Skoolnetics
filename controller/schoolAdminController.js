@@ -281,15 +281,134 @@ class App {
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
+                const classchool = await ClassSchool.find({school: schoolAdmin._id})
 
                 res.render('all-students', {title: 'All Students', schoolAdmin: schoolAdmin,
                 users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
-                sessS: session.name, termS: term.name})
+                sessS: session.name, termS: term.name, classchool: classchool})
             }else{
                 res.redirect(303, '/school')
             }
         }catch(err){
             res.render('error-page', {error: err})
+        }
+    }
+
+    getSuspendedStudents = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const classchool = await ClassSchool.find({school: schoolAdmin._id})
+
+                res.render('suspended-students', {title: 'Suspended Students', schoolAdmin: schoolAdmin,
+                users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                sessS: session.name, termS: term.name, classchool: classchool})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
+    getPromotedStudents = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const classchool = await ClassSchool.find({school: schoolAdmin._id})
+
+                res.render('promote-students', {title: 'Promote Students', schoolAdmin: schoolAdmin,
+                users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                sessS: session.name, termS: term.name, classchool: classchool})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
+    promoteEachClass = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const students = await Student.find({school: schoolAdmin._id, className: req.params.classID, status: 'Active'})
+                const classname = await ClassSchool.findOne({_id: req.params.classID})
+                const classchool = await ClassSchool.find({school: schoolAdmin._id})
+
+                res.render('promote-class', {title: 'Promote Students', schoolAdmin: schoolAdmin,
+                users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                sessS: session.name, termS: term.name, students: students, pClass : classname,
+                classchool: classchool})
+
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
+    postPromote = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const {target, classID} = req.body
+                let count = target.length 
+                while(count > 0){ 
+                    for (let student of target){ 
+                        
+                        await Student.findByIdAndUpdate(student.id, {
+                            className: classID
+                        }, {
+                            new : true, 
+                            useFindAndModify : false
+                            }
+                        ) 
+                        console.log("Updated successfully")
+                        count -= 1 
+                    }
+                }
+                res.json({message: 'Students have been promoted!'})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
+    fetchClassStudents = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                if(req.body.title == 'All Students'){
+                    const students = await Student.find({school: schoolAdmin._id, className: req.body.className})
+                    if(students.length > 0 ){
+                        res.json({message: students})
+                    }else{
+                        res.json({status: 404, message: 'No Students found.'})
+                    }
+                }else if(req.body.title == 'Suspended Students'){
+                    const suspended = await Student.find({school: schoolAdmin._id, className: req.body.className, status: 'Suspended'})
+                    if(suspended.length > 0 ){
+                        res.json({message: suspended})
+                    }else{
+                        res.json({status: 404, message: 'No Students found.'})
+                    }
+                }
+                
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.json({error: err})
         }
     }
 
@@ -330,7 +449,7 @@ class App {
  
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const {firstName , lastName, otherName, gender, className, pNumber,
-                        blood, religion, dob} = req.body
+                        address, blood, religion, dob} = req.body
                 const totalStudent = await Student.find({school : schoolAdmin._id})
                 
                 let start = req.session.schoolCode + "001"
@@ -349,7 +468,8 @@ class App {
                     bloodGroup : blood,
                     religion : religion,
                     dateOfBirth : dob,
-                    parentsNumber : pNumber
+                    parentsNumber : pNumber,
+                    address: address
                 })
                 const saveStudent = await student.save()
                 if ( saveStudent ) { 

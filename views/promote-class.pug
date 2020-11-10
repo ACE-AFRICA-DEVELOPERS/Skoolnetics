@@ -1,0 +1,42 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p #[a(href="#" class="btn btn-info" id="submit") Promote]
+                                p#displayMsg
+                                p#span-class.d-none #{pClass._id}
+                                .card
+                                    .card-header
+                                        h5#title Promote Students in #{pClass.name}
+                                        span.d-block.m-t-5 Click on #[code promote] to promote selected students.
+                                    .card-body
+                                        .row.mb-4
+                                            .col-md-6
+                                                label Select Class to promote to
+                                                select(name="class" class="form-control custom-select" id="promotedClass")
+                                                    option(selected disabled="disabled" value="") ----
+                                                    if classchool.length > 0
+                                                        each clas in classchool
+                                                            option(value=clas._id) #{clas.name}
+                                        p  
+                                            input(type="checkbox" id="selectAll") 
+                                            label.ml-1 #[b Select All]
+                                        .row
+                                            each student in students
+                                                .col-md-3
+                                                    input(type="checkbox" class='check' id=student._id)
+                                                    label.ml-1 #{student.firstName} #{student.lastName} #{student.otherName}
+
+        script(src="/javascripts/library/promote.js" type="module")                        
+        include includes/footer.pug

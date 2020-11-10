@@ -32,42 +32,44 @@ block content
                                                     form(method="POST")
                                                         div(class="row ")
                                                             div(class="col-md-6")
-                                                                label(class="label") First Name :
+                                                                label First Name :
                                                                 input(type="text" class="form-control mb-3" name="firstName" required)
                                                             div(class="col-md-6")
-                                                                label(class="label") Last Name :
+                                                                label Last Name :
                                                                 input(type="text" class="form-control mb-3" name="lastName" required)
                                                             div(class="col-md-6")
-                                                                label(class="label") Other Name :
+                                                                label Other Name :
                                                                 input(type="text" class="form-control mb-3" name="otherName" required)
                                                             div(class="col-md-6")
-                                                                label(class="label") Gender :
+                                                                label Gender :
                                                                 select(class="form-control mb-3 custom-select" name="gender" required)
                                                                     option(value="" selected disabled="disabled") ------------
                                                                     option(value="male") Male
                                                                     option(value="female") Female
                                                             div(class="col-md-6")
-                                                                label(class="label") Class :
+                                                                label Class :
                                                                 select(class="form-control mb-3 custom-select" name="className" required)
                                                                     option(value="" selected disabled="disabled") -------------
                                                                     each classN in classchool
                                                                         option(value=classN._id) #{classN.name}
                                                             div(class="col-md-6")
-                                                                label(class="label") Date of birth :
+                                                                label Date of birth :
                                                                 input(type="date" class="form-control mb-3" name="dob")
                                                             div(class="col-md-4")
-                                                                label(class="label") Religion :
+                                                                label Religion :
                                                                 select(class="form-control mb-3 custom-select" name="religion")
                                                                     option(value="" selected disabled="disabled") ------------
                                                                     option(value="Christian") Christian
                                                                     option(value="Muslim") Muslim
                                                             div(class="col-md-4")
-                                                                label(class="label") Blood Group :
+                                                                label Blood Group :
                                                                 input(type="text" class="form-control mb-3" name="blood")
                                                             div(class="col-md-4")
-                                                                label(class="label") Parents' Number :
+                                                                label Parents' Number :
                                                                 input(type="text" class="form-control mb-3" name="pNumber" required)
-                                                            
+                                                            div(class="col-md-12")
+                                                                label Address
+                                                                input(type="text" class="form-control mb-3" name="address")
                                                             div(class="col-md-12 text-center")
                                                                 button(type="submit" class="btn btn-info") Continue
                         
