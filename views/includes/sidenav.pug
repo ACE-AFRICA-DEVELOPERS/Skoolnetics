@@ -159,6 +159,16 @@ block content
                                         a(href='/staff/cbt/school') Exam
                                     li(class=ca_active)
                                         a(href='/staff/cbt/cbt-results') Results
+                            li(class=`nav-item ${time_active}`)
+                                a.nav-link(href='/staff/timetable')
+                                    span.pcoded-micon
+                                        i.feather.icon-clipboard
+                                    span.pcoded-mtext Timetable
+                            li(class=`nav-item ${examtime_active}`)
+                                a.nav-link(href='/staff/exam-timetable')
+                                    span.pcoded-micon
+                                        i.feather.icon-clipboard
+                                    span.pcoded-mtext Exam Timetable
 
                         if staff.role == 'r-2'
                             li.nav-item.pcoded-menu-caption
