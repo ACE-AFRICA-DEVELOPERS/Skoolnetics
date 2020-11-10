@@ -35,6 +35,8 @@ var RoleController = require('../controller/roleController');
 var LessonNoteController = require("../controller/lessonNoteController");
 
 var AssignmentController = require("../controller/assignmentContoller");
+
+var TimetableController = require("../controller/timetableController");
 /*--------------Home and Admin Routes--------------*/
 
 
@@ -110,10 +112,11 @@ router.post('/school/new-student/:studentID', FileController.studentUpload.singl
 router.get("/school/parent", SchoolAdminController.getParents);
 router.get('/school/parent/new', SchoolAdminController.getNewParent);
 router.post('/school/parent/new', SchoolAdminController.postParents);
-router.get('/school/parent/:parentID/complete', SchoolAdminController.getParentComplete);
-router.post('/school/parent/:parentID/complete', FileController.parentUpload.single('picture'), SchoolAdminController.completeParentReg);
 router.get('/school/parent/:parentID', SchoolAdminController.getSingleParent);
 router.post('/school/parent/:parentID', FileController.parentUpload.single('picture'), SchoolAdminController.updateSingleParent);
+/**---------------School Time Table----------------- */
+
+router.get('/school/period', TimetableController.getPeriodPage);
 router.get('/school/cbt-setup', SchoolAdminController.getExams);
 router.post('/school/cbt-setup', SchoolAdminController.postExams);
 router.get('/school/cbt-setup/:examID/open-exam', SchoolAdminController.openExam);
@@ -218,8 +221,10 @@ router.get('/parent', IndexController.getParentPage);
 router.post('/parent', ParentController.postParentLogin);
 router.get('/parent/dashboard', ParentController.getDashboard);
 router.get("/parent/student", ParentController.getChildren);
-router.get('/parent/new-student/:studentID', ParentController.getSingleChild);
-router.get('/parent/new-student/:studentID/child-fees', ParentController.getFinancialRecords);
+router.get('/parent/student/:studentID', ParentController.getSingleChild);
+router.get('/parent/student/:studentID/finance-page', ParentController.getFinancePage);
+router.get('/parent/student/:studentID/finance-page/child-fees', ParentController.getFinancialRecords);
+router.get('/parent/student/:studentID/finance-page/pay-online', ParentController.getPayOnline);
 /*--------------Student Routes--------------*/
 
 router.get('/student', IndexController.getStudentPage);
