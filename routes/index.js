@@ -86,6 +86,7 @@ router.get('/school/staff/:staffID/assign', SchoolAdminController.getAssignPage)
 router.post('/school/staff/:staffID/assign', SchoolAdminController.postAssignPage)
 
 router.get('/school/students', SchoolAdminController.getStudentsPage)
+router.get('/school/students/all', SchoolAdminController.getAllStudents)
 router.get('/school/new-student', SchoolAdminController.getNewStudent)
 router.post('/school/new-student', SchoolAdminController.postStudents)
 router.get('/school/new-student/:studentID/complete', SchoolAdminController.getComplete)

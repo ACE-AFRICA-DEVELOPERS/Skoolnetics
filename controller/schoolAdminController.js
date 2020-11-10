@@ -275,6 +275,24 @@ class App {
         }
     }
 
+    getAllStudents = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+
+                res.render('all-students', {title: 'All Students', schoolAdmin: schoolAdmin,
+                users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                sessS: session.name, termS: term.name})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
     getNewStudent = async (req , res , next) => {
         try{
             if(req.session.schoolCode){

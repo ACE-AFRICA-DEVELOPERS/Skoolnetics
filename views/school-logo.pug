@@ -35,14 +35,16 @@ block content
                                                                 - let logoUrl = '/uploads/schools/' + schoolAdmin.schoolCode + '/logo/' + schoolAdmin.logo
                                                                 img(src=logoUrl height="200px" width="200px")
                                                             else
-                                                                p No Image has been uploaded.
+                                                                p Default Logo
+                                                                img(src='/images/logo-stamp/logo.jpeg' height="200px" width="200px")
                                                         .col-md-6.mb-3
                                                             p #[b School Stamp]
                                                             if schoolAdmin.stamp
                                                                 - let stampUrl = '/uploads/schools/' + schoolAdmin.schoolCode + '/logo/' + schoolAdmin.stamp
                                                                 img(src=stampUrl height="200px" width="200px")
                                                             else
-                                                                p No Image has been uploaded.
+                                                                p Default Stamp
+                                                                img(src='/images/logo-stamp/stamp.jpg' height="200px" width="200px")
                                                         .col-md-12.text-center
                                                             a(href="#" class="btn btn-info" id="toggle") Edit/Upload Images       
 
