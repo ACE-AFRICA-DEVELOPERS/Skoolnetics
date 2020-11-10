@@ -16,7 +16,7 @@ block content
                                 .card
                                     if approvedSchools.length > 0
                                         .card-header
-                                            h5 New Schools
+                                            h5 Approved Schools
                                             span.d-block.m-t-5 Click on view to see the school details.
                                         .card-block.table-border-style
                                             .table-responsive
@@ -32,11 +32,14 @@ block content
                                                             - let name = school.schoolName
                                                             - let email = school.schoolEmail
                                                             - let code = school.schoolCode
-                                                            - let viewUrl = "/admin/school/" + school._id 
+                                                            - let viewUrl = "/202007/admin/school/" + school._id 
                                                             tr
                                                                 td #{code}
                                                                 td #{name}
                                                                 td #{email}
                                                                 td #[a(href=viewUrl class="main-link") View]
-
+                                    else
+                                        .card-header
+                                            h5 Approved Schools
+                                            span.d-block.m-t-5 No school has been approved.
         include includes/footer.pug
