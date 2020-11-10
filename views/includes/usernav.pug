@@ -169,4 +169,42 @@ block content
                                         a.dropdown-item(href='/student/logout')
                                             i.feather.icon-lock
                                             |  Lock Screen
+                if parent
+                    li.text-dark
+                        span #{sessS} | #{termS}
+                                
+                    li
+                        .dropdown.drp-user
+                            a.dropdown-toggle(href='javascript:' data-toggle='dropdown')
+                                i.icon.feather.icon-settings
+                            .dropdown-menu.dropdown-menu-right.profile-notification
+                                .pro-head
+                                    if parent.profilePhoto
+                                        - let imgUrl = '/uploads/schools/' + code + '/' + className.name + '/' + parent.profilePhoto 
+                                        img.img-radius(src=imgUrl alt='User')
+                                    else
+                                        if parent.gender == 'male'
+                                            img.img-radius(src='/images/user/avatar-4.jpg' alt='User')
+                                        else
+                                            img.img-radius(src='/images/user/avatar-3.jpg' alt='User')
+                                    span #{parent.name} #{parent.surname}
+                                    a.dud-logout(href='/parent/logout' title='Logout')
+                                        i.feather.icon-log-out
+                                ul.pro-body
+                                    li
+                                        a.dropdown-item(href='#')
+                                            i.feather.icon-settings
+                                            |  Settings
+                                    li
+                                        a.dropdown-item(href='#')
+                                            i.feather.icon-user
+                                            |  Profile
+                                    li
+                                        a.dropdown-item(href='#')
+                                            i.feather.icon-mail
+                                            |  My Messages
+                                    li
+                                        a.dropdown-item(href='/student/logout')
+                                            i.feather.icon-lock
+                                            |  Lock Screen
 

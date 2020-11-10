@@ -1,0 +1,40 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content 
+                        .main-body
+                            .page-wrapper
+                                if timetables
+                                    .card
+                                        .card-header
+                                            h5 Overall Class Timetable , #{className.name}
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light 
+                                                        tr 
+                                                            th Day
+                                                            each period in periods
+                                                                each p in period.weekday
+                                                                    th #{p.startTime} - #{p.endTime}
+
+                                                    tbody 
+                                                        each time , index in timetables
+                                                            
+                                                            tr
+                                                                td #{time.nameOfDay}
+                                                                each t in time.subject
+                                                                    td #{t.subjectName}
+                                else
+                                    p Nothing Created yet.
+                                
+            include includes/footer.pug

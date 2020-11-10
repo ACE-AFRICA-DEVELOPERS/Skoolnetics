@@ -6,7 +6,7 @@ const ParentSchema = new Schema ({
     parentID : {type : String},
     name : {type : String},
     surname: String,
-    title: String,
+    title: String, 
     password : {type : String},
     email : {type : String},
     number : {type: String},

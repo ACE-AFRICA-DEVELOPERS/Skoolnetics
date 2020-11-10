@@ -1045,10 +1045,10 @@ class App {
                         className: req.body.className,
                         subject: req.body.subject
                     }
-                    Staff.findOneAndUpdate(validStaff._id, {
+                    Staff.findByIdAndUpdate(validStaff._id, {
                         $addToSet : {
                             teaching : [fromBody] }
-                    }, {new : true, useAndModify : false}, (err , item) => {
+                    }, {new : true, useFindAndModify : false}, (err , item) => {
                         if(err){
                             res.status(500)
                             return

@@ -1,0 +1,45 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 Child's Financial Record
+                                        p Access the financial records of your child, view bills and make payments
+                                    .card-body
+                                        .row
+                                            .col-md-6.mb-3
+                                                - let viewUrl = '/parent/student/' + students._id + '/finance-page/child-fees'
+                                                a(href=viewUrl class="text-dark")
+                                                    .field-box
+                                                        p View Bills
+                                            .col-md-6.mb-3
+                                                - let viewUr = '/parent/student/' + students._id + '/finance-page/pay-online'
+                                                a(href=viewUr class="text-dark")
+                                                    .field-box
+                                                        p Pay Online
+                                            .col-md-6.mb-3
+                                                - let viewU = '/parent/student/' + students._id + '/finance-page/child-fees'
+                                                a(href=viewU class="text-dark")
+                                                    .field-box
+                                                        p Upload Payment Proof
+                                            .col-md-6.mb-3
+                                                - let viewUrlc = '/parent/student/' + students._id + '/finance-page/child-fees'
+                                                a(href=viewUrlc class="text-dark")
+                                                    .field-box
+                                                        p Financial History
+        
+
+
+        include includes/footer.pug

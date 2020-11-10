@@ -12,31 +12,16 @@ block content
                 .pcoded-content
                     .pcoded-inner-content
                         .main-body
-                            button(class="btn btn-primary ml-3 mb-2 mt-2" id="download") Download PDF
                             .page-wrapper
-                                
                                 div(class="container")
                                     .row.justify-content-between
                                         
                                         .col-md-12
                                             .card.mt-5
+                                                .card-header
+                                                    h5 Select Options to Pay for
                                                 #invoice.card
                                                     .card-body
-                                                        .text-center
-                                                            img(src='/images/babcock.jpg' width='300px' class='mb-5')
-                                                        .card-block.table-border-style
-                                                            .row
-                                                                .col-md-6
-                                                                    h5
-                                                                        b #{school.schoolName}
-                                                                    p.invoice #{school.address}
-                                                                    p.invoice #{school.state}.
-                                                                .col-md-6.text-right
-                                                                    
-                                                                    p.invoice Session: #{session.name}
-                                                                    p.invoice Term: #{term.name}
-                                                                    p.invoice Payment Invoice for: #{singleClass.name}
-                                                                    p Student: #{students.firstName} #{students.lastName} #{students.otherName}
                                                         .table-responsive
                                                             table.table.table-striped
                                                                 thead.thead-light
@@ -48,26 +33,33 @@ block content
                                                                     if payments
                                                                         each pay, index in payments.fees
                                                                             tr  
-                                                                                td.invoice #{index + 1}
+                                                                                td
+                                                                                    input(type="checkbox" class="check" id=pay.amount)
                                                                                 td.invoice #{paymentName[pay.paymentFor]}
                                                                                 td.invoice #{pay.amount}
                                                                             
                                                                     
-                                                            .card-body
+                                                            //-.card-body
                                                                 .d-md-flex.flex-md-wrap
                                                                     .pt-2.mb-3.wmin-md-400.ml-auto
                                                                         .table-responsive
                                                                             table.table
                                                                                 tbody
-                                                                                    th.text-left.invoice.mr-5 Total:
                                                                                     td.text-right.text-primary
-                                                                                        h5.font-weight-semibold.invoice ##{sum} 
-                                                                a(href="")
+                                                                                        h5.font-weight-semibold.invoice#totalPayment 
+                                                    .row
+                                                        .col-md-6
+                                                            .text-left.ml-2
+                                                                a(href="#" class="btn btn-primary mr-5" id="total-paid") Proccess
+                                                        .col-md-6
+                                                            .text-right.mr-2
+                                                                a(href='#' class='btn btn-primary' id="payment")
+                                                                    .font-weight-semibold#totalPayment
+
                                         
-                                                                            hr
 
         script(src="/javascripts/library/deduction.js" type="module")
-        script(src='/javascripts/library/pdf.js')
+        script(src='/javascripts/pdf.js')
 
 
         include includes/footer.pug

@@ -10,7 +10,7 @@ const Student = require('../model/student')
 const Parent = require("../model/parent")
 const Attendance = require('../model/attendance')
 const ClassSchool = require('../model/classchool')
-const Session = require('../model/session')
+const Session = require('../model/session') 
 const Term = require('../model/term')
 const LessonNote = require('../model/lessonNote')
 const Subject = require("../model/subject")
@@ -130,10 +130,12 @@ class App {
                 const term = await Term.findOne({session: session._id})
                 const singleClass = await ClassSchool.findOne({  school: school._id})
 
-                res.render('finance-page' , {title : 'Student Finance Page' , parent : parent , student : student})
+                res.render('finance-page' , {title : 'Student Finance Page' , parent : parent , students : student})
+            }else{
+                res.redirect(303, '/parent-page')
             }
-        } catch (error) {
-            
+        } catch (err) {
+            res.render("error-page", {error: err})
         }
     }
 
@@ -157,6 +159,36 @@ class App {
                 let sum = paymentFees.reduce((a, b) => a + Number(b.amount), 0)
 
                 res.render('child-fees' , {title : 'Child Fees Page' , parent : parent , students : student, card_active : 'active',
+                className : className, term : term, session : session , school : school, singleClass : singleClass ,
+                sum : sum  , payments : payments , paymentTypes : paymentTypes , paymentName : paymentName})
+            }else{
+                res.redirect(303, '/parent-page')
+            }
+        } catch (err) {
+            res.render("error-page", {error: err})
+        }
+    }
+
+    getPayOnline = async ( req , res , next ) => {
+        try {
+            if(req.session.parentCode){
+                const parent = await Parent.findOne({parentID : req.session.parentCode})
+                const student = await Student.findOne({_id : req.params.studentID})
+                const school = await SchoolAdmin.findOne({_id : parent.school})
+                const className = await ClassSchool.findOne({_id : student.className})
+                const session = await Session.findOne({school : student.school, current: true})
+                const term = await Term.findOne({session: session._id})
+                const singleClass = await ClassSchool.findOne({  school: school._id}) 
+                const payments = await Payment.findOne({ class : className._id })
+                const paymentTypes = await PaymentType.find({ school : school._id })
+
+                let paymentName = {}
+                paymentTypes.map(pay => paymentName[pay._id] = pay.paymentFor)
+                
+                let paymentFees = payments.fees
+                let sum = paymentFees.reduce((a, b) => a + Number(b.amount), 0)
+
+                res.render('pay-online' , {title : 'Make Payment Online' , parent : parent , students : student, card_active : 'active',
                 className : className, term : term, session : session , school : school, singleClass : singleClass ,
                 sum : sum  , payments : payments , paymentTypes : paymentTypes , paymentName : paymentName})
             }else{

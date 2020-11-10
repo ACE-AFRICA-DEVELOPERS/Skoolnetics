@@ -1,0 +1,40 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content 
+                        .main-body
+                            .page-wrapper
+                                div(class="d-flex justify-content-between mb-4")
+                                    h4 Class Timetable for #{classSchools.name}
+                                    p #[a(href="/school/timetable/class/" +classSchools._id+'/class-timetable/show-timetable' class="btn btn-info") Show Timetable #[i(class="fa fa-arrow-right ml-1")]]
+                                .card
+                                    .card-header.mb-3
+                                        h5 Select the Week day you want to compute for.
+                                    .row.p-3
+                                        if classSchools
+                                            each d in day
+                                                - let dayUrl = "/school/timetable/class/" + classSchools._id + "/class-timetable/day/" + d._id + '/subject'
+                                                .col-md-12.mb-3
+                                                    a(href=dayUrl)
+                                                        div(class="box-field")
+                                                            span #{d.weekday}
+
+                                a(href="/school/timetable" class="btn btn-info mt-5")
+                                    i(class="fa fa-arrow-left ml-1")
+                                        span.ml-2 Back
+
+
+                                
+
+
+
+            include includes/footer.pug

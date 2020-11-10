@@ -19,6 +19,14 @@ body {
   position: relative;
 }
 
+.box-field{
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-right: 5px solid #7968e6;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+
 *:focus {
   outline: none;
 }

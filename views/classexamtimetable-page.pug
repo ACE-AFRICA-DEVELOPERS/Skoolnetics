@@ -1,0 +1,39 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content 
+                        .main-body
+                            .page-wrapper
+                                p #[a(href="/school/exam-timetable/class/" +classSchools._id+'/show-timetable' class="btn btn-info") Show Timetable #[i(class="fa fa-arrow-right ml-1")]]
+                                .card
+                                    .card-header.mb-2
+                                        h5 Class Timetable for #{classSchools.name}
+                                        p.mb-0 Select the Exam day you want to compute for.
+                                    .row.p-3
+                                        if classSchools
+                                            each d in day
+                                                - let dayUrl = "/school/exam-timetable/class/" + classSchools._id + "/day/" + d._id + '/subject'
+                                                .col-md-12.mb-3
+                                                    a(href=dayUrl)
+                                                        div(class="box-field")
+                                                            span #{d.nameOfDay.toLocaleDateString()}
+
+                                a(href="/school/exam-timetable" class="btn btn-info mt-5")
+                                    i(class="fa fa-arrow-left ml-1")
+                                        span.ml-2 Back
+
+
+                                
+
+
+
+            include includes/footer.pug
