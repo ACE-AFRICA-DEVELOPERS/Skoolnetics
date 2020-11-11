@@ -13,48 +13,40 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
-                                div(class="container")
-                                    .row.justify-content-between
-                                        
-                                        .col-md-12
-                                            .card.mt-5
-                                                .card-header
-                                                    h5 Select Options to Pay for
-                                                #invoice.card
-                                                    .card-body
-                                                        .table-responsive
-                                                            table.table.table-striped
-                                                                thead.thead-light
-                                                                    tr
-                                                                        th Select
-                                                                        th Description
-                                                                        th Amount
-                                                                tbody
-                                                                    if payments
-                                                                        each pay, index in payments.fees
-                                                                            tr  
-                                                                                td
-                                                                                    input(type="checkbox" class="check" id=pay.amount)
-                                                                                td.invoice #{paymentName[pay.paymentFor]}
-                                                                                td.invoice #{pay.amount}
-                                                                            
-                                                                    
-                                                            //-.card-body
-                                                                .d-md-flex.flex-md-wrap
-                                                                    .pt-2.mb-3.wmin-md-400.ml-auto
-                                                                        .table-responsive
-                                                                            table.table
-                                                                                tbody
-                                                                                    td.text-right.text-primary
-                                                                                        h5.font-weight-semibold.invoice#totalPayment 
-                                                    .row
-                                                        .col-md-6
-                                                            .text-left.ml-2
-                                                                a(href="#" class="btn btn-primary mr-5" id="total-paid") Proccess
-                                                        .col-md-6
-                                                            .text-right.mr-2
-                                                                a(href='#' class='btn btn-primary' id="payment")
-                                                                    .font-weight-semibold#totalPayment
+                                .card
+                                    if payments
+                                        .card-header
+                                            h5 Pay for #{students.lastName} #{students.firstName} #{students.otherName}
+                                            span.d-block.m-t-5 Select what you want to pay and click on #[code Process] to proceed.
+                                        .card-body
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light
+                                                        tr
+                                                            th Select
+                                                            th Description
+                                                            th Amount
+                                                    tbody
+                                                        if payments
+                                                            each pay, index in payments.fees
+                                                                tr  
+                                                                    td
+                                                                        input(type="checkbox" class="check" id=pay.amount)
+                                                                    td.invoice #{paymentName[pay.paymentFor]}
+                                                                    td.invoice #{pay.amount}
+                                            .row
+                                                .col-md-6
+                                                    .text-left.ml-2
+                                                        a(href="#" class="btn btn-primary mr-5" id="total-paid") Proccess
+                                                .col-md-6
+                                                    .text-right.mr-2.d-none#hide
+                                                        a(href='#' class='btn btn-primary' id="payment")
+                                                            .font-weight-semibold#totalPayment
+                                    else
+                                        .card-header
+                                            span.d-block.m-t-5 There's no bill for #{students.lastName} #{students.firstName} yet.
+
+                                                    
 
                                         
 

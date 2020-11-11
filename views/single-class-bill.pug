@@ -26,7 +26,7 @@ block content
                                                                 - let logoUrl = '/uploads/schools/' + schoolAdmin.schoolCode + '/logo/' + schoolAdmin.logo
                                                                 img(src=logoUrl height="100px" width="100px")
                                                             else
-                                                                p School Logo appears here.
+                                                                p #[b School Logo appears here.]
                                                     tr
                                                         td #{schoolAdmin.schoolName}
                                                     tr
@@ -49,13 +49,10 @@ block content
                                                             tr
                                                                 th Status :
                                                                 td
-                                                                    span(class="label label-warning") Pending 
-                                                            tr
-                                                                th Id :
-                                                                td #146859
+                                                                    span(class="label label-success") Active
 
                                                 div(class="col-md-4 col-sm-6")
-                                                    h6(class="m-b-20") Invoice Number #[span #123685479624]
+                                                    h6(class="m-b-20") Invoices Generated: #[span #{invoices.length}]
                                                     
                                             div(class="row")
                                                 div(class="col-sm-12")
@@ -90,7 +87,7 @@ block content
                                                             - let stampUrl = '/uploads/schools/' + schoolAdmin.schoolCode + '/logo/' + schoolAdmin.stamp
                                                             img(src=stampUrl height="100px" width="100px")
                                                         else
-                                                            p School stamp will appear here.
+                                                            p #[b School stamp will appear here.]
 
     script(src='/javascripts/pdf.js')
     include includes/footer.pug

@@ -14,9 +14,10 @@ block content
                         .main-body
                             .page-wrapper
                                 .d-flex.justify-content-between
-                                    p #[a(href="#" data-toggle="modal" data-target="#addModal" class="btn btn-info") Add Payment Details #[i(class="fa fa-plus ml-1")]]
-                                    - let billUrl = '/school/fees/all-classes/' + singleClass._id + '/bill'
-                                    p #[a(href=billUrl class="btn btn-info") View Bill]
+                                    if invoices.length == 0
+                                        p #[a(href="#" data-toggle="modal" data-target="#addModal" class="btn btn-info") Add Payment Details #[i(class="fa fa-plus ml-1")]]
+                                    - let billUrl = '/school/fees/all-classes/' + singleClass._id + '/generate-invoice'
+                                    p #[a(href=billUrl class="btn btn-info") Generate Invoice]
                                 div(class="modal fade" id="addModal" role="dialog" aria-hidden="true")
                                     div(class="modal-dialog" role="document")
                                         div(class="modal-content")

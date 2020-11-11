@@ -10,14 +10,14 @@ class App {
     }
     
     getStudentPage = (req, res, next) => {
-        res.render('student-page', {title : "Students Page"})
+        res.render('student-page', {title : "Student Login"})
     }
     
     getStaffPage = (req, res, next) => {
-        res.render('staff-page', {title : "Staff Page"})
+        res.render('staff-page', {title : "Staff Login"})
     }
     getParentPage = (req, res, next) => {
-        res.render('parent-page', {title : "Parent Page"})
+        res.render('parent-page', {title : "Parent Login"})
     }
 }
 

@@ -129,6 +129,10 @@ block content
                                     a(href='/school/fees/payment-type') Payment Type
                                 li(class=amount_active)
                                     a(href='/school/fees/all-classes') Class Bills
+                                li(class=uploadT_active)
+                                    a(href='/school/fees/transactions/upload') Upload Transactions
+                                li(class=transaction_active)
+                                    a(href='/school/fees/transactions/logs') Transaction Logs
                        
                                     
                     if staff
@@ -249,7 +253,7 @@ block content
                                 span.pcoded-micon
                                     i.feather.icon-home
                                 span.pcoded-mtext Dashboard
-                        li(class=`nav-item ${card_active}`)
+                        li(class=`nav-item ${ward_active}`)
                             a.nav-link(href='/parent/student')
                                 span.pcoded-micon
                                     i.feather.icon-folder
