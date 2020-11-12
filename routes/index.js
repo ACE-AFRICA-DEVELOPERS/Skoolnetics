@@ -167,9 +167,14 @@ router.post('/school/fees/all-classes/:classID/generate-invoice', TransactionCon
 router.get('/school/fees/all-classes/:classID/bill' , TransactionController.getClassBill)
 router.get('/school/fees/all-classes/:classID/:feeID/delete', TransactionController.deleteSinglePayment)
 router.get('/school/fees/transactions/upload', TransactionController.getTransactionUpload)
+router.post('/get-proof-details', TransactionController.getProofDetails)
+router.post('/school/fees/transactions/upload', TransactionController.uploadSingleTransaction)
 router.get('/school/fees/transactions/upload/proofs', TransactionController.getPaymentProof)
 router.get('/school/fees/transactions/upload/proofs/record/:proofID', TransactionController.makeRecorded)
 router.get('/school/fees/transactions/logs', TransactionController.getTransactionLogs)
+router.get('/school/fees/transactions/logs/today', TransactionController.getTodayLogs)
+router.get('/school/fees/transactions/logs/today/:startDate/:endDate', TransactionController.getDailyLogs)
+router.get('/school/fees/transactions/logs/class/:className', TransactionController.getClassLogs)
 
 /*--------------Staff Routes--------------*/
 router.get('/staff', IndexController.getStaffPage)
@@ -267,6 +272,7 @@ router.get('/parent/student/:studentID/finance-page/child-fees', ParentControlle
 router.get('/parent/student/:studentID/finance-page/pay-online' , ParentController.getPayOnline)
 router.get('/parent/student/:studentID/finance-page/upload-payment' , ParentController.getUploadPayment)
 router.post('/parent/student/:studentID/finance-page/upload-payment', FileController.questionUpload.single('picture'), ParentController.postTransactionProof)
+router.get('/parent/student/:studentID/finance-page/histories', ParentController.getFinancialHistory)
 
 /*--------------Student Routes--------------*/
 router.get('/student', IndexController.getStudentPage)

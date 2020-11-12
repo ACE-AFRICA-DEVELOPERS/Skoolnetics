@@ -362,9 +362,16 @@ class App {
                 if(session){
                     const term = await Term.findOne({session: session._id, current: true})
                     if(term){
+                        const students = await Student.find({school: schoolAdmin._id})
+                        const paymentType = await PaymentType.find({school: schoolAdmin._id})
+                        const paymentProof = await PaymentProof.find({
+                            session: session._id, term: term._id, 
+                            school: schoolAdmin._id, recorded: false
+                        })
                         res.render('transaction-uploads' , { title : 'Upload Transactions' , schoolAdmin : schoolAdmin, 
-                        classes : classes , openfinance_active : 'pcoded-trigger',
-                        finance_active : 'active', uploadT_active : 'active', sessS: session.name, termS: term.name})
+                        classes : classes , openfinance_active : 'pcoded-trigger', students: students,
+                        finance_active : 'active', uploadT_active : 'active', sessS: session.name, termS: term.name,
+                        paymentType: paymentType, success: req.flash('success'), paymentProof: paymentProof})
                     }else{
                         res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Upload Transactions',
                         finance_active: 'active', openfinance_active: "pcoded-trigger",
@@ -380,6 +387,23 @@ class App {
             }
         }catch (err) {
             res.render("error-page", {error: err})
+        }
+    }
+
+    getProofDetails = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const code = req.session.schoolCode
+                const paymentProof = await PaymentProof.findOne({_id: req.body.proof})
+                const student = await Student.findOne({_id: paymentProof.student})
+                res.json({
+                    student, paymentProof, code
+                })
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.json(err)
         }
     }
 
@@ -437,6 +461,45 @@ class App {
         }
     }
 
+    uploadSingleTransaction = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const {studentID, target} = req.body
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode: req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin.id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const student = await Student.findOne({_id : studentID})
+                if(student){
+                    const transaction= new Transaction ({
+                        school: schoolAdmin._id,
+                        student: studentID,
+                        session: session._id,
+                        term: term._id,
+                        className: student.className,
+                        payment: target,
+                        status: 'Completed'
+                    })
+                    const saveTransaction = await transaction.save()
+                    if(saveTransaction){
+                        if(req.body.proof){
+                            await PaymentProof.findByIdAndUpdate(req.body.proof , {
+                                recorded: true
+                            } ,{new : true, useFindAndModify : false})
+                            console.log(req.body.proof)
+                        }
+                        res.json({message: "Transaction sent!"})
+                    }else{
+                        throw 'Error in Saving'
+                    }
+                }
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
     getTransactionLogs = async ( req , res , next ) => {
         try {
             if( req.session.schoolCode ){
@@ -463,6 +526,184 @@ class App {
                 res.redirect(303, '/school')
             }
         }catch (err) {
+            res.render("error-page", {error: err})
+        }
+    }
+
+    getTodayLogs = async ( req , res , next ) => {
+        try {
+            if( req.session.schoolCode ){
+                const schoolAdmin = await SchoolAdmin.findOne({ schoolCode : req.session.schoolCode })
+                const classes = await ClassSchool.find({school : schoolAdmin._id})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                let today = new Date()
+                today.setHours(today.getHours() - 24)
+                const transactions = await Transaction.find({
+                    session: session._id, term: term._id,
+                    paymentDate: {$gte: today}
+                }) 
+                const paymentType = await PaymentType.find({
+                    school: schoolAdmin._id
+                })
+
+                let compulsoryPayments = await PaymentType.find({
+                    school: schoolAdmin._id, importance: 'Compulsory'
+                })
+                let compulsory = [] 
+                compulsoryPayments.map(e => {
+                    compulsory.push(e.paymentFor)
+                })
+                let totalCompulsory, totalOptional, totalAll
+                if(transactions.length > 0){
+                    let cPayments = []
+                    let oPayments = []
+                    transactions.map(t => {
+                        let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
+                        let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
+                        let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
+                        let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
+                        cPayments.push(sumC)
+                        oPayments.push(sumO)
+                    })
+                    totalCompulsory = cPayments.reduce((a, b) => a + b)
+                    totalOptional = oPayments.reduce((a, b) => a + b)
+                    totalAll = totalCompulsory + totalOptional
+                }
+
+                const students = await Student.find({school: schoolAdmin._id})
+                let studentName = {}
+                students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
+                let studentReg = {}
+                students.map(r => studentReg[r._id] = r.studentID)
+
+                res.render('today-logs' , { title : 'Transactions' , schoolAdmin : schoolAdmin, 
+                classes : classes , openfinance_active : 'pcoded-trigger', today: today, transactions: transactions,
+                finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
+                paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional})
+                    
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch (err) {
+            res.render("error-page", {error: err})
+        }
+    }
+
+    getDailyLogs = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({ schoolCode : req.session.schoolCode })
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const transactions = await Transaction.find({
+                    session: session._id, term: term._id,
+                    paymentDate: {$gte: req.params.startDate, $lte: req.params.endDate}
+                })
+                const paymentType = await PaymentType.find({
+                    school: schoolAdmin._id
+                })
+
+                let compulsoryPayments = await PaymentType.find({
+                    school: schoolAdmin._id, importance: 'Compulsory'
+                })
+                let compulsory = [] 
+                compulsoryPayments.map(e => {
+                    compulsory.push(e.paymentFor)
+                })
+                let totalCompulsory, totalOptional, totalAll
+                if(transactions.length > 0){
+                    let cPayments = []
+                    let oPayments = []
+                    transactions.map(t => {
+                        let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
+                        let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
+                        let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
+                        let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
+                        cPayments.push(sumC)
+                        oPayments.push(sumO)
+                    })
+                    totalCompulsory = cPayments.reduce((a, b) => a + b)
+                    totalOptional = oPayments.reduce((a, b) => a + b)
+                    totalAll = totalCompulsory + totalOptional
+                }
+
+                const students = await Student.find({school: schoolAdmin._id})
+                let studentName = {}
+                students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
+                let studentReg = {}
+                students.map(r => studentReg[r._id] = r.studentID)
+
+                res.render('daily-logs' , { title : 'Transactions' , schoolAdmin : schoolAdmin, 
+                openfinance_active : 'pcoded-trigger', transactions: transactions,
+                finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
+                paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional,
+                startDate: req.params.startDate, endDate: req.params.endDate})
+
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    getClassLogs = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({ schoolCode : req.session.schoolCode })
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const className = await ClassSchool.findOne({school: schoolAdmin._id, name: req.params.className})
+                const classes = await ClassSchool.find({school: schoolAdmin._id})
+                const transactions = await Transaction.find({
+                    session: session._id, term: term._id,
+                    className: className._id
+                })
+                const paymentType = await PaymentType.find({
+                    school: schoolAdmin._id
+                })
+
+                let compulsoryPayments = await PaymentType.find({
+                    school: schoolAdmin._id, importance: 'Compulsory'
+                })
+                let compulsory = [] 
+                compulsoryPayments.map(e => {
+                    compulsory.push(e.paymentFor)
+                })
+                let totalCompulsory, totalOptional, totalAll
+                if(transactions.length > 0){
+                    let cPayments = []
+                    let oPayments = []
+                    transactions.map(t => {
+                        let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
+                        let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
+                        let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
+                        let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
+                        cPayments.push(sumC)
+                        oPayments.push(sumO)
+                    })
+                    totalCompulsory = cPayments.reduce((a, b) => a + b)
+                    totalOptional = oPayments.reduce((a, b) => a + b)
+                    totalAll = totalCompulsory + totalOptional
+                }
+
+                const students = await Student.find({school: schoolAdmin._id})
+                let studentName = {}
+                students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
+                let studentReg = {}
+                students.map(r => studentReg[r._id] = r.studentID)
+
+                res.render('class-logs' , { title : 'Transactions' , schoolAdmin : schoolAdmin, 
+                openfinance_active : 'pcoded-trigger', transactions: transactions, classes: classes,
+                finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
+                paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional,
+                pClass: req.params.className})
+
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
             res.render("error-page", {error: err})
         }
     }

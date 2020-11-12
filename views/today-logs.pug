@@ -1,0 +1,71 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p #[a(href="/school/fees/transactions/upload" class="btn btn-info") #[i.feather.icon-upload] Upload Transactions]
+                                .card
+                                    .card-header
+                                        h5 Transaction Logs
+                                        span.d-block.m-t-5 These are transactions carried out in the last 24 hours.
+                                    .card-body
+                                        .row
+                                            .col-md-6
+                                                label Start Date
+                                                input(type="date" class="form-control mb-3" id="startDate")
+                                            .col-md-6
+                                                label End Date
+                                                input(type="date" class="form-control mb-3" id="endDate")
+                                            .col-md-12.text-center
+                                                a(href="#" class="btn btn-info" id="searchDates") Search
+                                                p#displayMsg.text-c-green
+                                        hr
+                                            
+                                        - let date = new Date()
+                                        - let todayDate = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear()
+                                        - let currentDate = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear()
+                                        h5 #[b (#{todayDate} - #{currentDate})]
+                                        if transactions.length > 0 
+                                            - let payments = []
+                                            .card-block.table-border-style
+                                                .table-responsive
+                                                    table.table.table-striped
+                                                        thead
+                                                            th Time Stamp
+                                                            th Student Name
+                                                            th Student ID
+                                                            each payment in paymentType 
+                                                                - payments.push(payment.paymentFor)
+                                                                th #{payment.paymentFor}
+                                                        tbody
+                                                            each trans in transactions
+                                                                - let transDate = trans.paymentDate.toLocaleTimeString() 
+                                                                - let fees   = trans.payment
+                                                                tr 
+                                                                    td #{transDate}
+                                                                    td #{studentName[trans.student]}
+                                                                    td #{studentReg[trans.student]}
+                                                                    each name , i in payments 
+                                                                        - let fee = fees.find(fee => fee.paymentFor === name) 
+                                                                        - let amount = fee ? `#${fee.amountPaid.toLocaleString()}` : "-"
+                                                                        td #{amount}
+                                            hr
+                                            .text-right.mr-5
+                                                p #[b Total Payments Made:  ] ##{totalAll.toLocaleString()}
+                                                p #[b Compulsory Payments:  ] ##{totalCompulsory.toLocaleString()}
+                                                p #[b Optional Payments:  ] ##{totalOptional.toLocaleString()}
+                                        else
+                                            p No transaction carried out in the last 24 hours.
+
+        script(src="/javascripts/library/search-dates.js" type="module")
+        include includes/footer.pug

@@ -7,10 +7,14 @@ const TransactionSchema = new Schema ({
     session: {type : Schema.Types.ObjectId, ref: 'Session'},
     term: {type: Schema.Types.ObjectId, ref: 'Term'},
     className : { type : Schema.Types.ObjectId, ref : 'Classchool'},
-    paymentFor: String,
-    amountPaid: Number,
+    payment: [
+        {
+            paymentFor: String,
+            amountPaid: Number
+        }
+    ],
     paymentDate: {type : Date, default: Date.now()},
     status: {type : String, enum: ['Completed', 'Pending'], default: 'Pending'}
 })
 
-module.exports = mongoose.model("Transaction" , TransactionSchema)
+module.exports = mongoose.model("Transaction" , TransactionSchema) 

@@ -287,6 +287,34 @@ class App {
         }
     }
 
+    getFinancialHistory = async(req, res, next) => {
+        try{
+            if(req.session.parentCode){
+                const parent = await Parent.findOne({parentID : req.session.parentCode})
+                const student = await Student.findOne({_id : req.params.studentID})
+                const school = await SchoolAdmin.findOne({_id: parent.school})
+                const className = await ClassSchool.findOne({_id: student.className})
+                const session = await Session.findOne({current: true, school: school._id})
+                const term = await Term.findOne({current: true, session: session._id}) 
+                const transactions = await Transaction.find({
+                    session: session._id, term: term._id,
+                    student: student._id, school: parent.school
+                })
+                const paymentTypes = await PaymentType.find({ school : school._id }) 
+
+                res.render('student-finance-history', {title : "Financial Histories",
+                parent : parent, students: student, ward_active: "active", paymentTypes,
+                sessS: session.name, termS: term.name, transactions: transactions, className})
+
+            }else{
+                res.redirect(303, '/parent')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+
     settingsPage = async(req, res, next) => {
         try{
             if(req.session.parentCode){

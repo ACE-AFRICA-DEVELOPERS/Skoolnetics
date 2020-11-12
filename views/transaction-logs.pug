@@ -16,8 +16,21 @@ block content
                                 .card
                                     .card-header
                                         h5 Transaction Logs
-                                        
                                     .card-body
-                                       
+                                        .row
+                                            .col-md-4
+                                                a(href="/school/fees/transaction/logs/today")
+                                                    .box-field.text-center
+                                                        p Search by Dates
+                                            .col-md-4
+                                                - let className = classes[0].name
+                                                - let classUrl = "/school/fees/transactions/logs/class/" + className
+                                                a(href=classUrl)
+                                                    .box-field.text-center
+                                                        p Search by Class
+                                            .col-md-4
+                                                a(href="#")
+                                                    .box-field.text-center
+                                                        p Search by Payment Types
 
         include includes/footer.pug
