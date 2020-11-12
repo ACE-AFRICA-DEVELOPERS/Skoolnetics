@@ -11,92 +11,63 @@ block content
             .pcoded-wrapper
                 .pcoded-content
                     .pcoded-inner-content
-                        .main-bod
+                        .main-body
+                            button(class="btn btn-primary ml-3 mb-2 mt-2" id="download") Download PDF
                             .page-wrapper
-                                .card
-                                    if payments
-                                        .card-header
-                                            h5 Bill Generated for #{students.lastName} #{students.firstName} #{students.lastName}
-                                        .card-body
-                                            if invoice
-                                                .invoice-box
-                                                    table(class="table table-responsive invoice-table table-borderless")
-                                                        tbody
-                                                            tr
-                                                                td
-                                                                    if school.logo
-                                                                        - let logoUrl = '/uploads/schools/' + schoo.schoolCode + '/logo/' + school.logo
-                                                                        img(src=logoUrl height="100px" width="100px")
-                                                                    else
-                                                                        p #[b School Logo appears here.]
-                                                            tr
-                                                                td #{school.schoolName}
-                                                            tr
-                                                                td #{school.address} #{school.state}
-                                                .card-block
-                                                    .row.invoive-info
-                                                        div(class="col-md-4 col-xs-12 invoice-client-info")
-                                                            h6 For :
-                                                            h6(class="m-0") #{students.lastName} #{students.firstName} #{students.lastName}
-                                                            p(class="m-0 m-t-10") #{className.name}
-                                                            p(class="m-0 m-t-10") #{sessS}
-                                                            p(class="m-0") #{termS}
-                                                        div(class="col-md-4 col-sm-6")
-                                                            h6 Bill Information :
-                                                            table(class="table table-responsive invoice-table invoice-order table-borderless")
+                                
+                                div(class="container")
+                                    .row.justify-content-between
+                                        
+                                        .col-md-12
+                                            .card.mt-5
+                                                #invoice.card
+                                                    .card-body
+                                                        .text-center
+                                                            img(src='/images/babcock.jpg' width='300px' class='mb-5')
+                                                        .card-block.table-border-style
+                                                            .row
+                                                                .col-md-6
+                                                                    h5
+                                                                        b #{school.schoolName}
+                                                                    p.invoice #{school.address}
+                                                                    p.invoice #{school.state}.
+                                                                .col-md-6.text-right
+                                                                    
+                                                                    p.invoice Session: #{session.name}
+                                                                    p.invoice Term: #{term.name}
+                                                                    p.invoice Payment Invoice for: #{singleClass.name}
+                                                                    p Student: #{students.firstName} #{students.lastName} #{students.otherName}
+                                                        .table-responsive
+                                                            table.table.table-striped
+                                                                thead.thead-light
+                                                                    tr
+                                                                        th Select
+                                                                        th Description
+                                                                        th Amount
                                                                 tbody
-                                                                    tr
-                                                                        th Date :
-                                                                        - let today = new Date()
-                                                                        - let date = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear()
-                                                                        td #{date}
-                                                                    tr
-                                                                        th Status :
-                                                                        td
-                                                                            span(class="label label-warning") Pending
-
-                                                        div(class="col-md-4 col-sm-6")
-                                                            h6(class="m-b-20") Invoice Number: #[span #{invoice.invoiceNumber}]
-                                                    div(class="row")
-                                                        div(class="col-sm-12")
-                                                            div(class="table-responsive")
-                                                                table(class="table  invoice-detail-table")
-                                                                    thead
-                                                                        tr(class="thead-default")
-                                                                            th S/N
-                                                                            th Description
-                                                                            th Amount
-                                                                    tbody
+                                                                    if payments
                                                                         each pay, index in payments.fees
                                                                             tr  
                                                                                 td.invoice #{index + 1}
                                                                                 td.invoice #{paymentName[pay.paymentFor]}
-                                                                                td.invoice ##{pay.amount.toLocaleString()}
-                                                    .row
-                                                        .col-sm-12
-                                                            table(class="table table-responsive invoice-table invoice-total")
-                                                                tbody
-                                                                    tr(class="text-info")
-                                                                        td
-                                                                            hr
-                                                                            h5(class="m-r-10") Total :
-                                                                        td
-                                                                            hr
-                                                                            h5 ##{sum.toLocaleString()}
-                                                    .row
-                                                        .col-sm-12
-                                                            .float-right
-                                                                if school.stamp
-                                                                    - let stampUrl = '/uploads/schools/' + school.schoolCode + '/logo/' + school.stamp
-                                                                    img(src=stampUrl height="100px" width="100px")
-                                                                else
-                                                                    p #[b School stamp will appear here.]
-                                            else
-                                                p Invoice has not been generated yet.
-                                    else
-                                        .card-header
-                                            h5 Bill Generated for #{students.lastName} #{students.firstName} #{students.lastName}
-                                            span.d-block.m-t-5 No bill has been generated yet.
+                                                                                td.invoice #{pay.amount}
+                                                                            
+                                                                    
+                                                            .card-body
+                                                                .d-md-flex.flex-md-wrap
+                                                                    .pt-2.mb-3.wmin-md-400.ml-auto
+                                                                        .table-responsive
+                                                                            table.table
+                                                                                tbody
+                                                                                    th.text-left.invoice.mr-5 Total:
+                                                                                    td.text-right.text-primary
+                                                                                        h5.font-weight-semibold.invoice ##{sum} 
+                                                                a(href="")
                                         
-                               
+                                                                            hr
+
+        script(src="/javascripts/library/deduction.js" type="module")
+        script(src='/javascripts/library/pdf.js')
+
+
         include includes/footer.pug

@@ -3,6 +3,7 @@ block content
     link(rel="stylesheet", href="/stylesheets/landing.css")
     body
         section#home
+            //- navigation bar 1
             div.navbar.navbar-expand.ogg
                 .container
                     .nav-bckg
@@ -17,8 +18,8 @@ block content
                                         a(href="/student") Student
                                     li
                                         a(href="/staff") Staff
-                                    //- li
-                                    //-     a(href="#") Parent Sign In
+                                    li
+                                        a(href="#") Parent Sign In
                         li.nave-item
                             a(href="/school/signup")
                                 i(class="icofont-unlock")
@@ -56,7 +57,9 @@ block content
                             li(class="nav-item")
                                 a(class="nav-link js-scroll" href="#faq") FAQs
                             li(class="nav-item")
-                                a(class="nav-link js-scroll btn nav-btn" href="#faq") Get Free Version
+                                a(class="nav-link js-scroll active" href="#") Tutorials
+                            li(class="nav-item")
+                                a(class="nav-link js-scroll btn nav-btn" href="#faq") Get Demo
                             
             //- Nav End
             //- Mobile nav
@@ -98,7 +101,7 @@ block content
                                     li.nav-item.mb-3
                                         a(href="/school/signup" class="nav-link js-scroll") Sign Up
                                     li(class="nav-item")
-                                        a(class="nav-link js-scroll btn nav-btn" href="#faq") Get Free Version
+                                        a(class="nav-link js-scroll btn nav-btn" href="#faq") Get Demo 
                     
 
 
@@ -108,7 +111,7 @@ block content
                     div.hero-head
                         h2 Your Preferred All-In-One School Management Solution
                         a(href="/school/signup" class="btn btn-white btn-text") Sign Up
-                        a(href="#plan" class="btn btn-grey btn-text") Get Free Version 
+                        a(href="#plan" class="btn btn-grey btn-text") Get Demo  
         //- End of Hero and Home section
 
         //- About Us Section
@@ -117,7 +120,7 @@ block content
                 .row
                     .col-md-12
                         .text-center.section-header
-                            h4 What Does ACESKOOL Do?
+                            h4 What Does SKOOLNETICS Do?
                             hr
                     .col-md-12
                         div
@@ -163,7 +166,7 @@ block content
                 .row
                     .col-md-12
                         div.text-center.section-header
-                            h4 See Why Many Schools Choose ACESKOOL
+                            h4 See Why Many Schools Choose SKOOLNETICS
                             hr
                     .col-md-6.col-lg-4
                         div.why-thumb.text-center
@@ -187,7 +190,7 @@ block content
                             h4 Automation
                             p Our solution eliminates boring routine processes, helping you accomplish tasks faster.
                     .col-md-6.col-lg-4
-                        div.why-thumb.text-center
+                        div.why-thumb.text-center 
                             h3 4
                             div
                                 i(class="icofont-shield")
@@ -199,7 +202,7 @@ block content
                             div
                                 i(class="icofont-chart-histogram-alt")
                             h4 Cost Effectiveness
-                            p You too could cut-down on unnecessary cost by ACESKOOL.
+                            p You too could cut-down on unnecessary cost by using SKOOLNETICS.
                     .col-md-6.col-lg-4
                         div.why-thumb.text-center
                             h3 6
@@ -318,92 +321,100 @@ block content
                             h4 Choose One Of Our Packages
                             hr
                             p Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae impedit itaque odio doloribus quod nostrum, alias eveniet minima deserunt, repellat porro maxime velit aut suscipit neque vel possimus nulla. Natus.
-                    .col-lg-3.col-md-6
-                        div.text-center.plan-box
-                            div
-                                h4 Freemium
-                            sup.naira.gold &#8358;
-                            span.price.gold 0
-                            span.month /month
-                            ul.text-left.ml-2
-                                li
-                                    i(class="icofont-check-circled") 
-                                    span Lorem ipsum dolor. 
-                                li
-                                    i(class="icofont-check-circled") 
-                                    span Lorem ipsum dolor. 
-                                li
-                                    i(class="icofont-check-circled") 
-                                    span Lorem ipsum dolor. 
-                                li
-                                    i(class="icofont-check-circled") 
-                                    span Lorem ipsum dolor. 
-                                li
-                                    i(class="icofont-check-circled") 
-                                    span Lorem ipsum dolor. 
-                            a(href="#" class="btn btn-gold") Buy Now
+                    //- .col-lg-3.col-md-6
+                    //-     div.text-center.plan-box
+                    //-         div
+                    //-             h4 Freemium
+                    //-         sup.naira.gold &#8358;
+                    //-         span.price.gold 0
+                    //-         span.month /month
+                    //-         ul.text-left.ml-2
+                    //-             li
+                    //-                 i(class="icofont-check-circled") 
+                    //-                 span Lorem ipsum dolor. 
+                    //-             li
+                    //-                 i(class="icofont-check-circled") 
+                    //-                 span Lorem ipsum dolor. 
+                    //-             li
+                    //-                 i(class="icofont-check-circled") 
+                    //-                 span Lorem ipsum dolor. 
+                    //-             li
+                    //-                 i(class="icofont-check-circled") 
+                    //-                 span Lorem ipsum dolor. 
+                    //-             li
+                    //-                 i(class="icofont-check-circled") 
+                    //-                 span Lorem ipsum dolor. 
+                    //-         a(href="#" class="btn btn-gold") Buy Now
                                     
 
-                    .col-lg-3.col-md-6
+                    .col-lg-4.col-md-6
                         div.text-center.plan-box
                             div
                                 h4 Basic
                             sup.naira.gold &#8358;
                             span.price.gold 50,000
                             span.month /month
-                            ul.text-left.ml-2
+                            ul.text-left.ml-3
                                 li
                                     i(class="icofont-check-circled") 
-                                    span All features in Freemium.
+                                    span Generate invoice for each student.
                                 li
                                     i(class="icofont-check-circled") 
-                                    span Lorem ipsum dolor. 
+                                    span Student registration and promotion. 
                                 li
                                     i(class="icofont-check-circled") 
-                                    span Lorem ipsum dolor. 
+                                    span Session and Term management.
                                 li
                                     i(class="icofont-check-circled") 
-                                    span Lorem ipsum dolor. 
+                                    span Class and Exam Timetable.
                                 li
                                     i(class="icofont-check-circled") 
-                                    span Lorem ipsum dolor. 
+                                    span Result computation.
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Student attendance.
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Email notification.
                             a(href="#" class="btn btn-gold") Buy Now
 
-                    .col-lg-3.col-md-6
+                    .col-lg-4.col-md-6
                         div.text-center.plan-box
                             div
                                 h4 Premium
                             sup.naira.gold &#8358;
                             span.price.gold 90,000
                             span.month /month
-                            ul.text-left.ml-2
+                            ul.text-left.ml-3
                                 li
                                     i(class="icofont-check-circled") 
                                     span All features in Basic.    
                                 li
                                     i(class="icofont-check-circled") 
-                                    span Lorem ipsum dolor. 
+                                    span Role-based setup.
                                 li
                                     i(class="icofont-check-circled") 
-                                    span Lorem ipsum dolor. 
+                                    span Staff attendance.
                                 li
                                     i(class="icofont-check-circled") 
-                                    span Lorem ipsum dolor. 
+                                    span CBT 
                                 li
                                     i(class="icofont-check-circled") 
-                                    span Lorem ipsum dolor. 
+                                    span In-app notification.
+                                li
+                                    i(class="icofont-check-circled") 
+                                    span Online payment.
                             a(href="#" class="btn btn-gold") Buy Now
 
-                    .col-lg-3.col-md-6
+                    .col-lg-4.col-md-6.adv
                         div.text-center.plan-box
                             div
                                 span.advanced Advanced
-                                h4 Premium Plus + Website
+                                h4 Premium +
                             sup.naira.gold &#8358;
                             span.price.gold 90,000
                             span.month /month
-                            p.month (+ cost of website)
-                            ul.text-left.ml-2
+                            ul.text-left.ml-3
                                 li
                                     i(class="icofont-check-circled") 
                                     span All features in Premium.    
@@ -415,48 +426,6 @@ block content
                                     span Lorem ipsum dolor. 
                             a(href="#" class="btn btn-gold") Buy Now
                                     
-                        //- .row
-                        //-     .col-md-3
-                        //-     .col-md-6
-                        //-         form(action="", method="post")
-                        //-             .row
-                        //-                 .col-md-12
-                        //-                     h4 Company Details
-                        //-                     label(for="companyName") Name of Educational Institution
-                        //-                     input(type="text" name="" id="" class="form-control" autocomplete="off" placeholder="")
-                        //-                 .col-md-12
-                        //-                     label(for="email") Email Address
-                        //-                     input(type="email" name="" id="" class="form-control" autocomplete="off" placeholder="")
-                        //-                 .col-md-12
-                        //-                     label(for="password") Password
-                        //-                     input(type="password" name="" id="" class="form-control" placeholder="")
-                        //-                 .col-md-12
-                        //-                     label(for="confirmPassword") Confirm Password
-                        //-                     input(type="password" name="" id="" class="form-control" placeholder="")
-                        //-                 .col-md-12
-                        //-                     h4 Card Details
-                        //-                     label(for="cardNumber") Card Number
-                        //-                     .input-group
-                        //-                         input(type="number" name="" id="" class="form-control" placeholder="")
-                        //-                         .input-group-append
-                        //-                             span
-                        //-                                 .input-group-text.btn
-                        //-                                     img(src="/landingAsset/cards.png", alt="card-icon")
-                        //-                 .col-md-12
-                        //-                     label(for="cardName") Name on Card
-                        //-                     input(type="text" class="form-control" name="" id="" )
-                        //-                 .col-md-12
-                        //-                     .row
-                        //-                         .col-sm-6
-                        //-                             label(for="expiryDate") Expiry Date
-                        //-                             input(type="text" name="" id="" class="form-control" placeholder="MM/YY")
-                        //-                         .col-sm-6
-                        //-                             label(for="cvv") CVV
-                        //-                             input(type="number" name="" id="" class="form-control" placeholder="")
-
-
-                        //-     .col-md-3
-
         //- End of Plans section
 
 
@@ -543,7 +512,7 @@ block content
                     .col-md-6.order-last.order-md-first
                         div.copy
                             p &copy; Copyright 
-                                a(href="#") AceSkool 2020. 
+                                a(href="#") Skoolnetics 2020. 
                                 span All Rights Reserved.
                     .col-md-6.order-first.order-md-last
                         div.footer-icon
@@ -568,7 +537,7 @@ block content
         script(src="/landingAsset/easing/easing.min.js")
         script(src="/landingAsset/owlcarousel/owl.carousel.min.js")
         script(src="/landingAsset/wow/wow.min.js")
-        script(src="/javascripts/landing.js")
+        script(src="/javascripts/library/landing.js")
 
 
 

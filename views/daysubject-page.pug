@@ -42,11 +42,11 @@ block content
                                                         option(value="select") -------------- 
                                                         each subject in classSchools.subjects
                                                             option(value=subject) #{subject}
-                                                    label(class="label") Weekday 
-                                                    select(class="form-control" name="nameOfDay" id="nameOfDay" required)
-                                                        option(value="select") -------------- 
-                                                        if day
-                                                            option(value=day.weekday) #{day.weekday}
+                                                    //- label(class="label") Weekday 
+                                                    //- select(class="form-control" name="nameOfDay" id="nameOfDay" required)
+                                                    //-     option(value="select") -------------- 
+                                                    //-     if day
+                                                    //-         option(value=day.weekday) #{day.weekday}
                                                     div(class="text-center")
                                                         button(type="submit" class="btn main-btn") Create
 

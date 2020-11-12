@@ -13,90 +13,62 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
-                                 .row
-                                    .col-xl-8.col-md-6
-                                        .card.Recent-Users
-                                            .card-header
-                                                h5 Profile
-                                            .card-block.px-0.py-3
-                                                .table-responsive
-                                                    table.table.table-hover
-                                                        tbody
-                                                            tr.unread
-                                                                td
-                                                                    if parent.profilePhoto
-                                                                        - let imageUrl = "/uploads/schools/" + code + "/staffs/" + parent.profilePhoto
-                                                                        img.rounded-circle(style='width:40px;' src=imageUrl alt='activity-user')
-                                                                    else
-                                                                        if parent.title == 'Mr'
-                                                                            img.rounded-circle(style='width:40px;' src='/images/user/avatar-4.jpg' alt='activity-user')
-                                                                        else
-                                                                            img.rounded-circle(style='width:40px;' src='/images/user/avatar-3.jpg' alt='activity-user')
-                                                                td
-                                                                        h6.mb-1 #{parent.surname} #{parent.name}
-                                                                        p.m-0 #{parent.parentID}
-                                                                td
-                                                                    h6.text-muted
-                                                                        i.fas.fa-circle.text-c-green.f-10.m-r-15
-                                                                        | Online
-                                                                td
-                                                                    a.label.theme-bg2.text-white.f-12(href='#!') #[i.feather.icon-calendar]
-                                                                    a.label.theme-bg.text-white.f-12(href='#!') #[i.feather.icon-book]
-                                                            tr.unread
-                                                                td
-                                                                    h5.text-c-green
-                                                                        i.feather.icon-message-square
-                                                                td
-                                                                    h6.mb-1 #{parent.email}
-                                                                    p.m-0 Your Email...
-                                                                td
-                                                                    h6.text-muted
-                                                                        i.fas.fa-circle.text-c-green.f-10.m-r-15
-                                                                        | #[i.feather.icon-message-circle]
-                                                                td
-                                                                    a.label.theme-bg2.text-white.f-12(href='#!') #[i.feather.icon-calendar]
-                                                                    a.label.theme-bg.text-white.f-12(href='#!') #[i.feather.icon-book]
-                                                            tr.unread
-                                                                td
-                                                                    h5.text-c-green
-                                                                        i.feather.icon-phone
-                                                                td
-                                                                    h6.mb-1 #{parent.number}
-                                                                    p.m-0 Your Mobile Number...
-                                                                td
-                                                                    h6.text-muted
-                                                                        i.fas.fa-circle.text-c-green.f-10.m-r-15
-                                                                        | #[i.feather.icon-phone-call]
-                                                                td
-                                                                    a.label.theme-bg2.text-white.f-12(href='#!') #[i.feather.icon-calendar]
-                                                                    a.label.theme-bg.text-white.f-12(href='#!') #[i.feather.icon-book]
-                                                            tr.unread
-                                                                td
-                                                                    h5.text-c-green
-                                                                        i.feather.icon-clipboard
-                                                                td
-                                                                    h6.mb-1 School
-                                                                    p.m-0 Name of school…
-                                                                td
-                                                                    h6.text-muted
-                                                                        i.fas.fa-circle.text-c-green.f-10.m-r-15
-                                                                        | #{schoolT.schoolName}
-                                                                td
-                                                                    a.label.theme-bg2.text-white.f-12(href='#!') #[i.feather.icon-calendar]
-                                                                    a.label.theme-bg.text-white.f-12(href='#!') #[i.feather.icon-book]
-                                    .col-xl-4.col-md-6
-                                        .card.daily-sales
-                                            .card-block
-                                                h6.mb-4 Ward(s)
-                                                .row.d-flex.align-items-center
-                                                    .col-9
-                                                        h3.f-w-300.d-flex.align-items-center.m-b-0
-                                                            i.feather.icon-users.text-c-green.f-30.m-r-10
-                                                            | #{parent.ward.length}
-                                                    .col-3.text-right
-                                                        p.m-b-0 #[i.feather.icon-aperture]
-                                                .progress.m-t-30(style='height: 7px;')
-                                                    .progress-bar.progress-c-theme(role='progressbar' style='width: 50%;' aria-valuenow='50' aria-valuemin='0' aria-valuemax='100')
+                                .card
+                                    .row.justify-content-center
+                                        .col-md-8
+                                            if error
+                                                if error.length != 0
+                                                    .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                        button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                            span(aria-hidden="true") ×
+                                                        span #{error}
 
-        
+                                            if success
+                                                if success.length != 0
+                                                    .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                        button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                            span(aria-hidden="true") ×
+                                                        span #{success}
+                                    .card-header
+                                        h5 Profile.
+                                        span.d-block.m-t-5 Kindly select a class below to automatically generate a Bill.
+                                .card
+                                    div(class="col-md-10 pt-5")
+                                        div(class="row")
+                                            div(class="col-md-5")
+                                                div(class="card")
+                                                    if parent.profilePhoto
+                                                        - let imageUrl = "/uploads/schools/" + code + "/parents/" + parent.profilePhoto
+                                                        img(src=imageUrl alt="" width="100%" height="300px")
+                                                    else
+                                                        img(src="/images/default-avatar.png" alt="" width="100%" height="300px")
+                                                    
+                                            div(class="col-md-7")
+                                                div(class="card-box")
+                                                    .row
+                                                        .col-3
+                                                            label(for="ID" class="label") Parent ID:
+                                                        .col-9
+                                                            input(type="text" value= parent.parentID class="profile-form mb-4" readonly)
+                                                        .col-3
+                                                            label(for="name" class="label") Name:
+                                                        .col-9
+                                                            input(type="text" value= parent.name class="profile-form mb-4" name="name" readonly)
+                                                        .col-3
+                                                            label(for="ward" class="label") Child(ren):
+                                                        each student, index in parent.ward
+                                                            .col-9
+                                                                input(type="text" value= oneStudent[student] class="profile-form mb-4" readonly)
+                                                        .col-3
+                                                            label(for="email" class="label") Email:
+                                                        .col-9
+                                                            input(type="email" value= parent.email class="profile-form mb-4" name="otherName" readonly)
+                                                        .col-3
+                                                            label(for="number" class="label") Number:
+                                                        .col-9
+                                                            input(type="tel" value= parent.number class="profile-form mb-4" name="number" readonly)
+                                                        .col-3
+                                                            label(for="gender" class="label") Role:
+                                                        .col-9
+                                                            input(type="text" value= parent.role class="profile-form mb-4" name="gender" readonly)
         include includes/footer.pug

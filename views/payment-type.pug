@@ -25,11 +25,8 @@ block content
                                                 form(method="post")
                                                     label Payment Type : 
                                                     input(type="text" class="form-control mb-3" placeholder="School Fees" name="paymentFor" required)
-                                                    .mb-3
-                                                        input(type="checkbox" name='importance')
-                                                        label(class="ml-1") Compulsory payment?
+                                    
                                                     div(class="text-center")
-                                                        hr
                                                         input(type="submit", value="Add" class="btn btn-info")
                                 .card
                                     if paymentTypes.length > 0
@@ -60,17 +57,14 @@ block content
                                                             tr
                                                                 th S/N
                                                                 th Payment Type
-                                                                th Importance
                                                                 th Action
                                                         tbody
                                                             each pay, index in paymentTypes
                                                                 - let viewUrl = "#"
                                                                 - let name = pay.paymentFor
-                                                                - let importance = pay.importance
                                                                 tr
                                                                     td #{index + 1}  
                                                                     td #{name}
-                                                                    td #{importance}
                                                                     td #[a(href=viewUrl) View]
                                     else
                                         .card-header

@@ -5,7 +5,7 @@ const StaffSchema = new Schema ({
     school : {type : Schema.Types.ObjectId, ref : 'SchoolAdmin'},
     staffID : {type : String},
     firstName : {type : String},
-    lastName : {type : String},
+    lastName : {type : String}, 
     otherName : {type : String},
     email : {type : String},    
     mobile : {type : Number},
@@ -20,7 +20,8 @@ const StaffSchema = new Schema ({
             subject: String
         }
     ],
-    profilePhoto : {type : String}
+    profilePhoto : {type : String} ,
+    status : {type : String , enum : ['Resigned' , 'Sacked' , 'Active' ,'Retired'] , default : 'Active'}
 })
 
 module.exports = mongoose.model("Staff" , StaffSchema)
