@@ -20,7 +20,7 @@ class_select.addEventListener("change" , event => {
                 anchor.href = `/school/new-student/${item._id}`
                 anchor.classList.add('text-dark')
                 let fieldBox = createElement('div')
-                fieldBox.classList.add('field-box')
+                fieldBox.classList.add('box-field')
                 let para = createElement('p')
                 para.textContent = item.lastName + ' ' + item.firstName + ' ' + item.otherName
                 fieldBox.append(para)

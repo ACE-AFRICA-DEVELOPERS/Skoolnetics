@@ -34,42 +34,49 @@ block content
                                                             input(type="file" name='picture' id='picture')
                                                     div(class="col-md-8")
                                                         div(class="card-box")
-                                                            .row
-                                                                .col-3
-                                                                    label(for="ID" class="label") Student ID:
-                                                                .col-9
-                                                                    input(type="text" value= studentDB.studentID class="profile-form mb-4" readonly)
-                                                                .col-3
-                                                                    label(for="class" class="label") Class:
-                                                                .col-9
-                                                                    input(type="text" value= studentClass.name class="profile-form mb-4" readonly)
-                                                                .col-3
-                                                                    label(for="firstname" class="label") First Name:
-                                                                .col-9
-                                                                    input(type="text" value= studentDB.firstName class="profile-form mb-4" name="firstName")
-                                                                .col-3
-                                                                    label(for="lastname" class="label") Last Name:
-                                                                .col-9
-                                                                    input(type="text" value= studentDB.lastName class="profile-form mb-4" name="lastName")
-                                                                .col-3
-                                                                    label(for="pthername" class="label") Other Name:
-                                                                .col-9
-                                                                    input(type="text" value= studentDB.otherName class="profile-form mb-4" name="otherName")
-                                                                .col-3
-                                                                    label(for="gender" class="label") Gender:
-                                                                .col-9
-                                                                    input(type="text" value= studentDB.gender class="profile-form mb-4" name="gender")
-                                                                .col-3
-                                                                    label(for="dateOfBirth" class="label") Date of Birth:
-                                                                .col-9
-                                                                    - let age = studentDB.dateOfBirth.getDate() + "/" + (studentDB.dateOfBirth.getMonth() + 1) + "/" + studentDB.dateOfBirth.getFullYear()
-                                                                    input(type="text" value=age class="profile-form mb-4" readonly)
-                                                                .col-3
-                                                                    label(for="pNumber" class="label") Parent's No:
-                                                                .col-9
-                                                                    input(type="text" value= studentDB.parentsNumber class="profile-form mb-4" name="pNumber")
-                                    
-                                                    div(class="col-md-12 mt-3 text-center")
-                                                        input(type="submit" class="btn btn-info" value="Update")
+                                                            form(action="", method="post")
+                                                                .row
+                                                                    .col-3
+                                                                        label(for="ID" class="label") Student ID:
+                                                                    .col-9
+                                                                        input(type="text" value= studentDB.studentID class="profile-form mb-4" readonly)
+                                                                    .col-3
+                                                                        label(for="class" class="label") Class:
+                                                                    .col-9
+                                                                        - if(studentDB.studentClass != null) 
+                                                                            input(type="text" value= studentClass.name class="profile-form mb-4" readonly)
+                                                                        - else if(studentDB.studentClass == null)
+                                                                            input(type="text" value=`Graduated, ${sessS}` class="profile-form mb-4" readonly)
+                                                                    .col-3
+                                                                        label(for="firstname" class="label") First Name:
+                                                                    .col-9
+                                                                        input(type="text" value= studentDB.firstName class="profile-form mb-4" name="firstName")
+                                                                    .col-3
+                                                                        label(for="lastname" class="label") Last Name:
+                                                                    .col-9
+                                                                        input(type="text" value= studentDB.lastName class="profile-form mb-4" name="lastName")
+                                                                    .col-3
+                                                                        label(for="pthername" class="label") Other Name:
+                                                                    .col-9
+                                                                        input(type="text" value= studentDB.otherName class="profile-form mb-4" name="otherName")
+                                                                    .col-3
+                                                                        label(for="gender" class="label") Gender:
+                                                                    .col-9
+                                                                        input(type="text" value= studentDB.gender class="profile-form mb-4" name="gender")
+                                                                    .col-3
+                                                                        label(for="dateOfBirth" class="label") Date of Birth:
+                                                                    .col-9
+                                                                        - let age = studentDB.dateOfBirth.getDate() + "/" + (studentDB.dateOfBirth.getMonth() + 1) + "/" + studentDB.dateOfBirth.getFullYear()
+                                                                        input(type="text" value=age class="profile-form mb-4" readonly)
+                                                                    .col-3
+                                                                        label(for="pNumber" class="label") Parent's No:
+                                                                    .col-9
+                                                                        input(type="text" value= studentDB.parentsNumber class="profile-form mb-4" name="pNumber")
+                                                                    .col-3
+                                                                        label(for="status" class="label") Status:
+                                                                    .col-9
+                                                                        input(type="text" value= studentDB.status class="profile-form mb-4" name="status")
+                                                                    div(class="col-md-12 mt-3 text-center")
+                                                                        input(type="submit" class="btn btn-info" value="Update")
 
         include includes/footer.pug

@@ -1,5 +1,3 @@
-
-const GenerateInvoice = require('./invoiceGenerator')
 const SchoolAdmin = require('../model/schoolAdmin')
 const Staff = require("../model/staff")
 const Student = require('../model/student')
@@ -8,9 +6,7 @@ const Term = require('../model/term')
 const Payment = require('../model/payment')
 const PaymentType = require('../model/paymentType')
 const ClassSchool = require('../model/classchool')
-const Invoice = require('../model/invoice')
-const PaymentProof = require('../model/paymentProof')
-const Transaction = require('../model/transaction')
+
 
 class App {
 
@@ -49,17 +45,10 @@ class App {
         try {
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                const { paymentFor, importance } = req.body
-                let status
-                if(importance){
-                    status = "Compulsory"
-                }else{
-                    status = "Optional"
-                }
+                const { paymentFor } = req.body
                 const paymentType = new PaymentType ({
                     paymentFor : paymentFor ,
-                    school : schoolAdmin._id,
-                    importance: status
+                    school : schoolAdmin._id
                 })  
                 const saveType = await paymentType.save()
                 console.log(saveType)      
@@ -120,10 +109,6 @@ class App {
                 const singleClass = await ClassSchool.findOne({ _id : req.params.classID , school: schoolAdmin._id})
                 const payments = await Payment.findOne({ class: req.params.classID , school: schoolAdmin._id, })
                 
-                const invoices = await Invoice.find({
-                    payment: payments._id
-                })
-
                 let paymentName = {}
                 paymentTypes.map(pay => paymentName[pay._id] = pay.paymentFor)
 
@@ -131,7 +116,7 @@ class App {
                 termS : term.name , sessS : session.name , paymentTypes : paymentTypes , singleClass : singleClass , 
                 payments : payments , classDB : singleClass , paymentName : paymentName,
                 finance_active: 'active', openfinance_active: "pcoded-trigger",
-                amount_active : "active", invoices: invoices})
+                amount_active : "active"})
             }else {
                 res.redirect(303, '/school')
             }
@@ -256,48 +241,11 @@ class App {
                 let paymentName = {}
                 paymentTypes.map(pay => paymentName[pay._id] = pay.paymentFor)
 
-                const invoices = await Invoice.find({
-                    payment: payments._id
-                })
-
                 res.render('single-class-bill' , { title : title , schoolAdmin : schoolAdmin , 
                 sessS: session.name , termS : term.name , payments : payments , paymentTypes : paymentTypes,
                 paymentName : paymentName, openfinance_active : 'pcoded-trigger',
                 classes : classes , singleClass : singleClass, sum: sum , 
-                finance_active : 'active', amount_active : 'active', invoices: invoices})
-            }else{
-                res.redirect('/school')
-            }
-        }catch (err) {
-            res.render("error-page", {error: err})
-        }
-    }
-
-    generateInvoice = async ( req , res , next ) => {
-        try {
-            if(req.session.schoolCode){
-                const schoolAdmin = await SchoolAdmin.findOne({ schoolCode : req.session.schoolCode })
-                const session = await Session.findOne({ school : schoolAdmin._id , current : true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const payments = await Payment.findOne({ 
-                    class : req.params.classID , school : schoolAdmin._id,
-                    session: session._id, term: term._id 
-                })
-                const invoices = await Invoice.find({payment: payments._id})
-                const singleClass = await ClassSchool.findOne({ _id : req.params.classID , school: schoolAdmin._id})
-                const students = await Student.find({school: schoolAdmin._id, className: req.params.classID})
-                let title = `Generating Invoice for ${singleClass.name}`
-
-                let studentName = {}
-                students.map(s => studentName[s._id] = s.lastName + ' ' + s.firstName + ' ' + s.otherName)
-                let studentReg = {}
-                students.map(reg => studentReg[reg._id] = reg.studentID)
-
-                res.render('generate-invoice' , { title : title , schoolAdmin : schoolAdmin , 
-                sessS: session.name , termS : term.name , payments : payments , studentDB: students,
-                openfinance_active : 'pcoded-trigger', singleClass : singleClass, 
-                finance_active : 'active', amount_active : 'active', invoices: invoices,
-                studentName: studentName, studentReg: studentReg})
+                finance_active : 'active', amount_active : 'active',})
             }else{
                 res.redirect('/school')
             }

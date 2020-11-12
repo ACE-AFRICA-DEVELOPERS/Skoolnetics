@@ -89,6 +89,13 @@ router.post('/school/staff/:staffID/assign', SchoolAdminController.postAssignPag
 router.get('/school/students', SchoolAdminController.getStudentsPage)
 router.get('/school/students/all', SchoolAdminController.getAllStudents)
 router.get('/school/students/suspended', SchoolAdminController.getSuspendedStudents)
+router.get('/school/students/revoked', SchoolAdminController.getRevokedStudents)
+
+router.get('/school/students/graduate', SchoolAdminController.getGraduatedStudents)
+router.get('/school/students/graduate/:classID', SchoolAdminController.graduateEachClass)
+router.post('/school/students/graduate/:classID', SchoolAdminController.postGraduate)
+router.get('/school/students/all-graduates' , SchoolAdminController.getAllGraduates)
+
 router.get('/school/students/promote', SchoolAdminController.getPromotedStudents)
 router.get('/school/students/promote/:classID', SchoolAdminController.promoteEachClass)
 router.post('/school/students/promote/:classID', SchoolAdminController.postPromote)
@@ -129,6 +136,16 @@ router.get('/school/exam-timetable/class/:classID/day/:examDayID/subject' , Time
 router.post('/school/exam-timetable/class/:classID/day/:examDayID/subject' , TimetableController.postExamTimetablePage)
 router.get('/school/exam-timetable/class/:classID/day/:examDayID/subject/:subjectID', TimetableController.removeExamDaySubject)
 router.get('/school/exam-timetable/class/:classID/show-timetable', TimetableController.getAllExamTimetables)
+router.get('/staff/timetable' , TimetableController.getStaffTime)
+router.get('/staff/timetable/class/:classID/show-timetable' , TimetableController.getStaffAllTimetables)
+router.get('/staff/exam-timetable' , TimetableController.getStaffExamTime)
+router.get('/staff/exam-timetable/class/:classID/show-timetable' , TimetableController.getStaffAllExamTimetables)
+router.get('/student/timetable' , TimetableController.getStudentTimetable)
+router.get('/student/timetable/class/:classID/show-timetable' , TimetableController.getStudentAllTimetables)
+router.get('/student/exam-timetable' , TimetableController.getStudentExamTimetable)
+router.get('/student/exam-timetable/class/:classID/show-timetable' , TimetableController.getStudentAllExamTimetables)
+
+
 
 router.get('/school/cbt-setup', SchoolAdminController.getExams)
 router.post('/school/cbt-setup', SchoolAdminController.postExams)
@@ -251,14 +268,15 @@ router.post('/staff/transfer-report/:className', StaffController.transferReport)
 router.get('/staff/broadsheet/:className/:cardID', StaffController.getStudentReport)
 router.post('/staff/broadsheet/:className/:cardID', StaffController.writeRemarks)
 
-router.get('/staff/timetable' , TimetableController.getStaffTime)
-router.get('/staff/timetable/class/:classID/show-timetable' , TimetableController.getStaffAllTimetables)
-router.get('/staff/exam-timetable' , TimetableController.getStaffExamTime)
-router.get('/staff/exam-timetable/class/:classID/show-timetable' , TimetableController.getStaffAllExamTimetables)
-router.get('/student/timetable' , TimetableController.getStudentTimetable)
-router.get('/student/timetable/class/:classID/show-timetable' , TimetableController.getStudentAllTimetables)
-router.get('/student/exam-timetable' , TimetableController.getStudentExamTimetable)
-router.get('/student/exam-timetable/class/:classID/show-timetable' , TimetableController.getStudentAllExamTimetables)
+
+/**---------------Finance Routes--------------------- */
+router.get('/school/fees/payment-type' , TransactionController.createPaymentType)
+router.post('/school/fees/payment-type' , TransactionController.postPaymentType)
+router.get('/school/fees/all-classes' , TransactionController.getAllClass)
+router.get('/school/fees/all-classes/:classID' , TransactionController.getSingleClass)
+router.post('/school/fees/all-classes/:classID' , TransactionController.postSingleClass)
+router.get('/school/fees/all-classes/:classID/bill' , TransactionController.getClassBill)
+router.get('/school/fees/all-classes/:classID/:feeID/delete', TransactionController.deleteSinglePayment)
 
 
 /**---------------Parent Routes------------------ */
@@ -270,9 +288,13 @@ router.get('/parent/student/:studentID', ParentController.getSingleChild)
 router.get('/parent/student/:studentID/finance-page' , ParentController.getFinancePage)
 router.get('/parent/student/:studentID/finance-page/child-fees', ParentController.getFinancialRecords)
 router.get('/parent/student/:studentID/finance-page/pay-online' , ParentController.getPayOnline)
+<<<<<<< HEAD
 router.get('/parent/student/:studentID/finance-page/upload-payment' , ParentController.getUploadPayment)
 router.post('/parent/student/:studentID/finance-page/upload-payment', FileController.questionUpload.single('picture'), ParentController.postTransactionProof)
 router.get('/parent/student/:studentID/finance-page/histories', ParentController.getFinancialHistory)
+=======
+
+>>>>>>> skool/dev-v.1.0
 
 /*--------------Student Routes--------------*/
 router.get('/student', IndexController.getStudentPage)

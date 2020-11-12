@@ -49,7 +49,7 @@ class App {
     getDashboard = async (req , res , next) => {
         try{ 
             if(req.session.staffCode){
-                let staff = await Staff.findOne({staffID : req.session.staffCode})
+                let staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
                 let school = await SchoolAdmin.findOne({_id : staff.school})
                 const session = await Session.findOne({school : staff.school, current : true})
                 const term = await Term.findOne({session: session._id, current: true})
@@ -75,14 +75,14 @@ class App {
                    
                 }else{
                     throw{
-                        message : "No Staff"
+                        message : "Please Contact the IT personnel"
                     }
                 }
             }else{
                 res.redirect(303, '/staff')
             }
         }catch(err){
-            res.render("error-page", {error: err})
+            res.render("error-page")
         }
     }
 

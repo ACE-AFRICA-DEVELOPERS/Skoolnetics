@@ -313,6 +313,26 @@ class App {
         }
     }
 
+    getRevokedStudents = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const classchool = await ClassSchool.find({school: schoolAdmin._id})
+
+                res.render('revoked-students', {title: 'Revoked Students', schoolAdmin: schoolAdmin,
+                users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                sessS: session.name, termS: term.name, classchool: classchool})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
+
     getPromotedStudents = async (req, res, next) => {
         try{
             if(req.session.schoolCode){
@@ -384,14 +404,109 @@ class App {
         }
     }
 
+    getGraduatedStudents = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const classchool = await ClassSchool.find({school: schoolAdmin._id})
+
+                res.render('graduate-students', {title: 'Graduate Students', schoolAdmin: schoolAdmin,
+                users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                sessS: session.name, termS: term.name, classchool: classchool})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
+    graduateEachClass = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const students = await Student.find({school: schoolAdmin._id, className: req.params.classID, status: 'Active'})
+                const classname = await ClassSchool.findOne({_id: req.params.classID})
+                const classchool = await ClassSchool.find({school: schoolAdmin._id})
+
+                res.render('graduate-class', {title: 'Graduate Students', schoolAdmin: schoolAdmin,
+                users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                sessS: session.name, termS: term.name, students: students, pClass : classname,
+                classchool: classchool})
+
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
+    postGraduate = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const {target, classID} = req.body
+                let count = target.length 
+                while(count > 0){ 
+                    for (let student of target){ 
+                        
+                        await Student.findByIdAndUpdate(student.id, {
+                            className: null ,
+                            status : 'Graduated'
+                        }, {
+                            new : true, 
+                            useFindAndModify : false
+                            }
+                        ) 
+                        console.log("Updated successfully")
+                        count -= 1 
+                    }
+                }
+                res.json({message: 'Students have been graduated!'})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
+    getAllGraduates = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const students = await Student.find({school: schoolAdmin._id , status: 'Graduated'})
+
+                res.render('graduates', {title: 'Graduated Students', schoolAdmin: schoolAdmin,
+                users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                sessS: session.name, termS: term.name, students: students})
+
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
     fetchClassStudents = async (req, res, next) => {
         try{
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 if(req.body.title == 'All Students'){
                     const students = await Student.find({school: schoolAdmin._id, className: req.body.className})
-                    if(students.length > 0 ){
-                        res.json({message: students})
+                    let filterStudents = students.filter(s => s.status == 'Active' || s.status == 'Suspended')
+                    console.log(students)
+    
+                    if(filterStudents.length > 0 ){
+                        res.json({message: filterStudents})
                     }else{
                         res.json({status: 404, message: 'No Students found.'})
                     }
@@ -402,8 +517,14 @@ class App {
                     }else{
                         res.json({status: 404, message: 'No Students found.'})
                     }
+                } else if(req.body.title == 'Revoked Students'){
+                    const revoked = await Student.find({school: schoolAdmin._id, className: req.body.className, status: 'Revoked'})
+                    if(revoked.length > 0 ){
+                        res.json({message: revoked})
+                    }else{
+                        res.json({status: 404, message: 'No Students found.'})
+                    }
                 }
-                
             }else{
                 res.redirect(303, '/school')
             }
@@ -595,7 +716,8 @@ class App {
                             firstName : req.body.firstName,
                             lastName : req.body.lastName,
                             gender : req.body.gender,
-                            otherName : req.body.otherName
+                            otherName : req.body.otherName ,
+                            status : req.body.status
                         }, {new : true, useAndModify : false}, (err , item) => {
                             if(err){
                                 res.status(500)
@@ -613,7 +735,8 @@ class App {
                             firstName : req.body.firstName,
                             lastName : req.body.lastName,
                             gender : req.body.gender,
-                            otherName : req.body.otherName
+                            otherName : req.body.otherName ,
+                            status : req.body.status
                         }, {new : true, useAndModify : false}, (err , item) => {
                             if(err){
                                 res.status(500)
@@ -875,7 +998,8 @@ class App {
                             profilePhoto : originalName,
                             firstName : req.body.firstName,
                             lastName : req.body.lastName,
-                            gender : req.body.gender
+                            gender : req.body.gender ,
+                            status : req.body.status
                         }, {new : true, useAndModify : false}, (err , item) => {
                             if(err){
                                 res.status(500)
@@ -900,7 +1024,8 @@ class App {
                         Staff.findByIdAndUpdate(req.params.staffID, {
                             firstName : req.body.firstName,
                             lastName : req.body.lastName,
-                            gender : req.body.gender
+                            gender : req.body.gender ,
+                            status : req.body.status
                         }, {new : true, useAndModify : false}, (err , item) => {
                             if(err){
                                 res.status(500)

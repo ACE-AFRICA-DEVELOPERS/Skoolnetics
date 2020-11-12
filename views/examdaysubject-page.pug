@@ -49,11 +49,11 @@ block content
                                                     input(type="text", name="startTime" class="form-control") 
                                                     label(class="label") End Time
                                                     input(type="text", name="endTime" class="form-control") 
-                                                    label(class="label") Weekday 
-                                                    select(class="form-control" name="nameOfDay" id="nameOfDay" required)
-                                                        option(value="select") -------------- 
-                                                        if examDay
-                                                            option(value=examDay.nameOfDay.toLocaleDateString()) #{examDay.nameOfDay.toLocaleDateString()}
+                                                    //- label(class="label") Weekday 
+                                                    //- select(class="form-control" name="nameOfDay" id="nameOfDay" required)
+                                                    //-     option(value="select") -------------- 
+                                                    //-     if examDay
+                                                    //-         option(value=examDay.nameOfDay.toLocaleDateString()) #{examDay.nameOfDay.toLocaleDateString()}
                                                     div(class="text-center")
                                                         button(type="submit" class="btn main-btn") Create
                                 if timetables

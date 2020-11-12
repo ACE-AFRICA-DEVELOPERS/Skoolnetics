@@ -16,14 +16,41 @@ block content
                                 .card
                                     .card-header    
                                         h5 Child(ren)
-                                    .card-body
-                                        .row
-                                            each ward in parent.ward
-                                                .col-md-4
-                                                    -let profileUrl = "/parent/student/" + ward._id
-                                                    a(href=profileUrl)
-                                                        .box-field
-                                                            p #{oneStudent[ward]}
-                                
+                                    .row.justify-content-center
+                                        .col-md-8
+                                            if error
+                                                if error.length != 0
+                                                    .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                        button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                            span(aria-hidden="true") ×
+                                                        span #{error}
+
+                                            if success
+                                                if success.length != 0
+                                                    .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                        button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                            span(aria-hidden="true") ×
+                                                        span #{success}
+                                    if parent
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light
+                                                        tr
+                                                            th S/N
+                                                            th Child
+                                                            th View
+                                                        tbody 
+                                                            each student, index in parent.ward
+                                                                - let name = `${oneStudent[student]}`
+                                                                - let profileUrl = "/parent/student/" + student._id
+                                                                - i++ 
+                                                                tr 
+                                                                    td #{index + 1} 
+                                                                    td #{name}
+                                                                    td #[a(href=profileUrl class="main-link") Check Profile]
+
+                                    
+
 
         include includes/footer.pug

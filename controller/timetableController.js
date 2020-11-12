@@ -44,7 +44,7 @@ class App {
                     timetable_active : "active"})
                 }
             }catch(err){
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
             
         }else{
@@ -100,7 +100,7 @@ class App {
                     })	
                 }
             }catch(err) {
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
         }else {
             res.redirect(303 , '/school')
@@ -165,7 +165,7 @@ class App {
                     timetable_active : "active"})
                 }
             }catch(err){
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
         }else{
             res.redirect(303 , '/school')
@@ -192,7 +192,7 @@ class App {
                     }
                 }
             }catch(err) {
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
         }else {
             res.redirect(303 , '/school')
@@ -309,7 +309,7 @@ class App {
                     timetable_active : "active"})
                 }		
             }catch(err){
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
             
         }else{
@@ -362,7 +362,7 @@ class App {
                     timetable_active : "active"})
                 }		
             }catch(err){
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
             
         }else{
@@ -388,7 +388,7 @@ class App {
                             subjectName : subjectName ,
                             periodNum : periodNum ,
                         }],
-                        nameOfDay : nameOfDay ,
+                        nameOfDay : day.weekday ,
                         day :  day._id,
                         school : schoolAdmin._id ,
                         session : session._id ,
@@ -427,7 +427,7 @@ class App {
                     })	
                 }
             }catch(err) {
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
         }else {
             res.redirect(303 , '/school')
@@ -514,7 +514,7 @@ class App {
                     timetable_active : "active"})
                 }	
             }catch(err){
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
             
         }else{
@@ -589,7 +589,7 @@ class App {
                     timetable_active : "active"})
                 }	
             }catch(err){
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
             
         }else{
@@ -691,7 +691,7 @@ class App {
                     timetable_active : "active"})
                 }		
             }catch(err){
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
             
         }else{
@@ -744,7 +744,7 @@ class App {
                     timetable_active : "active"})
                 }		
             }catch(err){
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
             
         }else{
@@ -773,7 +773,7 @@ class App {
                             startTime : startTime ,
                             endTime : endTime
                         }],
-                        nameOfDay : nameOfDay ,
+                        nameOfDay : examDay.nameOfDay.toLocaleDateString() ,
                         examDay :  examDay._id,
                         school : schoolAdmin._id ,
                         session : session._id ,
@@ -814,7 +814,7 @@ class App {
                     })	
                 }
             }catch(err) {
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
         }else {
             res.redirect(303 , '/school')
@@ -902,7 +902,7 @@ class App {
                     timetable_active : "active"})
                 }	 		
             }catch(err){
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
             
         }else{
@@ -992,7 +992,7 @@ class App {
                     time_active: 'active'})
                 }	
             }catch(err){
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
             
         }else{
@@ -1079,7 +1079,7 @@ class App {
                     examtime_active: 'active'})
                 }	 		
             }catch(err){
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
             
         }else{
@@ -1114,8 +1114,8 @@ class App {
                     time_active: 'active'})
                 }
             }catch(err) {
-                    res.send(err.message)
-                }
+                res.render('error-page', {error : err})
+            }
         }else {
             res.redirect(303, '/student')
         }
@@ -1169,7 +1169,7 @@ class App {
                     time_active: 'active'})
                 }	
             }catch(err){
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
             
         }else{
@@ -1203,8 +1203,8 @@ class App {
                     examtime_active: 'active'})
                 }
             }catch(err) {
-                    res.send(err.message)
-                }
+                res.render('error-page', {error : err})
+            }
         }else {
             res.redirect(303, '/student')
         }
@@ -1255,7 +1255,7 @@ class App {
                     examtime_active: 'active'})
                 }	
             }catch(err){
-                res.send(err.message)
+                res.render('error-page', {error : err})
             }
             
         }else{

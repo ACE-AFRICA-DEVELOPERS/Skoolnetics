@@ -109,22 +109,20 @@ li.nave-item span:hover > ul.drop-menu.menu-1 li {
     top: 2.3rem;
 }
 
-.menu-1 li {
+.menu-1 li a{
     border: 2px solid  #0d58a6;
     background: white;
     padding: 1rem .5rem;
     color: #0d58a6;
     transition: all .6s ease-in-out;
     /* border-bottom: 2px dashed #f0f0f0; */
+    margin-bottom: .3rem;
+    display: block;
 }
 
-.menu-1 li:hover{
+.menu-1 li a:hover{
     background: rgb(51, 110, 238) ;
     box-shadow: 1px 2px 6px #ccc;
-}
-
-.menu-1 li:last-child {
-    border-bottom: none;
 }
 
 li span:hover > ul.drop-menu.menu-1 li:nth-child(1) {
@@ -281,24 +279,10 @@ li span:hover > ul.drop-menu.menu-1 li:nth-child(4) {
         transform:  translateX(0) ;
       }
   
-      30% {
-          -webkit-transform: translateY(-5rem) ;
-          transform:  translateY(-5rem) ;
-      }
-  
-      60% {
-          -webkit-transform: translateX(6rem) ;
-          transform:  translateX(6rem) ;
-      }
-
-      90% {
-        -webkit-transform: translateY(-4rem) ;
-        transform:  translateY(-4rem) ;
-    }
     
       100% {
-          -webkit-transform: translateY(0) ;
-          transform:  translateY(0) ;
+          -webkit-transform: translateX(3rem) ;
+          transform:  translateX(3rem) ;
       }
 }
   
@@ -932,7 +916,7 @@ li span:hover > ul.drop-menu.menu-1 li:nth-child(4) {
     border: 1px solid #0d58a6;
     box-shadow: 3px 6px 12px #ccc;
     border-radius: .5rem;
-    height: 24rem;
+    height: 34rem;
     margin-bottom: 2rem;
     overflow: hidden;
     position: relative;
@@ -996,7 +980,12 @@ li span:hover > ul.drop-menu.menu-1 li:nth-child(4) {
     padding: 1px 0 3px 0;
     background: #ffc107;
     color: #fff;
-  }
+}
+
+.adv {
+    margin-right: auto;
+    margin-left: auto;
+}
   
 
 
@@ -1303,6 +1292,7 @@ li span:hover > ul.drop-menu.menu-1 li:nth-child(4) {
         width: 300px;
         text-align: center;
     }
+    
 
 }
 
@@ -1324,6 +1314,14 @@ li span:hover > ul.drop-menu.menu-1 li:nth-child(4) {
         color: #0d58a6;
     }
     
+    
+}
+
+@media(max-width : 500px) {
+    .mobile-nav {
+        width: 24rem;
+        padding: 3rem 2rem;
+    }
     
 }
 
