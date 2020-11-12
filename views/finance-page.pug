@@ -15,14 +15,18 @@ block content
                             .page-wrapper
                                 .card
                                     .card-header
-                                        h5 Child's Financial Record
-                                        p Access the financial records of your child, view bills and make payments
+                                        h5 #{students.lastName} #{students.firstName} #{students.lastName}
+                                        - let pronoun
+                                        if students.gender == "male"
+                                            - pronoun = "his"
+                                        else
+                                            - pronoun = "her"
+                                        p Access #{pronoun} financial records, view bills and make payments.
                                     .card-body
                                         .row
-                                            .col-md-6.mb-3
+                                            .col-md-3.mb-3
                                                 - let viewUrl = '/parent/student/' + students._id + '/finance-page/child-fees'
                                                 a(href=viewUrl class="text-dark")
-<<<<<<< HEAD
                                                     .box-field
                                                         p #[i.feather.icon-eye] View Bills
                                             .col-md-3.mb-3
@@ -40,25 +44,6 @@ block content
                                                 a(href=historyUrl class="text-dark")
                                                     .box-field
                                                         p #[i.feather.icon-bar-chart] Financial History
-=======
-                                                    .field-box
-                                                        p View Bills
-                                            .col-md-6.mb-3
-                                                - let viewUr = '/parent/student/' + students._id + '/finance-page/pay-online'
-                                                a(href=viewUr class="text-dark")
-                                                    .field-box
-                                                        p Pay Online
-                                            .col-md-6.mb-3
-                                                - let viewU = '/parent/student/' + students._id + '/finance-page/child-fees'
-                                                a(href=viewU class="text-dark")
-                                                    .field-box
-                                                        p Upload Payment Proof
-                                            .col-md-6.mb-3
-                                                - let viewUrlc = '/parent/student/' + students._id + '/finance-page/child-fees'
-                                                a(href=viewUrlc class="text-dark")
-                                                    .field-box
-                                                        p Financial History
->>>>>>> skool/dev-v.1.0
         
 
 

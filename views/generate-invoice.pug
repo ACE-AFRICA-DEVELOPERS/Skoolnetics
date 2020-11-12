@@ -1,0 +1,56 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                if invoices.length > 0
+                                    - let billUrl = "/school/fees/all-classes/" + singleClass._id + "/bill"
+                                    p #[a(href=billUrl class="btn btn-info" id="submit") View Bill]
+                                    .card
+                                        .card-header
+                                            h5 Invoices generated for students in #{singleClass.name}
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead
+                                                        tr
+                                                            th Name
+                                                            th Student ID
+                                                            th Invoice Number
+                                                    tbody
+                                                        each invoice in invoices
+                                                            tr
+                                                                td #{studentName[invoice.student]}
+                                                                td #{studentReg[invoice.student]}
+                                                                td #{invoice.invoiceNumber}
+                                else
+                                    p #[a(href="#" class="btn btn-info" id="submit") Generate]
+                                    p#span-payment.d-none #{payments._id}
+                                    p#span-class.d-none #{singleClass._id}
+                                    p#displayMsg
+                                    .card
+                                        .card-header
+                                            h5 Invoices generated for students in #{singleClass.name}
+                                            span.d-block.m-t-5 Click on #[code Generate] after selecting the students you want to generate invoices for.
+                                        .card-body
+                                            p  
+                                                input(type="checkbox" id="selectAll") 
+                                                label.ml-1 #[b Select All]
+                                            .row
+                                                each student in studentDB
+                                                    .col-md-3
+                                                        input(type="checkbox" class='check' id=student._id)
+                                                        label.ml-1 #{student.firstName} #{student.lastName} #{student.otherName}
+        
+        script(src="/javascripts/library/generate-invoice.js" type="module")
+        include includes/footer.pug

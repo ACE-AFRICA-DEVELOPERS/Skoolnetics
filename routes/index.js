@@ -288,13 +288,10 @@ router.get('/parent/student/:studentID', ParentController.getSingleChild)
 router.get('/parent/student/:studentID/finance-page' , ParentController.getFinancePage)
 router.get('/parent/student/:studentID/finance-page/child-fees', ParentController.getFinancialRecords)
 router.get('/parent/student/:studentID/finance-page/pay-online' , ParentController.getPayOnline)
-<<<<<<< HEAD
 router.get('/parent/student/:studentID/finance-page/upload-payment' , ParentController.getUploadPayment)
 router.post('/parent/student/:studentID/finance-page/upload-payment', FileController.questionUpload.single('picture'), ParentController.postTransactionProof)
 router.get('/parent/student/:studentID/finance-page/histories', ParentController.getFinancialHistory)
-=======
 
->>>>>>> skool/dev-v.1.0
 
 /*--------------Student Routes--------------*/
 router.get('/student', IndexController.getStudentPage)

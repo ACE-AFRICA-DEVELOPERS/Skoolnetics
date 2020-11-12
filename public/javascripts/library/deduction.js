@@ -10,17 +10,9 @@ total.addEventListener("click", event => {
             target.push(Number(e.id))
         }  
     })
+    selector("#hide").classList.remove('d-none')
     let sum = target.reduce((a, b) => a + b)
-    selector("#totalPayment").textContent = `Pay ${sum.toLocaleString()}`
+    selector("#totalPayment").textContent = `Pay #${sum.toLocaleString()}`
 })
 
-function showPayment() {
-    let x = document.getElementById("payment");
-
-    if(x.style.display == "none") {
-        x.style.display == "block"
-    }else {
-        x.style.display = "none"
-    }
-}
 

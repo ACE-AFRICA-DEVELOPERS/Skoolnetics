@@ -16,7 +16,7 @@ const MongoDBStore = require('connect-mongodb-session')(session)
 const indexRouter = require('./routes/index');
 const app = express();
 const store = new MongoDBStore({
-  uri :"mongodb://127.0.0.1:27017/aceskool", 
+  uri :"mongodb://127.0.0.1:27017/aceschool", 
   collection : "sessions"
 }) 
 // view engine setup
@@ -67,7 +67,7 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 const CONFIG = { 
-	uri : "mongodb://127.0.0.1:27017/aceskool" , 
+	uri : "mongodb://127.0.0.1:27017/aceschool" , 
   OPTIONS : { 
     useNewUrlParser : true , 
     useCreateIndex : true , 
