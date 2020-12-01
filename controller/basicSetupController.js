@@ -151,7 +151,7 @@ class App {
                 if(session){
                     const term = await Term.findOne({session: session._id, current: true})
                     if(term){
-                        const gradeCompute = await Grade.find({school: schoolAdmin._id, session: session._id, term: term._id})
+                        const gradeCompute = await Grade.find({school: schoolAdmin._id})
                         res.render('grade-computation', {schoolAdmin: schoolAdmin, gradeCompute: gradeCompute, title: 'Grade Settings',
                         grade_active: 'active', opensession_active: "pcoded-trigger",
                         sessS: session.name, termS: term.name, session_active: 'active'})
@@ -178,7 +178,9 @@ class App {
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
-                
+                const grade = await Grade.findOne({session: session._id, rangeLowest : {$lte: 100}, rangeHighest: {$gte: 70}})
+                console.log(grade)
+
                 if(session){
                     const term = await Term.findOne({school: schoolAdmin._id, session: session._id, current: true})
                     if(term){
@@ -235,16 +237,50 @@ class App {
         }
     }
 
+    usePreviousTermExam = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode: req.session.schoolCode})
+                const session = await Session.findOne({current: true, school: schoolAdmin._id})
+                const term = await Term.findOne({current: true, session: session._id})
+                const findTerm = await Term.findOne({session: session._id, ended: true})
+                if(findTerm){
+                    const examCompute = await ExamCompute.find({
+                        session: session._id, term: findTerm._id
+                    })
+                    if(examCompute.length > 0){
+                        
+                        let newCompute = examCompute.map(function(e){
+                            return {session : e.session, term: term._id, 
+                                    name: e.name, total: e.total, school: e.school}
+                        })
+                        console.log(newCompute)
+                        await ExamCompute.insertMany(newCompute)
+
+                        req.flash('success', 'Settings retrieved successfully.')
+                        res.redirect(303, '/school/exam-settings')
+                    }else{
+                        req.flash('error', 'Cannot find settings from previous term')
+                        res.redirect(303, '/school/exam-settings')
+                    }
+                }else{
+                    req.flash('error', 'Cannot find a previous term.')
+                    res.redirect(303, '/school/exam-settings')
+                }
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
     postGradeComputations = async (req, res, next) => {
         try{
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                const session = await Session.findOne({school: schoolAdmin._id, current: true})
-                const term = await Term.findOne({school: schoolAdmin._id, session: session._id, current: true})
                 const gradeCompute = await new Grade({
                     school : schoolAdmin._id,  
-                    session: session._id,
-                    term: term._id,
                     grade : req.body.grade, 
                     rangeLowest : req.body.lowest,
                     rangeHighest: req.body.highest

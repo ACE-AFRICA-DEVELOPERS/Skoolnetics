@@ -14,7 +14,10 @@ const BroadSheetSchema = new Schema ({
             total : Number,
             grade : String,
             ca : Number,
-            exam: Number
+            exam: Number,
+            firstTerm: String,
+            secondTerm: String,
+            overall: Number
         }
     ],
     position: String,

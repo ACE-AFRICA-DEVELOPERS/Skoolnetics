@@ -9,7 +9,7 @@ searchDates.addEventListener('click', event => {
     displayMsg.textContent = "Loading..."
     if(selectClass.value !== ""){
         setTimeout(() => {
-            window.location.replace(`/school/fees/transactions/logs/class/${selectClass.value}`) 
+            window.location.replace(`/staff/finance/transactions/logs/class/${selectClass.value}`) 
         } , 2000)
     }else{
         displayMsg.textContent = "You need to select a class."

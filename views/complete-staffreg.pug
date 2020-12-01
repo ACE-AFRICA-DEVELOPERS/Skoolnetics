@@ -1,5 +1,6 @@
 include includes/header.pug
 block content
+    link(href="/fileinput/css/fileinput.css" media="all" rel="stylesheet" type="text/css")
     link(rel='stylesheet' , href='/stylesheets/dashboard.css')
     body
         .loader-bg
@@ -19,20 +20,21 @@ block content
                                         span.d-block.m-t-5 Upload an Image for #{getStaff.lastName} #{getStaff.firstName}
                                     .card-body
                                         .row.justify-content-center
-                                            .col-md-8
+                                            .col-md-6
                                                 form(method='POST' enctype="multipart/form-data")
-                                                    div(class="text-center mt-2")
-                                                        label(class="btn-file") #[i(class="fa fa-camera pr-2")] 
-                                                            input(type="file" accept="image/*" name='picture' id='picture' required)
+                                                    label Upload Image
+                                                    div(class="form-group")
+                                                        div(class="file-loading")
+                                                            input(id="file-1" type="file" name="picture" class="file" data-show-upload="false" data-overwrite-initial="false" data-theme="fas" required)
+                                                    
                                                     div(class="text-center mt-2")
                                                         input(type="submit" class="btn btn-info mr-4" value="Complete")
                                                         - let skipUrl = "/school/staff/" + getStaff._id
                                                         a(href=skipUrl class="btn btn-light") Skip
-                                                div(class="preview")
-                                                    div(class="boxImage" id="displayImage")
-                                                        p(class="hide mt-5") Preview 
-                                                    div(class="removePicture")
-                                                        a(href="#" id="removeImage") #[i(class="fa fa-times")]
+                                            
 
-        script(src="/javascripts/library/handleImage.js")
+        script(src="/javascripts/jquery.min.js")                               
+        script(src="/fileinput/js/fileinput.js" type="text/javascript")
+        script(src="/fileinput/themes/fas/theme.js" type="text/javascript") 
+        script(src="/javascripts/library/handle_upload.js")
         include includes/footer.pug

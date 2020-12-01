@@ -13,8 +13,14 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
-                                .card
-                                    if broadsheet.length > 0
+                                if broadsheet.length > 0
+                                    if broadsheet[0].released
+                                        - let unreleaseUrl = '/school/broadsheet/' + pClass + '/unrelease'
+                                        p #[a(href=unreleaseUrl class="btn btn-info") Recall]
+                                    else
+                                        - let releaseUrl = '/school/broadsheet/' + pClass + '/release'
+                                        p #[a(href=releaseUrl class="btn btn-info") Release Result]
+                                    .card
                                         .card-header
                                             h5 #{title}
                                             .card-block.table-border-style
@@ -55,8 +61,10 @@ block content
                                                                     td(class="obtainable") #{result.result.length * 100}
                                                                     td(class="average") #{result.gAverage}
                                                                     td(class="position") #{result.position}
-                                                                    td #[a(href="#") View] 
-                                    else
+                                                                    - let cardUrl = '/school/broadsheet/' + pClass + '/' + result._id
+                                                                    td #[a(href=cardUrl) View] 
+                                else
+                                    .card
                                         .card-header
                                             h5 #{title}
                                             span.d-block.m-t-5 No result has been uploaded for this class.

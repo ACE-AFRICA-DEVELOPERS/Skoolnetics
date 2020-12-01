@@ -14,8 +14,10 @@ block content
                         .main-body
                             .page-wrapper
                                 .card
-                                    .card-body
-                                        if assignments
+                                    if assignments.length > 0
+                                        .card-header
+                                            h5 Assignments
+                                        .card-body
                                             .card-block.table-border-style
                                                 .table-responsive
                                                     table.table.table-striped
@@ -35,6 +37,8 @@ block content
                                                                     td #{release}
                                                                     td #[a(href=singleAssignment class="main-link") view]
 
-                                        else
-                                            p.text-small #{noAssignment}
+                                    else
+                                        .card-header
+                                            h5 Assignments
+                                            span.d-block.m-t-5 No Assignment has been sent to you.
         include includes/footer.pug

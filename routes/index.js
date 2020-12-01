@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 const FileController = require('../controller/fileController')
-
 const IndexController = require('../controller/indexController')
 const AdminController = require('../controller/adminController')
 const SchoolAdminController = require('../controller/schoolAdminController')
@@ -19,6 +18,7 @@ const RoleController = require('../controller/roleController')
 const LessonNoteController = require("../controller/lessonNoteController")
 const AssignmentController = require("../controller/assignmentContoller")
 const TimetableController = require("../controller/timetableController")
+const DemoController = require("../controller/demoController")
 
 /*--------------Home and Admin Routes--------------*/
 router.get('/', IndexController.getIndex)
@@ -35,6 +35,15 @@ router.get('/202007/admin/new-admin', AdminController.getAllAdmins)
 router.post('/202007/admin/new-admin', AdminController.createNewAdmin)
 router.get('/202007/admin/logout', AdminController.getAdminLogout)
 
+// Demo Account
+router.get('/get-demo', DemoController.getDemoRegister)
+router.post('/get-demo', DemoController.requestDemo)
+router.get('/202007/admin/new-demo-schools', DemoController.getNewDemoSchool)
+router.get('/202007/admin/approved-demo-schools', DemoController.getApprovedDemoSchool)
+router.get('/202007/admin/demoschool/:demoSchoolID', DemoController.getSingleDemoSchool)
+router.get('/202007/admin/demoschool/:demoSchoolID/approve', DemoController.approveDemoSchool)
+router.get('/202007/admin/demoschool/:demoSchoolID/delete', DemoController.deleteDemo)
+
 /*--------------School Admin Routes--------------*/
 router.get('/school', SchoolAdminController.getSchoolLogin)
 router.post('/school', SchoolAdminController.postSchoolAdminLogin)
@@ -45,13 +54,19 @@ router.post('/school/signup', SchoolAdminController.postSchoolAdminSignUp)
 router.get('/school/verify/:schoolID', SchoolAdminController.verifyEmail)
 router.get('/school/dashboard', SchoolAdminController.getDashboard)
 
+router.get('/school/settings', SchoolAdminController.getSettings)
+router.post('/change-school-password', SchoolAdminController.changePassword)
+router.get('/school/profile', SchoolAdminController.getProfile)
+
 router.get('/school/session', SessionController.getSessionPage)
 router.post('/school/session', SessionController.postSession)
 router.get('/school/session/:sessionID', SessionController.getTermPage)
 router.post('/school/populate-terms', SessionController.populateTerm)
 router.post('/school/session/:sessionID', SessionController.postTerm)
 router.get('/school/session/current/:sessionID', SessionController.makeCurrent)
+router.get('/school/session/end/:sessionID', SessionController.endSession)
 router.get('/school/session/:sessionID/current/:termID', SessionController.currentTerm)
+router.get('/school/session/:sessionID/end/:termID', SessionController.endTerm)
 
 router.get('/school/logo', BasicSetupController.getLogo)
 router.post('/school/logo', FileController.adminUpload.fields([{name : 'logo', maxCount : 1}, {name : 'stamp', maxCount : 1}]), 
@@ -61,6 +76,7 @@ router.post('/school/assign-roles', BasicSetupController.createRole)
 
 router.get('/school/exam-settings', BasicSetupController.getExamComputations)
 router.post('/school/exam-settings', BasicSetupController.postExamComputations)
+router.get('/school/exam-settings/use-prev', BasicSetupController.usePreviousTermExam)
 router.get('/school/grade-settings', BasicSetupController.getGradeComputations)
 router.post('/school/grade-settings', BasicSetupController.postGradeComputations)
 
@@ -122,20 +138,22 @@ router.get('/school/day' , TimetableController.getDayPage)
 router.post('/school/day' , TimetableController.postDayPage)
 router.get('/school/day/:dayID/delete', TimetableController.deleteDay)
 router.get('/school/timetable', TimetableController.getTimetablePage)
-router.get('/school/timetable/class/:classID/class-timetable', TimetableController.getClassTimetablePage)
+router.get('/school/timetable/class/:classID/class-timetable', TimetableController.getAllTimetables)
+router.get('/school/timetable/class/:classID/class-timetable/set', TimetableController.getClassTimetablePage)
 router.get('/school/timetable/class/:classID/class-timetable/day/:dayID/subject', TimetableController.getDaySubjectPage)
 router.post('/school/timetable/class/:classID/class-timetable/day/:dayID/subject', TimetableController.postTimetablePage)
 router.get('/school/timetable/class/:classID/class-timetable/day/:dayID/subject/:subjectID', TimetableController.removeDaySubject)
-router.get('/school/timetable/class/:classID/class-timetable/show-timetable', TimetableController.getAllTimetables)
 router.get('/school/exam-timetable', TimetableController.getExamTimetablePage)
 router.get('/school/exam-day' , TimetableController.getExamDayPage)
 router.post('/school/exam-day' , TimetableController.postExamDayPage)
 router.get('/school/exam-day/:examDayID/delete', TimetableController.deleteExamDay)
-router.get('/school/exam-timetable/class/:classID' , TimetableController.getClassExamTimetablePage)
+router.get('/school/exam-timetable/class/:classID' , TimetableController.getAllExamTimetables)
+router.get('/school/exam-timetable/class/:classID/set' , TimetableController.getClassExamTimetablePage)
 router.get('/school/exam-timetable/class/:classID/day/:examDayID/subject' , TimetableController.getExamDaySubjectPage)
 router.post('/school/exam-timetable/class/:classID/day/:examDayID/subject' , TimetableController.postExamTimetablePage)
 router.get('/school/exam-timetable/class/:classID/day/:examDayID/subject/:subjectID', TimetableController.removeExamDaySubject)
 router.get('/school/exam-timetable/class/:classID/show-timetable', TimetableController.getAllExamTimetables)
+
 router.get('/staff/timetable' , TimetableController.getStaffTime)
 router.get('/staff/timetable/class/:classID/show-timetable' , TimetableController.getStaffAllTimetables)
 router.get('/staff/exam-timetable' , TimetableController.getStaffExamTime)
@@ -144,8 +162,6 @@ router.get('/student/timetable' , TimetableController.getStudentTimetable)
 router.get('/student/timetable/class/:classID/show-timetable' , TimetableController.getStudentAllTimetables)
 router.get('/student/exam-timetable' , TimetableController.getStudentExamTimetable)
 router.get('/student/exam-timetable/class/:classID/show-timetable' , TimetableController.getStudentAllExamTimetables)
-
-
 
 router.get('/school/cbt-setup', SchoolAdminController.getExams)
 router.post('/school/cbt-setup', SchoolAdminController.postExams)
@@ -162,6 +178,10 @@ router.get('/school/cbt-results/:examCode/:className/unrelease', SchoolAdminCont
 
 router.get('/school/broadsheet', SchoolAdminController.getBroadSheet)
 router.get('/school/broadsheet/:className', SchoolAdminController.getClassBroadSheet)
+router.get('/school/broadsheet/:className/third-term', SchoolAdminController.getClassBroadSheetThird)
+router.get('/school/broadsheet/:className/release', SchoolAdminController.releaseReportCard)
+router.get('/school/broadsheet/:className/unrelease', SchoolAdminController.unReleaseReportCard)
+router.get('/school/broadsheet/:className/:cardID', SchoolAdminController.getReportCard)
 
 router.get('/school/attendance', SchoolAdminController.getAttendanceClass)
 router.get('/school/attendance/:className', SchoolAdminController.firstAttendance)
@@ -193,6 +213,25 @@ router.get('/school/fees/transactions/logs/today', TransactionController.getToda
 router.get('/school/fees/transactions/logs/today/:startDate/:endDate', TransactionController.getDailyLogs)
 router.get('/school/fees/transactions/logs/class/:className', TransactionController.getClassLogs)
 
+router.get('/school/manage-sessions', SessionController.getManageSessions)
+router.get('/school/manage-sessions/:sessionID', SessionController.getManageTerm)
+router.get('/school/manage-sessions/:sessionID/:termName', SessionController.getTermActivities)
+router.get('/school/manage-sessions/:sessionID/:termName/results', SessionController.getTermResultsClasses)
+router.get('/school/manage-sessions/:sessionID/:termName/results/:className', SessionController.getTermResults)
+router.get('/school/manage-sessions/:sessionID/:termName/results/:className/third', SessionController.getTermResultsThird)
+router.get('/school/manage-sessions/:sessionID/:termName/results/:className/:cardID', SessionController.getReportCard)
+router.get('/school/manage-sessions/:sessionID/:termName/results/:className/third/:cardID', SessionController.getReportCardThird)
+
+router.get('/school/manage-sessions/:sessionID/:termName/cbt', SessionController.getCBTExams)
+router.get('/school/manage-sessions/:sessionID/:termName/cbt/:examID/questions', SessionController.getCBTQuestions)
+router.get('/school/manage-sessions/:sessionID/:termName/cbt/:examID/questions/:courseID', SessionController.getMainQuestion)
+router.get('/school/manage-sessions/:sessionID/:termName/cbt/:examID/results', SessionController.getCBTResults)
+router.get('/school/manage-sessions/:sessionID/:termName/cbt/:examID/results/:className', SessionController.getMainResults)
+
+router.get('/school/manage-sessions/:sessionID/:termName/attendance', SessionController.getAttendanceClasses)
+router.get('/school/manage-sessions/:sessionID/:termName/attendance/:className', SessionController.redirectToAttendance)
+router.get('/school/manage-sessions/:sessionID/:termName/attendance/:className/:week', SessionController.getEachAttendance)
+
 /*--------------Staff Routes--------------*/
 router.get('/staff', IndexController.getStaffPage)
 router.post('/staff', StaffController.postStaffLogin)
@@ -203,8 +242,12 @@ router.get('/staff/upload-result', StaffController.getUploadResult)
 router.get('/staff/upload-result/:subject/:className', StaffController.getUploadClass)
 router.get('/staff/upload-result/:subject/:className/sheet', StaffController.getStudentsUploads)
 router.post('/staff/upload-result/:subject/:className/sheet', StaffController.uploadBroadSheet)
+router.get('/staff/upload-result/:subject/:className/sheet/third-term', StaffController.getStudentsThirdTerm)
+router.post('/staff/upload-result/:subject/:className/sheet/third-term', StaffController.uploadBroadSheetThird)
+router.post('/fetch-grade', StaffController.fetchGrade)
 router.get('/staff/upload-result/:subject/:className/:studentID', StaffController.getOneStudentUpload)
 router.post('/staff/upload-result/:subject/:className/:studentID', StaffController.postStudentResults)
+router.get('/staff/upload-result/:subject/:className/:studentID/:examType/:score', StaffController.postFirstorSecond)
 router.post('/fetch-total-score', StaffController.fetchTotalExamScore)
 
 router.get('/staff/cbt/quick-one', CbtController.getQuickPage)
@@ -212,6 +255,7 @@ router.get('/staff/cbt/quick-one/:subject/:className', CbtController.getQuickSet
 router.post('/staff/cbt/quick-one/:subject/:className', CbtController.postQuickCBT)
 router.get('/staff/cbt/quick-one/:subject/:className/:examCode', CbtController.startQuickQuestions)
 router.post('/staff/cbt/quick-one/:subject/:className/:examCode', CbtController.postQuestionSetup)
+router.get('/staff/cbt/quick-one/:subject/:className/:examCode/replicate/:classT', CbtController.addCBTtoClass)
 router.get('/staff/cbt/quick-one/:subject/:className/:examCode/questions', CbtController.getQuestions)
 router.get('/staff/cbt/quick-one/:subject/:className/:examCode/questions/new', CbtController.setQuestions)
 router.post('/staff/cbt/quick-one/:subject/:className/:examCode/questions/new', FileController.questionUpload.single('picture'), CbtController.postQuestions)
@@ -221,11 +265,13 @@ router.get('/staff/cbt/quick-one/:subject/:className/:examCode/passwords', CbtCo
 router.post('/staff/cbt/quick-one/:subject/:className/:examCode/passwords', CbtController.generatePassword)
 router.get('/staff/cbt/quick-one/:subject/:className/:examCode/publish', CbtController.publishQuestions)
 router.get('/staff/cbt/quick-one/:subject/:className/:examCode/open-exam', CbtController.openExam)
+router.get('/staff/cbt/quick-one/:subject/:className/:examCode/release-course', CbtController.releaseCourse)
 
 router.get('/staff/cbt/school', CbtController.getSchoolCBT)
 router.get('/staff/cbt/school/:examCode', CbtController.getStaffCourses)
 router.get('/staff/cbt/school/:examCode/:subject/:className', CbtController.startSchoolQuestions)
 router.post('/staff/cbt/school/:examCode/:subject/:className', CbtController.postInstructions)
+router.get('/staff/cbt/school/:examCode/:subject/:className/replicate/:classT', CbtController.addCBTtoClassSchool)
 router.get('/staff/cbt/school/:examCode/:subject/:className/questions', CbtController.getSchoolQuestions)
 router.get('/staff/cbt/school/:examCode/:subject/:className/questions/new', CbtController.setSchoolQuestions)
 router.post('/staff/cbt/school/:examCode/:subject/:className/questions/new', FileController.questionUpload.single('picture'), CbtController.postSchoolQuestions)
@@ -243,6 +289,7 @@ router.get('/staff/cbt/cbt-results/:examCode/:subject/:className/release', CbtCo
 router.get('/staff/attendance', AttendanceController.attendanceSessionTerm)
 router.get('/staff/attendance/:className', AttendanceController.attendancePage)
 router.get('/staff/attendance/:className/:week', AttendanceController.getAttendance)
+router.get('/staff/attendance/:className/:week/:date', AttendanceController.removeMarkedAttendance)
 router.get('/staff/mark-attendance/:className', AttendanceController.getMarkAttendance) 
 router.post('/staff/mark-attendance/:className', AttendanceController.postMarkAttendance)
 
@@ -264,20 +311,58 @@ router.get('/staff/assignment/:assignment', AssignmentController.getSingleAssign
 
 router.get('/staff/broadsheet', StaffController.getBroadSheetClass)
 router.get('/staff/broadsheet/:className', StaffController.getBroadSheet)
+router.get('/staff/broadsheet/:className/third-term', StaffController.getBroadSheetThird)
 router.post('/staff/transfer-report/:className', StaffController.transferReport)
 router.get('/staff/broadsheet/:className/:cardID', StaffController.getStudentReport)
 router.post('/staff/broadsheet/:className/:cardID', StaffController.writeRemarks)
 
+router.get('/staff/manage-sessions', SessionController.getManageSessionsStaff)
+router.get('/staff/manage-sessions/:sessionID', SessionController.getManageTermStaff)
+router.get('/staff/manage-sessions/:sessionID/:termName', SessionController.getTermActivitiesStaff)
 
-/**---------------Finance Routes--------------------- */
-router.get('/school/fees/payment-type' , TransactionController.createPaymentType)
-router.post('/school/fees/payment-type' , TransactionController.postPaymentType)
-router.get('/school/fees/all-classes' , TransactionController.getAllClass)
-router.get('/school/fees/all-classes/:classID' , TransactionController.getSingleClass)
-router.post('/school/fees/all-classes/:classID' , TransactionController.postSingleClass)
-router.get('/school/fees/all-classes/:classID/bill' , TransactionController.getClassBill)
-router.get('/school/fees/all-classes/:classID/:feeID/delete', TransactionController.deleteSinglePayment)
+/**--------------- Secretary Special Routes --------------- */
+router.get('/staff/finance/payment-type' , RoleController.createPaymentType)
+router.post('/staff/finance/payment-type' , RoleController.postPaymentType)
+router.get('/staff/finance/all-classes' , RoleController.getAllClass)
+router.get('/staff/finance/all-classes/:classID' , RoleController.getSingleClass)
+router.post('/staff/finance/all-classes/:classID' , RoleController.postSingleClass)
+router.get('/staff/finance/all-classes/:classID/replicate/:cls' , RoleController.replicatePayment)
+router.get('/staff/finance/all-classes/:classID/:feeID/delete', RoleController.deleteSinglePayment)
+router.get('/staff/finance/all-classes/:classID/generate-invoice', RoleController.generateInvoice)
+router.post('/staff/finance/all-classes/:classID/generate-invoice', RoleController.createInvoice)
+router.get('/staff/finance/all-classes/:classID/bill' , RoleController.getClassBill)
+router.get('/staff/finance/transactions/upload',RoleController.getTransactionUpload)
+router.post('/get-proof-details', RoleController.getProofDetails)
+router.get('/staff/finance/transactions/upload/proofs', RoleController.getPaymentProof)
+router.post('/staff/finance/transactions/upload', RoleController.uploadSingleTransaction)
+router.get('/staff/finance/transactions/upload/proofs/record/:proofID', RoleController.makeRecorded)
+router.get('/staff/finance/transactions/logs', RoleController.getTransactionLogs)
+router.get('/staff/finance/transactions/logs/today', RoleController.getTodayLogs)
+router.get('/staff/finance/transactions/logs/today/:startDate/:endDate', RoleController.getDailyLogs)
+router.get('/staff/finance/transactions/logs/class/:className', RoleController.getClassLogs)
 
+/**-------------Principal Special Routes-------------------- */
+router.get('/staff/school-staffs', RoleController.getPrincipalStaffs)
+router.get('/staff/school-staffs/:staffID', RoleController.getSinglePrincipalStaff)
+router.get('/staff/students', RoleController.getStudentsPage)
+router.get('/staff/students/all', RoleController.getAllStudents)
+router.get('/staff/new-student/:studentID', RoleController.getSingleStudent)
+router.post('/staff/new-student/:studentID', FileController.studentUpload.single('picture'), RoleController.updateSingleStudent)
+router.get('/staff/students/suspended', RoleController.getSuspendedStudents)
+router.get('/staff/students/revoked', RoleController.getRevokedStudents)
+router.get('/staff/students/all-graduates' , RoleController.getAllGraduates)
+router.get('/staff/students/graduate', RoleController.getGraduatedStudents)
+router.get('/staff/students/graduate/:classID', RoleController.graduateEachClass)
+
+router.get('/staff/principal/transactions/logs', RoleController.getPrincipalTransactionLogs)
+router.get('/staff/principal/transactions/logs/today', RoleController.getPrincipalTodayLogs)
+router.get('/staff/principal/transactions/logs/today/:startDate/:endDate', RoleController.getPrincipalDailyLogs)
+router.get('/staff/principal/transactions/logs/class/:className', RoleController.getPrincipalClassLogs)
+
+router.get('/staff/principal/lesson-notes', RoleController.getPendingNotes)
+router.get('/staff/principal/lesson-notes/all', RoleController.getApprovedNotes)
+router.get('/staff/principal/lesson-notes/:noteID', RoleController.getSingleNote)
+router.get('/staff/principal/lesson-notes/:noteID/approve', RoleController.approveNote)
 
 /**---------------Parent Routes------------------ */
 router.get('/parent', IndexController.getParentPage)
@@ -291,6 +376,13 @@ router.get('/parent/student/:studentID/finance-page/pay-online' , ParentControll
 router.get('/parent/student/:studentID/finance-page/upload-payment' , ParentController.getUploadPayment)
 router.post('/parent/student/:studentID/finance-page/upload-payment', FileController.questionUpload.single('picture'), ParentController.postTransactionProof)
 router.get('/parent/student/:studentID/finance-page/histories', ParentController.getFinancialHistory)
+router.get('/parent/student/:studentID/attendance' , ParentController.getAttendance)
+router.get('/parent/student/:studentID/attendance/:week' , ParentController.getEachAttendance)
+router.get('/parent/student/:studentID/report-card', ParentController.getReportCard)
+router.get('/parent/student/:studentID/report-card/third-term', ParentController.getReportCardThird)
+router.get('/parent/student/:studentID/assignment', ParentController.getAssignment)
+router.get('/parent/student/:studentID/assignment/:assID', ParentController.getSingleAssignment)
+router.get('/parent/logout', ParentController.getLogout)
 
 
 /*--------------Student Routes--------------*/
@@ -302,10 +394,12 @@ router.get('/student/cbt/:examCode', StudentController.getExamCourses)
 router.get('/student/cbt/:examCode/:courseName/verify', StudentController.getVerifyCBT)
 router.post('/student/cbt/:examCode/:courseName/verify', StudentController.postVerifyCBT)
 router.get('/student/cbt/:examCode/:courseName/start', StudentController.readyExam)
+router.get('/student/cbt/:examCode/:courseName/count', StudentController.countToExam)
 router.get('/student/cbt/:examCode/:courseName/running', StudentController.examRunning)
 router.post('/student/cbt/:examCode/:courseName/running', StudentController.markExam)
 router.get('/student/exam/congrats', StudentController.getCompletePage)
 router.get('/student/cbt-result', StudentController.getResults)
+router.get('/student/report-card', StudentController.getReportCard)
 
 router.get('/student/lesson-notes', LessonNoteController.getLessonNotes)
 router.get('/student/lesson-notes/:lessonNoteID', LessonNoteController.getSingleNote)
@@ -315,5 +409,9 @@ router.get('/student/assignment/:assignmentId', AssignmentController.getChildAss
 
 router.get('/student/cbt-result/:resultID', StudentController.displayResults)
 router.get('/student/logout', StudentController.getLogout)
+
+router.get('/student/manage-sessions', SessionController.getManageSessionsStudent)
+router.get('/student/manage-sessions/:sessionID', SessionController.getManageTermStudent)
+router.get('/student/manage-sessions/:sessionID/:termName', SessionController.getTermActivitiesStudent)
 
 module.exports = router;

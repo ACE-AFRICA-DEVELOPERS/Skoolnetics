@@ -52,7 +52,8 @@ block content
                                                                 tr
                                                                     th S/N
                                                                     th Session
-                                                                    th Current
+                                                                    th Current?
+                                                                    th Ended?
                                                                     th Add/View Term
                                                             tbody 
                                                                 each sess, index in session
@@ -61,11 +62,22 @@ block content
                                                                     tr
                                                                         th(scope='row') #{index + 1}  
                                                                         td #{name}
-                                                                        if sess.current
-                                                                            td Yes
+                                                                        if sess.ended
+                                                                            td Ended
                                                                         else
-                                                                            - let currentUrl = "/school/session/current/" + sess._id
-                                                                            td #[a(href=currentUrl class="ace-btn") Make Current]
+                                                                            if sess.current
+                                                                                td Yes
+                                                                            else
+                                                                                - let currentUrl = "/school/session/current/" + sess._id
+                                                                                td #[a(href=currentUrl class="ace-btn") Make Current]
+                                                                        if sess.current
+                                                                            if sess.ended
+                                                                                td Yes
+                                                                            else
+                                                                                - let endUrl = "/school/session/end/" + sess._id 
+                                                                                td #[a(href=endUrl class="ace-btn") Set]
+                                                                        else
+                                                                            td ---
                                                                         td #[a(href=viewUrl) View]
                                             else
                                                 .card-header

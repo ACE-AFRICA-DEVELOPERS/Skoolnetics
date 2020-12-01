@@ -54,11 +54,12 @@ selector("#submit").addEventListener("click", event => {
         }
     })
     if(target.length > 0 && studentID != ""){
-        sendData(`/school/fees/transactions/upload` , {target, studentID, proof})
+        event.target.disabled = true
+        sendData(`/staff/finance/transactions/upload` , {target, studentID, proof})
         .then(res => {
             displayMsg.textContent = res.message
             setTimeout(() => {
-                window.location.replace(`/school/fees/transactions/upload`) 
+                window.location.replace(`/staff/finance/transactions/upload`) 
             } , 2000)
         })
         .catch(err => console.error(err))

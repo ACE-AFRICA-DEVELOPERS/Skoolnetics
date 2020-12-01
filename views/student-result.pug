@@ -24,11 +24,15 @@ block content
                                                     thead
                                                         tr 
                                                             th Subject
+                                                            th Total
                                                             th Score
+                                                            th Percentage
                                                     tbody 
                                                         each res, index in results.result
                                                             tr
                                                                 td #{res.courseName}
+                                                                td #{res.total}
                                                                 td(id="score") #{res.score}
+                                                                td #{res.percentage}
 
         include includes/footer.pug

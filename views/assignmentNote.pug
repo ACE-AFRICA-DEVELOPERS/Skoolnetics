@@ -16,19 +16,18 @@ block content
                                 .card
                                     .card-header
                                         h5 Assignment
-                        
                                     .card-body
-                                        .col-md-4.mb-3
+                                        .row
+                                            .col-md-4.mb-3
+                                                
+                                                a(href=`/staff/assignment/create` class="text-dark")
+                                                    .box-field
+                                                        p Create Assignment
                                             
-                                            a(href=`/staff/assignment/create` class="text-dark")
-                                                .field-box
-                                                    p Create Assignment
-                                        
-                                        .col-md-4.mb-3
-                                            
-                                            a(href=`/staff/assignment/upload` class="text-dark")
-                                                .field-box
-                                                    p Upload Assignment
- 
+                                            .col-md-4.mb-3
+                                                
+                                                a(href=`/staff/assignment/upload` class="text-dark")
+                                                    .box-field
+                                                        p Upload Assignment
 
         include includes/footer.pug

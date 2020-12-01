@@ -70,7 +70,7 @@ class App {
                 }
                 if(staff){
                     res.render('staff-dashboard' , { title  : "Dashboard", staff : staff, 
-                    code : school.schoolCode, dash_active : "active", schoolT: school,
+                    code : school, dash_active : "active", schoolT: school,
                     termS: termS, sessS: sessionS, exams: exams.length, roleName: roleName })
                    
                 }else{
@@ -103,11 +103,11 @@ class App {
 
                 if(exam.length != 0){
                     res.render('staff-exam', {exams : exam, staff : staff, 
-                        code : school.schoolCode, exam_active : "active", 
-                        termName : termName, sessionName : sessionName})
+                    code : school, exam_active : "active", 
+                    termName : termName, sessionName : sessionName})
                 }else{
                     res.render('staff-exam', {noExam : "No Exam has been created yet.", 
-                    code : school.schoolCode, staff : staff, exam_active : "active"})
+                    code : school, staff : staff, exam_active : "active"})
                 }
             }else{
                 res.redirect(303, '/staff')
@@ -126,8 +126,8 @@ class App {
                 if(exam){
                     let staffCourses = staff.class.subject
                     res.render('check-courses', {courses : staffCourses, exam : exam, 
-                        staff: staff, exam_active : "active",
-                        code : school.schoolCode})
+                    staff: staff, exam_active : "active",
+                    code : school})
                 }else{
                     throw{
                         message : "No Exam found"
@@ -151,7 +151,7 @@ class App {
                     let staffClasses = staff.class.className
                     let course = req.params.coursename
                     res.render('check-classes', {classes : staffClasses, exam : exam, 
-                        course : course, staff : staff, code : school.schoolCode, exam_active : "active"})
+                    course : course, staff : staff, code : school, exam_active : "active"})
                 }else{
                     throw{
                         message : "No Exam found"
@@ -175,11 +175,14 @@ class App {
     
                     let course = req.params.coursename
                     let className = req.params.classname
+
                     const courseDB = await Course.findOne({examiner : staff._id, 
-                        courseName : course, className : className, school : school._id})
+                    courseName : course, className : className, school : school._id})
+
                     res.render('start-question', {staff : staff, exam : exam, 
-                        examQuestions : courseDB, code : school.schoolCode, 
-                        exam_active : "active", courseName : course, className : className })
+                    examQuestions : courseDB, code : school, 
+                    exam_active : "active", courseName : course, className : className })
+
                 }else{
                     throw{
                         message : "No Exam found"
@@ -220,7 +223,6 @@ class App {
                     throw {
                         message : "Unable to save this Course"
                     }
-                    return 
                 }
             }else {
                 res.redirect(303, '/staff')
@@ -238,9 +240,11 @@ class App {
                 const exam = await Exam.findOne({examCode : req.params.examname, school : school._id})
                 
                 const course = await Course.findOne({courseName : req.params.coursename, 
-                    className : req.params.classname, examiner : staff._id})
+                className : req.params.classname, examiner : staff._id})
+
                 res.render('set-questions', {course : course, exam : exam, staff : staff,
-                code : school.schoolCode, exam_active : "active"})
+                code : school, exam_active : "active"})
+
             }else{
                 res.redirect(303, '/staff')
             }
@@ -256,7 +260,7 @@ class App {
                 const school = await SchoolAdmin.findOne({_id : staff.school})
                 const exam = await Exam.findOne({examCode : req.params.examname, school : staff.school})
                 const course = await Course.findOne({courseName : req.params.coursename, 
-                    className : req.params.classname, examiner : staff._id})
+                className : req.params.classname, examiner : staff._id})
                 const availableQuestion = await Question.findOne({course : course._id, school : staff.school})
                 const {question, optionA , optionB , optionC , optionD , correctOption , 
                     mark} = req.body 
@@ -402,11 +406,11 @@ class App {
                     if(question){
                         res.render('questions', {questions : question, staff : staff, exam : exam,
                             course : course, success : req.flash('success'), 
-                            code : school.schoolCode, exam_active : "active"})
+                            code : school, exam_active : "active"})
                     }else{
                         res.render('questions', {noQue : `You haven't set your questions`, staff : staff,
                         exam : exam, course : course, success : req.flash('success'), 
-                        code : school.schoolCode, exam_active : "active"})
+                        code : school, exam_active : "active"})
                     }
                 }else{
                     throw {
@@ -503,16 +507,16 @@ class App {
                             currentQuestion = 1
                         }
                         res.render('preview', {title : "Preview", staff : staff,
-                        code : school.schoolCode, exam : exam , questions : question,
+                        exam : exam , questions : question,
                         course : courseDB , currentQuestion : question.question[currentQuestion - 1],
-                        code : school.schoolCode, className : req.params.classname})
+                        code : school, className : req.params.classname})
                     }else{
-                        res.render('preview', {title : 'Preview', staff : staff, code : school.schoolCode,
+                        res.render('preview', {title : 'Preview', staff : staff, code : school,
                         noQuestion : "You need to have up to 5 questions to preview.", exam : exam,
                         course : courseDB, className : req.params.classname})
                     }
                 }else{
-                    res.render('preview', {title : 'Preview', staff : staff, code : school.schoolCode,
+                    res.render('preview', {title : 'Preview', staff : staff, code : school,
                     noQuestion : "No questions has been set yet.", exam : exam,
                     course : courseDB, className : req.params.classname})
                 }
@@ -543,11 +547,11 @@ class App {
                 
                 if(result.length != 0){
                     res.render("check-results", {staff : staff, results : result, 
-                        courseName : courseName, code : school.schoolCode, 
-                        studentName : studentName, studentID : studentID, exam_active : "active"})
+                    courseName : courseName, code : school, 
+                    studentName : studentName, studentID : studentID, exam_active : "active"})
                 }else{
-                    res.render("check-results", {staff : staff, code : school.schoolCode,
-                        noResult : "No student have written the exam yet.", exam_active : "active"})
+                    res.render("check-results", {staff : staff, code : school,
+                    noResult : "No student have written the exam yet.", exam_active : "active"})
                 }
             }else{
                 res.redirect(303, '/staff')
@@ -565,8 +569,8 @@ class App {
                 const session = await Session.findOne({school : school._id, current : true})
                 const term = await Term.find({session : session._id})
                 
-                res.render('lesson_note_term', {staff: staff, code : school.schoolCode, session: session,
-                    term: term, notes_active : "active"})
+                res.render('lesson_note_term', {staff: staff, code : school, session: session,
+                term: term, notes_active : "active"})
                 
             }else{
                 res.redirect(303, '/staff')
@@ -584,8 +588,9 @@ class App {
                 const session = await Session.findOne({school : school._id, current : true})
                 const term = await Term.findOne({session : session._id, name : req.params.term})
 
-                res.render('lessonNote', {staff: staff, code : school.schoolCode, session: session,
-                    term: term, notes_active : "active"})
+                res.render('lessonNote', {staff: staff, code : school, session: session,
+                term: term, notes_active : "active"})
+
             }else{
                 res.redirect(303, '/staff')
             }
@@ -602,8 +607,8 @@ class App {
                 const session = await Session.findOne({school : school._id, current : true})
                 const term = await Term.findOne({session : session._id, name : req.params.term})
 
-                res.render('make-lesson-note', {staff: staff, code : school.schoolCode, session: session,
-                    term: term, notes_active : "active"})
+                res.render('make-lesson-note', {staff: staff, code : school, session: session,
+                term: term, notes_active : "active"})
                 
             }
         }catch(err){
@@ -670,11 +675,11 @@ class App {
                 const lessonNote = await LessonNote.find({school : staff.school, staff: staff._id,
                     session : session._id, term : term._id})
                 if(lessonNote.length > 0){
-                    res.render("view-lesson-note", {staff: staff, code : school.schoolCode, lessonNotes : lessonNote,
+                    res.render("view-lesson-note", {staff: staff, code : school, lessonNotes : lessonNote,
                     notes_active : "active", session: session, term : term})
                 }else{
-                    res.render("view-lesson-note", {staff: staff, code : school.schoolCode, noNote: "No note has been created.",
-                        notes_active : "active", session: session, term : term})
+                    res.render("view-lesson-note", {staff: staff, code : school, noNote: "No note has been created.",
+                    notes_active : "active", session: session, term : term})
                 }
             }else{
                 res.redirect(303, '/staff')
@@ -693,8 +698,9 @@ class App {
                 const term = await Term.findOne({session : session._id, name : req.params.term})
                 const singleLessonNote = await LessonNote.findOne({_id : req.params.lessonNote})
                 if(singleLessonNote){
-                    res.render("view-single-lesson-note", {staff: staff, code : school.schoolCode, term: term,
-                        singleLessonNote : singleLessonNote, notes_active: "active" })
+                    res.render("view-single-lesson-note", {staff: staff, code : school, term: term,
+                    singleLessonNote : singleLessonNote, notes_active: "active" })
+
                 }else{
                     throw{
                         message : "Note not found."
@@ -715,7 +721,8 @@ class App {
                 const school = await SchoolAdmin.findOne({_id : staff.school})
                 const session = await Session.findOne({school: school._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
-                res.render("upload-result", {staff: staff, code : school.schoolCode,
+                
+                res.render("upload-result", {staff: staff, code : school,
                 upload_active: 'active', title: 'Upload Results', sessS: session.name,
                 termS: term.name})
                 
@@ -738,15 +745,47 @@ class App {
                 const session = await Session.findOne({school: school._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
 
-                res.render("upload-result-class", {staff: staff, code : school.schoolCode,
+                const broadsheet = await BroadSheet.findOne({
+                    session: session._id, className: req.params.className,
+                    term: term._id
+                }) 
+                
+                let courseSheet
+                if(broadsheet){
+                    courseSheet = broadsheet.result.filter(b => {
+                        return b.courseName == req.params.subject
+                    })
+                }else{
+                    courseSheet = null
+                }
+                console.log(courseSheet)
+
+                res.render("upload-result-class", {staff: staff, code : school,
                 pSubject: req.params.subject, upload_active: 'active', title: title, students: students,
-                pClass: req.params.className, sessS: session.name, termS: term.name})
+                pClass: req.params.className, sessS: session.name, termS: term.name, courseSheet})
                 
             }else{
                 res.redirect(303, '/staff')
             }
         }catch(err){
             res.render("error-page", {error: err.message})
+        }
+    }
+
+    fetchGrade = async (req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID: req.session.staffCode})
+                const school = await SchoolAdmin.findOne({_id: staff.school})
+                const n = req.body.average
+                const grade = await Grade.findOne({school: school._id, rangeLowest : {$lte: n}, rangeHighest: {$gte: n}})
+                res.json({message: grade.grade})
+                
+            }else{
+                res.json({message : 'Failed to connect'})
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
         }
     }
 
@@ -760,8 +799,16 @@ class App {
                 const students = await Student.find({school: school._id, className: classSchool._id})
                 const session = await Session.findOne({current: true, school: school._id})
                 const term = await Term.findOne({current: true, school: school._id})
+                if(term.name == 'Third Term'){
+                    let redirectUrl = '/staff/upload-result/' + req.params.subject + '/' + req.params.className + '/sheet/third-term'
+                    res.redirect(303, redirectUrl)
+                    return
+                }
                 const examCompute = await ExamCompute.find({school: school._id, session: session._id, term: term._id})
-                const studentResults = await StudentResult.find({school: school._id})
+                
+                let sortedCompute = examCompute.sort((a,b) => (a.name > b.name) ? 1 : -1)
+
+                const studentResults = await StudentResult.find({school: school._id, session: session._id, term: term._id})
 
                 const broadsheet = await BroadSheet.findOne({
                     session: session._id, className: req.params.className,
@@ -808,9 +855,9 @@ class App {
                     return { total: sumT, grades: grade, id: sum.student}
                 }))
                
-                res.render("staff-student-results", {staff: staff, code : school.schoolCode,
+                res.render("staff-student-results", {staff: staff, code : school,
                 pSubject: req.params.subject, upload_active: 'active', title: title, students: students,
-                pClass: req.params.className, examCompute: examCompute, studentResults: resultArray,
+                pClass: req.params.className, examCompute: sortedCompute, studentResults: resultArray,
                 regNo: regNo, studentName: studentName, firstCourseResult: firstCourseResult,
                 sumTotal: sumTotal, courseSheet: courseSheet, sessS: session.name, termS: term.name,
                 })
@@ -820,6 +867,75 @@ class App {
             }
         }catch(err){
             res.render("error-page", {error: err.message})
+        }
+    }
+
+    getStudentsThirdTerm = async (req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                let title = req.params.subject + ", " + req.params.className
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const school = await SchoolAdmin.findOne({_id : staff.school})
+                const classSchool = await ClassSchool.findOne({school: school._id, name: req.params.className})
+                const students = await Student.find({school: school._id, className: classSchool._id})
+                const session = await Session.findOne({current: true, school: school._id})
+                const term = await Term.findOne({current: true, school: school._id})
+                if(term.name != 'Third Term'){
+                    let redirectUrl = '/staff/upload-result/' + req.params.subject + '/' + req.params.className + '/sheet'
+                    res.redirect(303, redirectUrl)
+                    return
+                }
+                const examCompute = await ExamCompute.find({school: school._id, session: session._id, term: term._id})
+                
+                examCompute.sort((a,b) => (a.name > b.name) ? 1 : -1)
+
+                const studentResults = await StudentResult.find({school: school._id, session: session._id, term: term._id})
+                const broadsheet = await BroadSheet.findOne({
+                    session: session._id, className: req.params.className,
+                    term: term._id
+                }) 
+                
+                let courseSheet
+                if(broadsheet){
+                    courseSheet = broadsheet.result.filter(b => {
+                        return b.courseName == req.params.subject
+                    })
+                }else{
+                    courseSheet = null
+                }
+                console.log(courseSheet)
+                
+                let studentName = {}
+                students.map(sess => studentName[sess._id] = sess.firstName + " " + sess.lastName)
+
+                let regNo = {}
+                students.map(ses => regNo[ses._id] = ses.studentID)
+
+                const courseResults = studentResults.map(exam => {
+                    exam.results = exam.results.filter(e => {
+                        return e.subject == req.params.subject
+                    })
+                    return exam
+                })
+                const resultArray = courseResults.map(item => {
+                    item.results = item.results.sort((a,b) => (a.examType > b.examType) ? 1 : -1)
+                    return item
+                })
+                const firstCourseResult = resultArray[0]
+                console.log(resultArray)
+
+                res.render("staff-student-results-third", {staff: staff, code : school,
+                pSubject: req.params.subject, upload_active: 'active', title: title, students: students,
+                pClass: req.params.className, examCompute: examCompute, studentResults: resultArray,
+                regNo: regNo, studentName: studentName, firstCourseResult: firstCourseResult,
+                sessS: session.name, termS: term.name, courseSheet
+                })
+
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
         }
     }
 
@@ -888,6 +1004,77 @@ class App {
         }
     }
 
+    uploadBroadSheetThird = async (req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const session = await Session.findOne({school : staff.school, current : true})
+                const term = await Term.findOne({session : session._id, current: true})
+                const {getAllDataObjects} = req.body 
+                
+                let count = getAllDataObjects.length 
+                while(count > 0){ 
+                    for (let student of getAllDataObjects){ 
+                        const broadsheet = await BroadSheet.findOne({
+                            student : student.studentID, session: session._id,
+                            term: term._id
+                        }) 
+                        if(!broadsheet){
+                            const newSheet = await new BroadSheet({
+                                student : student.studentID,
+                                session : session._id,
+                                term : term._id,
+                                className : req.params.className,
+                                school : staff.school,
+                                result : [
+                                    {
+                                        courseName : req.params.subject,
+                                        ca : Number(student.ca),
+                                        exam: Number(student.Exam),
+                                        total : Number(student.total),
+                                        grade : student.grade,
+                                        firstTerm: student.firstTerm,
+                                        secondTerm: student.secondTerm,
+                                        overall: Number(student.average)
+                                    }
+                                ]
+                            })
+                            await newSheet.save()  
+                            console.log("Saved successfully")
+                        }else {
+                            await BroadSheet.findByIdAndUpdate(broadsheet._id, {
+                                $addToSet : {
+                                    result : [
+                                        {
+                                            courseName : req.params.subject,
+                                            ca : Number(student.ca),
+                                            exam: Number(student.Exam),
+                                            total : Number(student.total),
+                                            grade : student.grade,
+                                            firstTerm: student.firstTerm,
+                                            secondTerm: student.secondTerm,
+                                            overall: Number(student.average)
+                                        }
+                                    ]}
+                                }, {
+                                    new : true, 
+                                    useFindAndModify : false
+                                }
+                            ) 
+                            console.log("Updated successfully")
+                        }
+                        count -= 1 
+                    }
+                }
+                res.json({message : "Sent!"})
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render('error-page', {error: err.message})
+        }
+    }
+
     getOneStudentUpload = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
@@ -898,19 +1085,51 @@ class App {
                 const session = await Session.findOne({current: true, school: school._id})
                 const term = await Term.findOne({current: true, school: school._id})
                 const examCompute = await ExamCompute.find({school: school._id, session: session._id, term: term._id})
-                const studentResult = await StudentResult.findOne({school: school._id, student: req.params.studentID})
+                const studentResult = await StudentResult.findOne({
+                    school: school._id, student: req.params.studentID,
+                    term: term._id, session: session._id
+                })
                 
-                let courseUploaded
+                let courseUploaded, firstTermResult, secondTermResult
                 if(studentResult){
                     courseUploaded = studentResult.results.filter(e => {
                         return e.subject == req.params.subject
                     })
                 }
+                if(term.name == "Third Term"){
+                    const firstTerm = await Term.findOne({ended: true, session: session._id, name: 'First Term'})
+                    const secondTerm = await Term.findOne({ended: true, session: session._id, name: 'Second Term'})
+                    if(firstTerm){
+                        const broadsheetFirst = await BroadSheet.findOne({
+                            session: session._id, term: firstTerm._id,
+                            student: req.params.studentID
+                        })
+                        if(broadsheetFirst){
+                            firstTermResult = broadsheetFirst.result.find(e => {
+                                return e.courseName == req.params.subject
+                            })
+                        }
+                        
+                    }
+                    if(secondTerm){
+                        const broadsheetSecond = await BroadSheet.findOne({
+                            session: session._id, term: secondTerm._id,
+                            student: req.params.studentID
+                        })
+
+                        if(broadsheetSecond){
+                            secondTermResult = broadsheetSecond.result.find(e => {
+                                return e.courseName == req.params.subject
+                            })
+                        }   
+                    }
+                }
                 
-                res.render("one-student-upload", {staff: staff, code : school.schoolCode,
+                res.render("one-student-upload", {staff: staff, code : school,
                 pSubject: req.params.subject, upload_active: 'active', title: title, studentDB: student,
                 pClass: req.params.className, examCompute: examCompute, success: req.flash('success'),
-                courseUploaded: courseUploaded, sessS: session.name, termS: term.name})
+                courseUploaded: courseUploaded, sessS: session.name, termS: term.name, firstTermResult, 
+                secondTermResult})
                 
             }else{
                 res.redirect(303, '/staff')
@@ -948,12 +1167,20 @@ class App {
                 const staff = await Staff.findOne({staffID : req.session.staffCode})
                 const school = await SchoolAdmin.findOne({_id : staff.school})
                 const student = await Student.findOne({_id: req.params.studentID})
-                const studentResult = await StudentResult.findOne({student: req.params.studentID})
+                const session = await Session.findOne({school: school._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const studentResult = await StudentResult.findOne({
+                    student: req.params.studentID, 
+                    session: session._id,
+                    term: term._id
+                })
                 const {examType, total, score} = req.body
                 if(!studentResult){
                     const firstDetails = await new StudentResult({
                         student : req.params.studentID,
                         classSchool : student.className,
+                        session : session._id,
+                        term : term._id,
                         school : school._id,
                         results: [
                             {
@@ -1002,6 +1229,72 @@ class App {
         }
     }
 
+    postFirstorSecond = async (req, res, next) => {
+        try{ 
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const school = await SchoolAdmin.findOne({_id : staff.school})
+                const student = await Student.findOne({_id: req.params.studentID})
+                const session = await Session.findOne({school: school._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const {examType, score, studentID, subject, className} = req.params
+                const studentResult = await StudentResult.findOne({
+                    student: studentID, 
+                    session: session._id,
+                    term: term._id
+                })
+                if(!studentResult){
+                    const firstDetails = await new StudentResult({
+                        student : studentID,
+                        classSchool : student.className,
+                        session : session._id,
+                        term : term._id,
+                        school : school._id,
+                        results: [
+                            {
+                                examType: examType,
+                                total: 100,
+                                score: Number(score),
+                                subject: subject
+                            }
+                        ]
+                    })
+                    const saveDetails = await firstDetails.save()
+                    if(saveDetails){
+                        let redirectUrl = '/staff/upload-result/' + subject + '/' + className + '/' + studentID
+                        res.redirect(303, redirectUrl)
+                        return
+                    }else{
+                        throw 'Unable to save this record.'
+                    }
+                }else{
+                    let fromBody = {
+                        examType: examType,
+                        total: 100,
+                        score: Number(score),
+                        subject: subject
+                    }
+                    StudentResult.findByIdAndUpdate(studentResult._id, {
+                        $addToSet : {
+                            results : [fromBody] }
+                    }, {new : true, useAndModify : false}, (err , item) => {
+                        if(err){
+                            res.status(500)
+                            return
+                        }else {
+                            let redirectUrl = '/staff/upload-result/' + subject + '/' + className + '/' + studentID
+                            res.redirect(303, redirectUrl)
+                        }
+                    })	
+                }
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.json({error: err.message})
+        }
+    }
+
     getBroadSheetClass = async (req, res, next) => {
         try{
             if(req.session.staffCode){
@@ -1015,7 +1308,7 @@ class App {
                 let className = {}
                 allClass.map(s => className[s._id] = s.name)
 
-                res.render('staff-broadsheet-class', {staff: staff, code : school.schoolCode,
+                res.render('staff-broadsheet-class', {staff: staff, code : school,
                     broadsheet_active : "active", title: 'Broadsheet', sessS: session.name,
                     classHead: classHead, className: className, termS: term.name
                 })
@@ -1035,6 +1328,11 @@ class App {
                 const school = await SchoolAdmin.findOne({_id: staff.school})
                 const session = await Session.findOne({school : school._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
+                if(term.name == "Third Term"){
+                    let redirectUrl = '/staff/broadsheet/' + req.params.className + '/third-term'
+                    res.redirect(303, redirectUrl) 
+                    return
+                }
                 const broadsheet = await BroadSheet.find({
                     className: req.params.className, session: session._id,
                     term: term._id, school: school._id
@@ -1056,7 +1354,53 @@ class App {
 
                 const firstResult = resultArray[0]
 
-                res.render('staff-broadsheet', {title : title, staff: staff, code : school.schoolCode,
+                res.render('staff-broadsheet', {title : title, staff: staff, code : school,
+                pClass : req.params.className, broadsheet_active: "active", broadsheet: resultArray,
+                firstResult: firstResult, studentName: studentName, studentID: studentID,
+                sessS: session.name, termS: term.name})
+                
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render('error-page', {error : err})
+        }
+    }
+
+    getBroadSheetThird = async (req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const school = await SchoolAdmin.findOne({_id: staff.school})
+                const session = await Session.findOne({school : school._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                if(term.name != "Third Term"){
+                    let redirectUrl = '/staff/broadsheet/' + req.params.className
+                    res.redirect(303, redirectUrl) 
+                    return
+                }
+                const broadsheet = await BroadSheet.find({
+                    className: req.params.className, session: session._id,
+                    term: term._id, school: school._id
+                })
+                let title = 'Broadsheet for ' + req.params.className
+                const students = await Student.find({school: school._id})
+
+                let studentName = {}
+                let studentID = {}
+                students.map(student => {
+                    studentName[student._id] = student.firstName + " " + student.lastName
+                    studentID[student._id] = student.studentID
+                })
+
+                const resultArray = broadsheet.map(item => {
+                    item.result = item.result.sort((a,b) => (a.courseName > b.courseName) ? 1 : -1)
+                    return item
+                })
+
+                const firstResult = resultArray[0]
+
+                res.render('staff-broadsheet-third', {title : title, staff: staff, code : school,
                 pClass : req.params.className, broadsheet_active: "active", broadsheet: resultArray,
                 firstResult: firstResult, studentName: studentName, studentID: studentID,
                 sessS: session.name, termS: term.name})
@@ -1120,7 +1464,7 @@ class App {
                 const broadsheet = await BroadSheet.findOne({_id: req.params.cardID})
                 const student = await Student.findOne({_id: broadsheet.student})
 
-                res.render('create-student-report', {staff: staff, code : school.schoolCode,
+                res.render('create-student-report', {staff: staff, code : school,
                 broadsheet_active : "active", title: 'Broadsheet', sessS: session.name, schoolDB: school,
                 pClass: req.params.className, termS: term.name, studentDB: student, broadsheet: broadsheet
                 })

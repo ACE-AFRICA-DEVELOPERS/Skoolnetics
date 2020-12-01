@@ -14,7 +14,7 @@ block content
                         .main-body
                             .page-wrapper
                                 .d-flex.justify-content-between
-                                    p #[a(href="/school/fees/transactions/upload" class="btn btn-info") #[i.feather.icon-arrow-left] Back to Uploads]
+                                    p #[a(href="/staff/finance/transactions/upload" class="btn btn-info") #[i.feather.icon-arrow-left] Back to Uploads]
                                     p #[a(href="#" class="btn btn-info") Recorded POP]
                                 .card
                                     if paymentProof.length > 0
@@ -30,10 +30,10 @@ block content
                                                             p #[b Class:] #{className[payment.className]}
                                                             p #[b Description: ] #{payment.description}
                                                             p #[b Amount Paid: ] #{payment.amountPaid}
-                                                            - let uploadUrl = '/uploads/schools/' + schoolAdmin.schoolCode + '/transactions/' + payment.proof
+                                                            - let uploadUrl = '/uploads/schools/' + school.schoolCode + '/transactions/' + payment.proof
                                                             a(href=uploadUrl) #[img(src=uploadUrl height="200px" width="200px")]
                                                             if !payment.recorded
-                                                                - let recordUrl = '/school/fees/transactions/upload/proofs/record/' + payment._id
+                                                                - let recordUrl = '/staff/finance/transactions/upload/proofs/record/' + payment._id
                                                                 p.mt-3 #[a(href="#" class="btn btn-light") Mark as recorded]
                                     else
                                         .card-header

@@ -20,7 +20,7 @@ block content
                             p(class="mt-2 question-para" id=currentQuestion._id) #{currentQuestion.mainQuestion}
                             if currentQuestion.image
                                 div(class="mt-1 text-center")
-                                    - let imageUrl = "/uploads/schools/" + code + "/" + "/exam-" + exam.examCode + "/" + course.courseName + "-" + course.className + "/" + currentQuestion.image
+                                    - let imageUrl = "/uploads/schools/" + code + "/" + "/exam-" + exam.examCode + "/" + currentQuestion.image
                                     p #[img(src=imageUrl height="150px" width="300px")]
                             div(class="radio-box")
                                 input(type="radio" class="" data-id=currentQuestion._id name=currentQuestion.question value=currentQuestion.options.optionA)
@@ -52,4 +52,4 @@ block content
             - let backUrl = `/staff/cbt/quick-one/${course.courseName}/${course.className}/${exam.examCode}`
             a(href=backUrl class="fixed-b btn btn-info") #[i.fa.fa-arrow-left] Back to Dashboard
 
-        include includes/footer.pug
+        //- include includes/footer.pug

@@ -79,6 +79,9 @@ body{
     text-transform: uppercase;
     text-shadow: 1px 1px 2px #333333;
   }
+  .chelcin_logo a{
+    text-decoration: none;
+  }
   .welcome_text{
     font-size: 0.8rem;
     font-weight: 400;

@@ -32,25 +32,27 @@ block content
                                                     span(aria-hidden="true") &times;
                                             div(class="modal-body")
                                                 form(method="POST")
-                                                    label(class="label") Period: 
-                                                    select(class="form-control" name="periodNum" id="periodNum" required)
+                                                    label Period: 
+                                                    select(class="form-control mb-3 custom-select" name="periodNum" id="periodNum" required)
                                                         option(value="select") -------------- 
                                                         each period in periods.weekday
                                                             option(value=period.periodNum) #{period.periodNum}
-                                                    label(class="label") Subject 
-                                                    select(class="form-control" name="subjectName" id="subjectName" required)
+                                                    label Subject 
+                                                    select(class="form-control mb-3 custom-select" name="subjectName" id="subjectName" required)
                                                         option(value="select") -------------- 
                                                         each subject in classSchools.subjects
                                                             option(value=subject) #{subject}
+                                                        option(value="Break") Break
                                                     //- label(class="label") Weekday 
                                                     //- select(class="form-control" name="nameOfDay" id="nameOfDay" required)
                                                     //-     option(value="select") -------------- 
                                                     //-     if day
                                                     //-         option(value=day.weekday) #{day.weekday}
                                                     div(class="text-center")
-                                                        button(type="submit" class="btn main-btn") Create
+                                                        button(type="submit" class="btn btn-info") Create
 
                                 if timetables
+                                    - let pArray = []
                                     .card
                                         .card-header
                                             h5 Class Timetable for #{day.weekday} , #{classSchools.name}
@@ -61,28 +63,23 @@ block content
                                                         tr 
                                                             th Day
                                                             each period in periods.weekday
-                                                                
+                                                                - pArray.push(period.periodNum)
                                                                 th #{period.startTime} - #{period.endTime}
-
                                                     tbody 
-                                                    
-                                                        //- if timetables
                                                         tr
-                                                            td #{day.weekday}
-                                                            
-                                                            each sub, index in timetables
-                                                                td
-                                                                    if sub.periodNum == index + 1 
-                                                                        span #{sub.subjectName}
-                                                                        a(class="float-right" href="/school/timetable/class/"+classSchools._id+'/class-timetable/day/'+day._id+'/subject/'+sub._id) #[i(class="fa fa-trash")] 
-                                                                        p(class="clearfix")
-                                                                    else
-                                                                        span Period #{sub.periodNum}
-                                                                        a(class="float-right" href="/school/timetable/class/"+classSchools._id+'/class-timetable/day/'+day._id+'/subject/'+sub._id) #[i(class="fa fa-trash")] 
-                                                                    
+                                                            th #{day.weekday}
+                                                            each sub , i in pArray 
+                                                                - let d = timetables.find(e => e.periodNum == sub) 
+                                                                if d
+                                                                    td #{d.subjectName} #[a(class="ml-1 red-color" href="/school/timetable/class/"+classSchools._id+'/class-timetable/day/'+day._id+'/subject/'+ d._id) #[i(class="feather icon-trash")] ]
+                                                                else
+                                                                    td -  
                                 else
-                                    p.mb-5 Nothing created yet.
-                            a(href="/school/timetable/class/"+classSchools._id+'/class-timetable' class="btn btn-info mt-5")
+                                    .card
+                                        .card-header
+                                            h5 Class Timetable for #{day.weekday} , #{classSchools.name}
+                                            span.d-block.m-t-5 Nothing created yet.
+                            a(href="/school/timetable/class/"+classSchools._id+'/class-timetable/set' class="btn btn-info mt-5")
                                 i(class="fa fa-arrow-left ml-1")
                                     span.ml-2 Back
                                 

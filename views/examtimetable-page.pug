@@ -20,16 +20,9 @@ block content
                                     .row.p-3
                                         each c in classchool
                                             - let classUrl = "/school/exam-timetable/class/" + c._id
-                                            .col-md-4.mb-3
+                                            .col-md-3.mb-3
                                                 a(href=classUrl)
                                                     div(class="box-field")
                                                         span #{c.name}
-
-
-
-
-
-
-
 
             include includes/footer.pug

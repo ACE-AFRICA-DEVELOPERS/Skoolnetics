@@ -1,5 +1,6 @@
 include includes/header.pug 
 block content
+    link(href="/fileinput/css/fileinput.css" media="all" rel="stylesheet" type="text/css")
     link(rel="stylesheet" href="/stylesheets/dashboard.css")
     body
         .loader-bg
@@ -17,46 +18,47 @@ block content
                                     .card-header
                                         h5 Add a Question
                                     .card-body
-                                        .row.justify-content-center
-                                            .col-md-10
-                                                .form-field
+                                        .row
+                                            .col-md-11
+                                                .report-field
                                                     form(method="POST" enctype="multipart/form-data")
                                                         .row
-                                                            .col-sm-2
-                                                                label(for="ID" class="label") Question:
-                                                            .col-sm-10
-                                                                textarea(class="form-control mb-4" name="question")
-                                                            .col-sm-2
-                                                                label(for="class" class="label") Image:
-                                                            .col-sm-10
-                                                                input(type="file" class="mb-4" name="picture")
-                                                            .col-sm-2
-                                                                label(for="class" class="label") Option A:
-                                                            .col-sm-10
-                                                                input(type="text" class="form-control mb-4" id="optionA" name="optionA")
-                                                            .col-sm-2
-                                                                label(for="class" class="label") Option B:
-                                                            .col-sm-10
-                                                                input(type="text" class="form-control mb-4" id="optionB" name="optionB")
-                                                            .col-sm-2
-                                                                label(for="class" class="label") Option C:
-                                                            .col-sm-10
-                                                                input(type="text" class="form-control mb-4" id="optionC" name="optionC")
-                                                            .col-sm-2
-                                                                label(for="class" class="label") Option D:
-                                                            .col-sm-10
-                                                                input(type="text" class="form-control mb-4" id="optionD" name="optionD")
-                                                            .col-sm-2
-                                                                label(for="class" class="label") Answer:
-                                                            .col-sm-10
-                                                                input(type="text" class="form-control mb-4" id="correctOption" name="correctOption")
-                                                            .col-sm-2
-                                                                label(for="class" class="label") Mark:
-                                                            .col-sm-10
-                                                                input(type="number" class="form-control mb-4" name="mark")
-                                                            .col-12.text-center
+                                                            .col-md-7
+                                                                .mb-3
+                                                                    label Question:
+                                                                    textarea(class="form-control question-form mb-4" name="question")
+                                                                .mb-3
+                                                                    label Image (Optional)
+                                                                    div(class="form-group")
+                                                                        div(class="file-loading")
+                                                                            input(id="file-1" type="file" name="picture" class="file" data-show-upload="false" data-overwrite-initial="false" data-theme="fas")
+                                                            .col-md-5
+                                                                .mb-3
+                                                                    label Option A:
+                                                                    input(type="text" class="form-control mb-4" id="optionA" name="optionA" required)
+                                                                .mb-3
+                                                                    label Option B:
+                                                                    input(type="text" class="form-control mb-4" id="optionB" name="optionB" required)
+                                                                .mb-3
+                                                                    label Option C:
+                                                                    input(type="text" class="form-control mb-4" id="optionC" name="optionC" required)
+                                                                .mb-3
+                                                                    label Option D:
+                                                                    input(type="text" class="form-control mb-4" id="optionD" name="optionD")
+                                                                .mb-3
+                                                                    label Answer:
+                                                                    input(type="text" class="form-control mb-4" id="correctOption" name="correctOption" required)
+                                                                .mb-3
+                                                                    label Mark:
+                                                                    input(type="number" class="form-control mb-4" name="mark" required)
+                                                            .col-md-12.text-center
+                                                                hr
                                                                 input(type="submit" value="Create" class="btn btn-info" id="submit")
                                                                 p(class="err-msg mt-2" id="on-submit")
-                                    
+
+        script(src="/javascripts/jquery.min.js")                               
+        script(src="/fileinput/js/fileinput.js" type="text/javascript")
+        script(src="/fileinput/themes/fas/theme.js" type="text/javascript") 
+        script(src="/javascripts/library/handle_upload.js")                            
         script(src="/javascripts/library/questions.js")
         include includes/footer.pug

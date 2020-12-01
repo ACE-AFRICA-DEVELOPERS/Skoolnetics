@@ -20,8 +20,6 @@ const Result = require('../model/result')
 const Question = require('../model/question')
 const Attendance = require('../model/attendance')
 const LessonNotes = require('../model/lessonNote')
-const ExamCompute = require('../model/exam-settings')
-const Grade = require('../model/grade')
 const Broadsheet = require('../model/broadsheet')
 const Parent = require('../model/parent')
 const Role = require('../model/role')
@@ -36,7 +34,8 @@ class App {
     postSchoolAdminLogin = async (req , res , next) => {
         try { 
             const {schoolCode, email, password} = req.body
-            let school = await SchoolAdmin.findOne({schoolCode : schoolCode, schoolEmail : email})  
+            let school = await SchoolAdmin.findOne({schoolCode : schoolCode, schoolEmail : email}) 
+            console.log(school) 
             if(school){
                 let validSchool = await bcrypt.compare(password , school.password)
                 if (validSchool) {
@@ -155,12 +154,60 @@ class App {
         }
     }
 
-    getSchoolProfile = async (req, res, next) => {
+    getSettings = async (req, res, next) => {
         try{
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                res.render('school-settings', {title : 'Settings', schoolAdmin : schoolAdmin, 
+                error : req.flash('error'), success : req.flash('success')})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error : err})
+        }
+    }
+
+    changePassword = async(req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const {oldPassword, newPassword, cNewPassword} = req.body
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                if(newPassword == cNewPassword){
+                    let validPassword = await bcrypt.compare(oldPassword , schoolAdmin.password)
+                    if(validPassword){
+                        let harshedPassword = await bcrypt.hash(newPassword , 10)
+                        SchoolAdmin.findByIdAndUpdate(schoolAdmin._id, {
+                            password : harshedPassword
+                        }, {new : true, useFindAndModify : false}, (err, item) => {
+                            if(err) {
+                                console.log(err)
+                            }else {
+                                res.json({message: "Password changed successfully.", status: 200})
+                            }
+                        })
+                    }else{
+                        res.json({message: "Old Password is incorrect", status: 500})
+                    }
+                }else{
+                    res.json({message: "Passwords does not match.", status: 500})
+                }
+            }else{
+                res.rson({message: "Access denied", status: 500})
+            }
+        }catch(err) {
+            res.render('error-page', {error : err})
+        }
+    }
+
+    getProfile = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                
                 res.render('school-profile', {title : 'Profile', schoolAdmin : schoolAdmin, 
-                    error : req.flash('error'), success : req.flash('success')})
+                error : req.flash('error'), success : req.flash('success')})
+
             }else{
                 res.redirect(303, '/school')
             }
@@ -196,51 +243,6 @@ class App {
                 res.redirect(303, '/school')
             }
         }catch(err){
-            res.render('error-page', {error : err})
-        }
-    }
-
-    settingsPage = async(req, res, next) => {
-        try{
-            if(req.session.schoolCode){
-                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                res.render('admin-settings', {title : "Settings",
-                    schoolAdmin : schoolAdmin, success : req.flash('success')})
-            }else{
-                res.redirect(303, '/school')
-            }
-        }catch(err){
-            res.render('error-page', {error : err})
-        }
-    }
-
-    postSettings = async(req, res, next) => {
-        try{
-            if(req.session.schoolCode){
-                const {oldPassword, newPassword} = req.body
-                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                let validPassword = await bcrypt.compare(oldPassword , schoolAdmin.password)
-                if(validPassword){
-                    let harshedPassword = await bcrypt.hash(newPassword , 10)
-                    SchoolAdmin.findByIdAndUpdate(schoolAdmin._id, {
-                        password : harshedPassword
-                    }, {new : true, useFindAndModify : false}, (err, item) => {
-                        if(err) {
-                            console.log(err)
-                        }else {
-                            req.flash('success', 'Password changed successfully.')
-                            res.redirect(303, "/school/settings")
-                            return
-                        }
-                    })
-                }else{
-                    res.render("admin-settings", {error : "Old Password is wrong!", title : "Settings",
-                    schoolAdmin : schoolAdmin, success : req.flash('success')})
-                }
-            }else{
-                res.redirect(303, '/school')
-            }
-        }catch(err) {
             res.render('error-page', {error : err})
         }
     }
@@ -882,7 +884,6 @@ class App {
                         throw {
                             message : "Unable to save this Staff"
                         }
-                        return 
                     }
                 }
             }else {
@@ -1273,12 +1274,13 @@ class App {
     getAssignPage = async (req , res , next) => {
         try{
             if(req.session.schoolCode){
-                let validStaff = await Staff.findOne({_id : req.params.staffID})
+                const validStaff = await Staff.findOne({_id : req.params.staffID})
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const subjects = await Subject.findOne({school: schoolAdmin._id})
                 const classSchool = await ClassSchool.find({school: schoolAdmin._id})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
+                
                 if(validStaff){
                     res.render('assign-class' , { title  : "Staff", staffDB: validStaff, 
                     schoolAdmin : schoolAdmin, success : req.flash('success'), staff_active : "active",
@@ -1412,10 +1414,14 @@ class App {
         try{
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                const exam = await Exam.findOne({examCode : req.params.examCode, school : schoolAdmin._id})
-                const courses = await Course.find({school : schoolAdmin._id, exam : exam._id, publish : true})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
                 const term = await Term.findOne({current: true, session: session._id})
+                const exam = await Exam.findOne({
+                    examCode : req.params.examCode, school : schoolAdmin._id,
+                    session: session._id, term: term._id
+                })
+                const courses = await Course.find({school : schoolAdmin._id, exam : exam._id, publish : true})
+                
                 res.render('admin-questions', {schoolAdmin : schoolAdmin, 
                 courses : courses, exam : exam, setup_active : "active",
                 cbt_active: 'active', opencbt_active: "pcoded-trigger",
@@ -1537,9 +1543,13 @@ class App {
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const classSchool = await ClassSchool.find({school : schoolAdmin._id})
-                const exam = await Exam.findOne({school : schoolAdmin._id, examCode : req.params.examCode})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
+                const exam = await Exam.findOne({
+                    school : schoolAdmin._id, examCode : req.params.examCode,
+                    session: session._id, term: term._id
+                })
+                
                 res.render('all-exams', {schoolAdmin : schoolAdmin, classSchool : classSchool, 
                 exam : exam, result_active : "active", sessS: session.name, termS: term.name,
                 cbt_active: 'active', opencbt_active: "pcoded-trigger"})
@@ -1556,14 +1566,19 @@ class App {
         try{
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                const exam = await Exam.findOne({school : schoolAdmin._id, examCode : req.params.examCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const exam = await Exam.findOne({
+                    school : schoolAdmin._id, examCode : req.params.examCode,
+                    session: session._id, term: term._id
+                })
                 let className = req.params.className
                 const result = await Result.find({
                     className : className, 
                     school : schoolAdmin._id,
                     exam: exam._id
                 })
-                const students = await Student.find()
+                const students = await Student.find({school: schoolAdmin._id})
 
                 let studentName = {}
                 let studentID = {}
@@ -1578,11 +1593,9 @@ class App {
                 })
 
                 const firstResult = resultArray[0]
-                const session = await Session.findOne({school: schoolAdmin._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
 
                 res.render('class-report', {firstResult : firstResult, schoolAdmin : schoolAdmin, 
-                results : resultArray, exam : exam, studentName : studentName, 
+                results : resultArray, exam : exam, studentName : studentName, title: 'CBT Results',
                 result_active : "active",className : className, studentID : studentID,
                 cbt_active: 'active', opencbt_active: "pcoded-trigger", sessS: session.name, termS: term.name})
             
@@ -1598,7 +1611,12 @@ class App {
         try{
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                const exam = await Exam.findOne({school : schoolAdmin._id, examCode : req.params.examCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const exam = await Exam.findOne({
+                    school : schoolAdmin._id, examCode : req.params.examCode,
+                    session: session._id, term: term._id
+                })
                 
                 Result.updateMany({className : req.params.className, school : schoolAdmin._id, exam: exam._id}, {
                         $set : {released : true}
@@ -1623,7 +1641,12 @@ class App {
         try{
             if(req.session.email){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                const exam = await Exam.findOne({school : schoolAdmin._id, examCode : req.params.examCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const exam = await Exam.findOne({
+                    school : schoolAdmin._id, examCode : req.params.examCode,
+                    session: session._id, term: term._id
+                })
 
                 Result.updateMany({className : req.params.className, school : schoolAdmin._id, exam: exam._id}, {
                         $set : {released : false}
@@ -1678,6 +1701,11 @@ class App {
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const session = await Session.findOne({school : schoolAdmin._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
+                if(term.name == 'Third Term'){
+                    let redirectUrl = '/school/broadsheet/' + req.params.className + '/third-term'
+                    res.redirect(303, redirectUrl)
+                    return
+                }
                 const broadsheet = await Broadsheet.find({
                     className: req.params.className, session: session._id,
                     term: term._id, school: schoolAdmin._id
@@ -1704,6 +1732,130 @@ class App {
                 firstResult: firstResult, studentName: studentName, studentID: studentID,
                 sessS: session.name, termS: term.name})
                 
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error : err})
+        }
+    }
+
+    getClassBroadSheetThird = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school : schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                if(term.name != 'Third Term'){
+                    let redirectUrl = '/school/broadsheet/' + req.params.className
+                    res.redirect(303, redirectUrl)
+                    return
+                }
+                const broadsheet = await Broadsheet.find({
+                    className: req.params.className, session: session._id,
+                    term: term._id, school: schoolAdmin._id
+                })
+                let title = 'Broadsheet for ' + req.params.className
+                const students = await Student.find({school: schoolAdmin._id})
+
+                let studentName = {}
+                let studentID = {}
+                students.map(student => {
+                    studentName[student._id] = student.firstName + " " + student.lastName
+                    studentID[student._id] = student.studentID
+                })
+
+                const resultArray = broadsheet.map(item => {
+                    item.result = item.result.sort((a,b) => (a.courseName > b.courseName) ? 1 : -1)
+                    return item
+                })
+
+                const firstResult = resultArray[0]
+
+                res.render('broadsheet-third', {title : title, schoolAdmin : schoolAdmin,
+                pClass : req.params.className, broadsheet_active: "active", broadsheet: resultArray,
+                firstResult: firstResult, studentName: studentName, studentID: studentID,
+                sessS: session.name, termS: term.name})
+                
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error : err})
+        }
+    }
+
+    getReportCard = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const broadsheet = await Broadsheet.findOne({_id: req.params.cardID})
+                const student = await Student.findOne({_id: broadsheet.student})
+
+                res.render('school-report-card', {broadsheet_active : "active", 
+                title: 'Report Card', sessS: session.name, schoolAdmin: schoolAdmin,
+                pClass: req.params.className, termS: term.name, 
+                studentDB: student, broadsheet: broadsheet
+                })
+
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    releaseReportCard = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({current: true, session: session._id})
+                
+                Broadsheet.updateMany({
+                    className : req.params.className, school : schoolAdmin._id, 
+                    session: session._id, term: term._id}, {
+                        $set : {released : true}
+                }, {new : true, useFindAndModify : false}, (err , item) => {
+                    if(err){
+                        res.status(500)
+                        return
+                    }else {
+                        let redirectUrl = '/school/broadsheet/' + req.params.className 
+                        res.redirect(303, redirectUrl)
+                    }
+                })	
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error : err})
+        }
+    }
+
+    unReleaseReportCard = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({current: true, session: session._id})
+                
+                Broadsheet.updateMany({
+                    className : req.params.className, school : schoolAdmin._id, 
+                    session: session._id, term: term._id}, {
+                        $set : {released : false}
+                }, {new : true, useFindAndModify : false}, (err , item) => {
+                    if(err){
+                        res.status(500)
+                        return
+                    }else {
+                        let redirectUrl = '/school/broadsheet/' + req.params.className 
+                        res.redirect(303, redirectUrl)
+                    }
+                })	
             }else{
                 res.redirect(303, '/school')
             }
@@ -1779,15 +1931,23 @@ class App {
                         })
                         return week
                     })
+
+                    week1Attendance.map(week => {
+                        week.attendance = week.attendance.sort((a, b) => {
+                            return new Date(a.date) - new Date(b.date)
+                        })
+                        return week
+                    })
+                    
                     const attendanceWeek = week1Attendance[0].attendance
 
                     let weekday = new Array(7)
-                    weekday[0] = "M"
-                    weekday[1] = "T"
-                    weekday[2] = "W"
-                    weekday[3] = "Th"
-                    weekday[4] = "F"
-                    weekday[5] = "S"
+                    weekday[0] = "S"
+                    weekday[1] = "M"
+                    weekday[2] = "T"
+                    weekday[3] = "W"
+                    weekday[4] = "Th"
+                    weekday[5] = "F"
                     weekday[6] = "S"
                     
                     res.render('admin-attendance', {title : 'School Attendance', schoolAdmin : schoolAdmin,
@@ -1845,7 +2005,7 @@ class App {
                 const lessonNotes = await LessonNotes.find({
                     session : session._id, 
                     term : term._id, 
-                    status : "Pending",
+                    status : "Approved",
                     className: req.params.className
                 })
                 const staffs = await Staff.find({school : schoolAdmin._id})
@@ -1872,9 +2032,15 @@ class App {
                 const singleNote = await LessonNotes.findOne({_id : req.params.noteID})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
+                const staffs = await Staff.find({school: schoolAdmin._id})
+                let staffName = {}
+                staffs.map(elem => staffName[elem._id] = elem.firstName + " " + elem.lastName)
+                let staffID = {}
+                staffs.map(elem => staffID[elem._id] = elem.staffID)
+
                 res.render('admin-single-note', {title : "Lesson Note", schoolAdmin : schoolAdmin, 
                 notes_active : "active", singleLessonNote : singleNote, sessS: session.name,
-                termS: term.name})
+                termS: term.name, school: schoolAdmin, staffName, staffID, session, term})
             }else{
                 res.redirect(303, '/school')
             }

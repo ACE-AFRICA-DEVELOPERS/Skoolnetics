@@ -10,9 +10,11 @@ const ExamTimetable = require('../model/examTimetable')
 const ExamDay = require('../model/examDay')
 const Staff = require('../model/staff')
 const Student = require('../model/student')
+const { getApprovedDemoSchool } = require('./demoController')
 
 
 class App {
+
     getPeriodPage = async (req , res , next) => {
         if(req.session.schoolCode) {
             try{
@@ -22,6 +24,7 @@ class App {
                     const term = await Term.findOne({school: schoolAdmin._id, session: session._id, current: true})
                     if(term) {
                         const periods = await Period.find({school : schoolAdmin._id}).sort([['startTime' , 'ascending']]) 
+
                         res.render("period-page" , {
                             periods : periods ,
                             title : "Timetable Periods" ,
@@ -155,7 +158,7 @@ class App {
                             opentimetable_active: "pcoded-trigger",
                         })    
                     }else{
-                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
+                        res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Set Day Page',
                         period_active: 'active', opentimetable_active: "pcoded-trigger",
                         timetable_active : "active"})
                     }
@@ -336,6 +339,7 @@ class App {
                         }  else {
                             result = null
                         }
+                        console.log(result)
                         res.render("daysubject-page" , {
                             timetables : result ,
                             subjects : subjects ,
@@ -345,11 +349,11 @@ class App {
                             schoolAdmin : schoolAdmin,
                             classSchools : classSchools ,
                             sessS: session.name,
-                             termS: term.name ,
-                             success : req.flash('success'),
-                             time_active: 'active',
-                             timetable_active : "active" ,
-                             opentimetable_active: "pcoded-trigger",
+                            termS: term.name ,
+                            success : req.flash('success'),
+                            time_active: 'active',
+                            timetable_active : "active" ,
+                            opentimetable_active: "pcoded-trigger",
                         })
                     }else{
                         res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
@@ -376,11 +380,10 @@ class App {
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const classSchool = await ClassSchool.findOne({school : schoolAdmin._id , _id : req.params.classID}) 
                 const session = await Session.findOne({school : schoolAdmin._id , current : true}) 
-                const subjects = await Subject.find({school : schoolAdmin._id})
-                const term = await Term.findOne({school : schoolAdmin._id}) 
+                const term = await Term.findOne({session: session._id, current: true}) 
                 const day = await Day.findOne({school : schoolAdmin._id , _id : req.params.dayID})
     
-                const {nameOfDay , periodNum , subjectName } = req.body
+                const {periodNum , subjectName } = req.body
                 const periodd = await ClassTimetable.findOne({ school : schoolAdmin._id , class : req.params.classID , day : req.params.dayID })
                 if(!periodd) {  
                     const classTimetable = new ClassTimetable({
@@ -393,9 +396,7 @@ class App {
                         school : schoolAdmin._id ,
                         session : session._id ,
                         term : term._id ,
-                        class : classSchool._id ,
-    
-    
+                        class : classSchool._id 
                     })
                     const saveClassTimetable = await classTimetable.save()
                     if (saveClassTimetable) {
@@ -438,12 +439,18 @@ class App {
         try{
             if(req.session.schoolCode){ 
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                const periods = await ClassTimetable.findOne({ school : schoolAdmin._id , class : req.params.classID , day : req.params.dayID })
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({current: true, session: session._id})
+                const periods = await ClassTimetable.findOne({ 
+                    school : schoolAdmin._id , class : req.params.classID , day : req.params.dayID,
+                    session: session._id, term: term._id
+                })
                 const classSchool = await ClassSchool.findOne({school : schoolAdmin._id , _id : req.params.classID}) 
                 const day = await Day.findOne({school : schoolAdmin._id , _id : req.params.dayID})
                 
                 const allPeriods = periods.subject
                 let mapIt = allPeriods.find( elem => elem._id == req.params.subjectID)
+                console.log(mapIt)
                 ClassTimetable.findByIdAndUpdate(periods._id, {
                     $pullAll : {
                         subject : [mapIt] }
@@ -470,27 +477,20 @@ class App {
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const session = await Session.findOne({school : schoolAdmin._id, current: true})
                 if(session) {
-                    const term = await Term.findOne({school: schoolAdmin._id, session: session._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
                     if(term) {  
                         const periods = await Period.find({school : schoolAdmin._id})
                         const subjects = await Subject.findOne({school : schoolAdmin._id})
-                        const timetables = await ClassTimetable.find({school : schoolAdmin._id , class : req.params.classID })
+                        const timetables = await ClassTimetable.find({
+                            school : schoolAdmin._id , class : req.params.classID,
+                            session: session._id, term: term._id
+                        })
                         const day = await Day.find({school : schoolAdmin._id})
                         const classSchools = await ClassSchool.findOne({school : schoolAdmin._id , _id : req.params.classID })
-                        let resArr    
-                        if(timetables) {
-                            resArr = timetables.map(item => {
-                                console.log(item.subject)
-                                item.subject = item.subject.sort((a,b) => (a.periodNum - b.periodNum)) 
-                                return item
-                            })
-                            console.log(resArr)
-                        }  else {
-                            result = null
-                        }
+                        
             
                         res.render("all-time" , {
-                            timetables : resArr ,
+                            timetables : timetables ,
                             subjects : subjects ,
                             periods : periods ,
                             day : day ,
@@ -566,7 +566,10 @@ class App {
                 if(session) {
                     const term = await Term.findOne({school: schoolAdmin._id, session: session._id, current: true})
                     if(term) {  
-                        const days = await ExamDay.find({school : schoolAdmin._id}).sort([['nameOfDay' , 'ascending']]) 
+                        const days = await ExamDay.find({
+                            school : schoolAdmin._id, session: session._id,
+                            term: term._id
+                        }).sort([['nameOfDay' , 'ascending']]) 
                         res.render("examday-page" , {
                             days : days ,
                             title : "Set Exam Days" ,
@@ -601,9 +604,13 @@ class App {
         if(req.session.schoolCode) {
             try{
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
                 const {nameOfDay } = req.body
                 const day = new ExamDay({
                     school : schoolAdmin._id ,
+                    session: session._id,
+                    term: term._id,
                     nameOfDay : nameOfDay
                 })
                 const saveDay = await day.save()
@@ -665,7 +672,11 @@ class App {
                     const term = await Term.findOne({school: schoolAdmin._id, session: session._id, current: true})
                     if(term) {  
                         const timetables = await ExamTimetable.findOne({school : schoolAdmin._id, class : req.params.classID})
-                        const day = await ExamDay.find({school : schoolAdmin._id}).sort([['nameOfDay' , 'ascending']])
+                        const day = await ExamDay.find({
+                            school : schoolAdmin._id,
+                            session: session._id,
+                            term: term._id
+                        }).sort([['nameOfDay' , 'ascending']])
                         const classSchools = await ClassSchool.findOne({school : schoolAdmin._id , _id : req.params.classID})
                         res.render("classexamtimetable-page" , {
                             timetables : timetables ,
@@ -709,18 +720,16 @@ class App {
                     if(term) {  
                         const subjects = await Subject.findOne({school : schoolAdmin._id})
                         const session = await Session.findOne({school : schoolAdmin._id , current : true}) 
-                        const timetables = await ExamTimetable.findOne({school : schoolAdmin._id, class : req.params.classID , examDay : req.params.examDayID})
+                        const timetables = await ExamTimetable.findOne({
+                            school : schoolAdmin._id, class : req.params.classID , 
+                            examDay : req.params.examDayID, session: session._id,
+                            term: term._id
+                        })
                         const examDay = await ExamDay.findOne({school : schoolAdmin._id , _id : req.params.examDayID})
                         const classSchools = await ClassSchool.findOne({school : schoolAdmin._id , _id : req.params.classID}) 
-                        let result         
-                        if(timetables) {
-                            result = timetables.subject.sort((a,b) => (a.periodNum - b.periodNum))
-                        }  else {
-                            result = null
-                        }
             
                         res.render("examdaysubject-page" , {
-                            timetables : result ,
+                            timetables : timetables ,
                             subjects : subjects ,
                             examDay : examDay ,
                             title : "Timetable Periods" ,
@@ -759,28 +768,29 @@ class App {
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const classSchool = await ClassSchool.findOne({school : schoolAdmin._id , _id : req.params.classID}) 
                 const session = await Session.findOne({school : schoolAdmin._id , current : true}) 
-                const subjects = await Subject.find({school : schoolAdmin._id})
-                // const term = await Term.findOne({school : schoolAdmin._id , current : true}) 
-                const examDay = await ExamDay.findOne({school : schoolAdmin._id , _id : req.params.examDayID})
-    
-                const {nameOfDay , periodNum , subjectName , endTime , startTime} = req.body
-                const periodd = await ExamTimetable.findOne({ school : schoolAdmin._id , class : req.params.classID , examDay : req.params.examDayID })
+                const term = await Term.findOne({session : session._id , current : true}) 
+                const examDay = await ExamDay.findOne({
+                    school : schoolAdmin._id ,
+                     _id : req.params.examDayID
+                })
+                console.log(examDay)
+                const {subjectName , endTime , startTime} = req.body
+                const periodd = await ExamTimetable.findOne({ 
+                    school : schoolAdmin._id , session: session._id, term: term._id,
+                    class : req.params.classID , examDay : req.params.examDayID })
                 if(!periodd) {  
                     const examTimetable = new ExamTimetable({
                         subject : [{
                             subjectName : subjectName ,
-                            periodNum : periodNum ,
                             startTime : startTime ,
                             endTime : endTime
                         }],
-                        nameOfDay : examDay.nameOfDay.toLocaleDateString() ,
+                        nameOfDay : examDay.nameOfDay,
                         examDay :  examDay._id,
                         school : schoolAdmin._id ,
                         session : session._id ,
-                        // term : term._id ,
+                        term : term._id ,
                         class : classSchool._id ,
-    
-    
                     })
                     const saveExamTimetable = await examTimetable.save()
                     if (saveExamTimetable) {
@@ -799,7 +809,6 @@ class App {
                         $addToSet : {
                             subject : [{
                                 subjectName : subjectName ,
-                                periodNum : periodNum ,
                                 startTime : startTime ,
                                 endTime : endTime
                             }],
@@ -825,7 +834,13 @@ class App {
         try{
             if(req.session.schoolCode){ 
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                const periods = await ExamTimetable.findOne({ school : schoolAdmin._id , class : req.params.classID , examDay : req.params.examDayID })
+                const session = await Session.findOne({school : schoolAdmin._id , current : true}) 
+                const term = await Term.findOne({session : session._id , current : true}) 
+                const periods = await ExamTimetable.findOne({ 
+                    school : schoolAdmin._id , class : req.params.classID ,
+                    examDay : req.params.examDayID, session: session._id,
+                    term: term._id
+                 })
                 const classSchool = await ClassSchool.findOne({school : schoolAdmin._id , _id : req.params.classID}) 
                 const examDay = await ExamDay.findOne({school : schoolAdmin._id , _id : req.params.examDayID})
                 
@@ -860,23 +875,15 @@ class App {
                 if(session) {
                     const term = await Term.findOne({school: schoolAdmin._id, session: session._id, current: true})
                     if(term) {  
-                        const timetables = await ExamTimetable.find({school : schoolAdmin._id , class : req.params.classID })
-                        const examDay = await ExamDay.find({school : schoolAdmin._id})
+                        const timetables = await ExamTimetable.find({
+                            school : schoolAdmin._id , class : req.params.classID,
+                            session: session._id, term: term._id
+                        })
+                        const examDay = await ExamDay.find({school : schoolAdmin._id, session: session._id, term: term._id})
                         const classSchools = await ClassSchool.findOne({school : schoolAdmin._id , _id : req.params.classID })
-                        let resArr    
-                        if(timetables) {
-                            resArr = timetables.map(item => {
-                                console.log(item.subject)
-                                item.subject = item.subject.sort((a,b) => (a.periodNum - b.periodNum)) 
-                                return item
-                            })
-                            console.log(resArr)
-                        }  else {
-                            result = null
-                        }
             
                         res.render("allexam-time" , {
-                            timetables : resArr ,
+                            timetables : timetables ,
                             examDay : examDay ,
                             title : `Exam Timetable for ${classSchools.name}` ,
                             schoolAdmin : schoolAdmin,
@@ -923,10 +930,13 @@ class App {
                         res.render('stafftimetable-page', {
                             title : 'Timetable', staff : staff,
                             classchool : classchool,
-                             sessS: session.name,
-                             termS: term.name ,
-                             success : req.flash('success'),
-                             time_active: 'active',
+                            sessS: session.name,
+                            termS: term.name ,
+                            success : req.flash('success'),
+                            time_active: 'active',
+                            opentimetable_active: "pcoded-trigger",
+                            timetable_active: 'active',
+                            code : school
                         })
                     }else{
                         res.render('sess-term-error', {staff: staff, title: 'Exam Settings',
@@ -955,23 +965,15 @@ class App {
                     if(term) { 
                         const periods = await Period.find({school : school._id})
                         const subjects = await Subject.findOne({school : school._id})
-                        const timetables = await ClassTimetable.find({school : school._id , class : req.params.classID })
+                        const timetables = await ClassTimetable.find({
+                            school : school._id , class : req.params.classID,
+                            session: session._id, term: term._id
+                        })
                         const day = await Day.find({school : school._id})
                         const classSchools = await ClassSchool.findOne({school : school._id , _id : req.params.classID })
-                        let resArr    
-                        if(timetables) {
-                            resArr = timetables.map(item => {
-                                console.log(item.subject)
-                                item.subject = item.subject.sort((a,b) => (a.periodNum - b.periodNum)) 
-                                return item
-                            })
-                            console.log(resArr)
-                        }  else {
-                            result = null
-                        }
-            
+                        
                         res.render("staffall-time" , {
-                            timetables : resArr ,
+                            timetables : timetables,
                             subjects : subjects ,
                             periods : periods ,
                             day : day ,
@@ -982,6 +984,9 @@ class App {
                             sessS: session.name,
                             termS: term.name ,
                             time_active: 'active',
+                            opentimetable_active: "pcoded-trigger",
+                            timetable_active: 'active',
+                            code : school
                         })
                     } else{
                         res.render('sess-term-error', {school: school, title: 'Exam Settings',
@@ -1014,9 +1019,12 @@ class App {
                         res.render('staffexamtimetable-page', {
                             title : 'Timetable', staff : staff,
                             classchool : classchool,
-                             sessS: session.name,
-                             termS: term.name ,
-                             examtime_active: 'active',
+                            sessS: session.name,
+                            termS: term.name ,
+                            examtime_active: 'active',
+                            opentimetable_active: "pcoded-trigger",
+                            timetable_active: 'active',
+                            code : school
                         })
                     }else{
                         res.render('sess-term-error', {staff: staff, title: 'Exam Settings',
@@ -1043,23 +1051,15 @@ class App {
                 if(session) {
                     const term = await Term.findOne({school: school._id, session: session._id, current: true})
                     if(term) { 
-                        const timetables = await ExamTimetable.find({school : school._id , class : req.params.classID })
-                        const examDay = await ExamDay.find({school : school._id})
+                        const timetables = await ExamTimetable.find({
+                            school : school._id , class : req.params.classID,
+                            session: session._id, term: term._id
+                        })
+                        const examDay = await ExamDay.find({school : school._id, session: session._id, term: term._id})
                         const classSchools = await ClassSchool.findOne({school : school._id , _id : req.params.classID })
-                        let resArr    
-                        if(timetables) {
-                            resArr = timetables.map(item => {
-                                console.log(item.subject)
-                                item.subject = item.subject.sort((a,b) => (a.periodNum - b.periodNum)) 
-                                return item
-                            })
-                            console.log(resArr)
-                        }  else {
-                            result = null
-                        }
             
                         res.render("allexam-time" , {
-                            timetables : resArr ,
+                            timetables : timetables,
                             examDay : examDay ,
                             title : `Timetable for ${classSchools.name}` ,
                             school : school,
@@ -1067,8 +1067,11 @@ class App {
                             sessS: session.name,
                             termS: term.name ,
                             examtime_active: 'active',
+                            opentimetable_active: "pcoded-trigger",
+                            timetable_active: 'active',
                             term : term ,
-                            staff : staff 
+                            staff : staff ,
+                            code : school
                         })
                     } else{
                         res.render('sess-term-error', {school: school, title: 'Exam Settings',
@@ -1100,10 +1103,11 @@ class App {
                         res.render('studenttimetable-page', {
                             title : 'Timetable', student : student,
                             className : className,
-                             sessS: session.name,
-                             termS: term.name ,
-                             success : req.flash('success'),
-                             time_active: 'active',
+                            sessS: session.name,
+                            termS: term.name ,
+                            success : req.flash('success'),
+                            time_active: 'active',
+                            code : school
                         })
                     }else{
                         res.render('sess-term-error', {school: school, title: 'Exam Settings',
@@ -1132,23 +1136,15 @@ class App {
                     if(term) { 
                         const periods = await Period.find({school : school._id})
                         const subjects = await Subject.findOne({school : school._id})
-                        const timetables = await ClassTimetable.find({school : school._id , class : req.params.classID })
+                        const timetables = await ClassTimetable.find({
+                            school : school._id , class : req.params.classID, 
+                            session: session._id, term: term._id
+                        })
                         const day = await Day.find({school : school._id})
                         const className = await ClassSchool.findOne({_id : student.className})
-                        let resArr    
-                        if(timetables) {
-                            resArr = timetables.map(item => {
-                                console.log(item.subject)
-                                item.subject = item.subject.sort((a,b) => (a.periodNum - b.periodNum)) 
-                                return item
-                            })
-                            console.log(resArr)
-                        }  else {
-                            result = null
-                        }
             
                         res.render("studentall-time" , {
-                            timetables : resArr ,
+                            timetables : timetables ,
                             subjects : subjects ,
                             periods : periods ,
                             day : day ,
@@ -1159,6 +1155,7 @@ class App {
                             sessS: session.name,
                             termS: term.name ,
                             time_active: 'active',
+                            code : school
                         })
                     } else{
                         res.render('sess-term-error', {school: school, title: 'Exam Settings',
@@ -1190,9 +1187,10 @@ class App {
                         res.render('studentexamtimetable-page', {
                             title : 'Timetable', student : student,
                             className : className,
-                             sessS: session.name,
-                             termS: term.name ,
-                             examtime_active: 'active',
+                            sessS: session.name,
+                            termS: term.name ,
+                            examtime_active: 'active',
+                            code : school
                         })
                     }else{
                         res.render('sess-term-error', {school: school, title: 'Exam Settings',
@@ -1219,23 +1217,15 @@ class App {
                 if(session) {
                     const term = await Term.findOne({school: school._id, session: session._id, current: true})
                     if(term) { 
-                        const timetables = await ExamTimetable.find({school : school._id , class : req.params.classID })
-                        const examDay = await ExamDay.find({school : school._id})
+                        const timetables = await ExamTimetable.find({
+                            school : school._id , class : req.params.classID,
+                            session: session._id, term: term._id
+                        })
+                        const examDay = await ExamDay.find({school : school._id, session: session._id, term: term._id})
                         const className = await ClassSchool.findOne({_id : student.className})
-                        let resArr    
-                        if(timetables) {
-                            resArr = timetables.map(item => {
-                                console.log(item.subject)
-                                item.subject = item.subject.sort((a,b) => (a.periodNum - b.periodNum)) 
-                                return item
-                            })
-                            console.log(resArr)
-                        }  else {
-                            result = null
-                        }
             
                         res.render("student-allexam" , {
-                            timetables : resArr ,
+                            timetables : timetables ,
                             examDay : examDay ,
                             title : `Exam Timetable for ${className.name}` ,
                             school : school,
@@ -1244,7 +1234,8 @@ class App {
                             sessS: session.name,
                             termS: term.name ,
                             examtime_active: 'active',
-                            term : term
+                            term : term,
+                            code : school
                         })
                     } else{
                         res.render('sess-term-error', {school: school, title: 'Exam Settings',

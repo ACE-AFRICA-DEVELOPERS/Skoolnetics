@@ -1,5 +1,6 @@
 include includes/header.pug
 block content
+    link(href="/fileinput/css/fileinput.css" media="all" rel="stylesheet" type="text/css")
     link(rel='stylesheet' , href='/stylesheets/dashboard.css')
     body
         .loader-bg
@@ -18,34 +19,31 @@ block content
                                         h5 Create Note
                                     div(class="card-body")
                                         p #{message}
-                                        form(action="", method="post" class="form-field" enctype="multipart/form-data")
+                                        form(method="post" class="form-field" enctype="multipart/form-data")
                                             .row
-                                                .col-md-3.col-sm-6.mt-2
-                                                    label(class="label") Week
-                                                    input(type="number", name="week" class="form-control")
-                                                .col-md-3.col-sm-6.mt-2
-                                                    label(class="label") Subject
+                                                .col-md-4.col-sm-6.mb-3
+                                                    label Subject & Class
                                                     select(name="subject" class="form-control custom-select")
                                                         option(value="" selected disabled="disabled") ------
                                                         each st in staff.teaching 
-                                                            option(value=st.subject) #{st.subject}
-                                                .col-md-3.col-sm-6.mt-2
-                                                    label(class="label") Class
-                                                    select(name="className" class="form-control custom-select")
-                                                        option(value="" selected disabled="disabled") ------
-                                                        each ct in staff.teaching 
-                                                            option(value=ct.className) #{ct.className}
-                                                .col-md-3.col-sm-6.mt-2
+                                                            option(value=st._id) #{st.subject} (#{st.className})
+                                                .col-md-4.col-sm-6.mb-3
                                                         label(class="label") Released Date
                                                         input(type="date", name="releaseDate" class="form-control")
-                                                .col-md-3.col-sm-6.mt-2
+                                                .col-md-4.col-sm-6.mb-3
                                                     label(class="label") Submission Date
                                                     input(type="date", name="submissionDate" class="form-control")
-                                                div(class="justify-content-center text-center col-md-10 mt-2")
-                                                    label(class="btn main-btn mt-3 pl-5 pr-5") Add File
-                                                        input(type="file" name='picture' id='picture' required)
+                                                .col-md-6.mb-3
+                                                    label Upload File
+                                                    div(class="form-group")
+                                                        div(class="file-loading")
+                                                            input(id="file-1" type="file" name="picture" class="file" data-show-upload="false" data-overwrite-initial="false" data-theme="fas")
                                                 
-                                                .col-md-6
-                                                    button(type="submit").btn.main-btn.mt-3.pl-5.pr-5 Add Note
-                                                
+                                                .col-md-12
+                                                    button(type="submit").btn.btn-info.mt-3.pl-5.pr-5 Add Note
+        
+        script(src="/javascripts/jquery.min.js")                               
+        script(src="/fileinput/js/fileinput.js" type="text/javascript")
+        script(src="/fileinput/themes/fas/theme.js" type="text/javascript") 
+        script(src="/javascripts/library/handle_upload.js")                                       
         include includes/footer.pug

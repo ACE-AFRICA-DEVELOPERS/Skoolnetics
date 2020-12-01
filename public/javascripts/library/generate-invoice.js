@@ -30,13 +30,14 @@ submit.addEventListener("click", event => {
     })
     if (targetStudents.length > 0){
         //Send the id of students selected to the server
+        event.target.disabled = true
         displayMsg.textContent = "Please wait..."
        
-        sendData(`/school/fees/all-classes/${spanClass.textContent}/generate-invoice` , {target: targetStudents, payment: spanPayment.textContent})
+        sendData(`/staff/finance/all-classes/${spanClass.textContent}/generate-invoice` , {target: targetStudents, payment: spanPayment.textContent})
         .then(res => {
             displayMsg.textContent = res.message
             setTimeout(() => {
-                window.location.replace(`/school/fees/all-classes/${spanClass.textContent}/generate-invoice`) 
+                window.location.replace(`/staff/finance/all-classes/${spanClass.textContent}/generate-invoice`) 
             } , 2000)
         })
         .catch(err => displayMsg.textContent = err.message) 

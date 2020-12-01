@@ -33,17 +33,17 @@ block content
                                                     span(aria-hidden="true") &times;
                                             div(class="modal-body")
                                                 form(method="POST")
-                                                    label(class="label") Period (1, 2 , etc): 
+                                                    label Period (1, 2 , etc): 
                                                     input(type="Number" class="form-control mb-2" name="periodNum")
-                                                    label(class="label") Start Time: 
+                                                    label Start Time: (E.G: 7:00)
                                                     input(type="text" class="form-control mb-2" name="startTime")
-                                                    label(class="label") End Time: 
+                                                    label End Time: (E.G: 10:00)
                                                     input(type="text" class="form-control mb-2" name="endTime")
                                                     
                                                     div(class="text-center")
-                                                        button(type="submit" class="btn main-btn") Create
+                                                        button(type="submit" class="btn btn-info") Create
 
-                                if periods
+                                if periods.length > 0
                                     .card
                                         .card-header
                                             h5 School Periods
@@ -57,19 +57,22 @@ block content
                                                             th Delete
 
                                                     tbody 
-                                                            each period, index in periods
-                                                                each week in period.weekday
-                                                                    - let viewUrl = "/school/period/" + week._id
-                                                                    - let periodnum = week.periodNum
-                                                                    - let timedur = week.startTime +" - "+week.endTime
-                                                                    tr
-                                                                        td #{periodnum}
-                                                                        td #{timedur}
-                                                                        td 
-                                                                            a(href=viewUrl class="main-link") 
-                                                                                i(class="fa fa-trash")
+                                                        each period, index in periods
+                                                            each week in period.weekday
+                                                                - let viewUrl = "/school/period/" + week._id
+                                                                - let periodnum = week.periodNum
+                                                                - let timedur = week.startTime +" - "+week.endTime
+                                                                tr
+                                                                    td #{periodnum}
+                                                                    td #{timedur}
+                                                                    td 
+                                                                        a(href=viewUrl class="red-color") 
+                                                                            i(class="feather icon-trash")
                                 else
-                                    p No Periods Created
+                                    .card
+                                        .card-header
+                                            h5 School Periods
+                                            span.d-block.m-t-5 No Periods has been created yet.
                                 
 
 

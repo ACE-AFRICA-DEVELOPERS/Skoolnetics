@@ -13,19 +13,13 @@ block content
                     .pcoded-inner-content 
                         .main-body
                             .page-wrapper
-                            if timetables
+                            if timetables.length > 0
                                 .card
                                     .card-header.mb-3
                                         h5 #{term.name} Examination Timetable for #{className.name}
                                     .card-block.table-border-style
                                         .table-responsive
                                             table.table.table-striped
-                                                thead.thead-light 
-                                                    tr 
-                                                        th Day
-                                                        each s, index in timetables
-                                                            th Subjects #{index + 1}
-
                                                 tbody 
                                                     each time , index in timetables
                                                         
@@ -36,6 +30,9 @@ block content
                                                                     span #{t.subjectName}
                                                                     p #{t.startTime} - #{t.endTime}
                             else
-                                p Yet to be uploaded.
+                                .card
+                                    .card-header
+                                        h5 #{term.name} Examination Timetable for #{className.name}
+                                        span.d-block.m-t-5 It hasn't been set yet.
                                 
             include includes/footer.pug

@@ -1,0 +1,76 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 #{demoSchool.schoolName}
+                                    .card-body
+                                        form(method="post")
+                                            div(class="row")
+                                                div(class="col-md-6 form-field ml-3")
+                                                    div(class="custom-border")
+                                                        if demoSchool.schoolCode
+                                                            label School ID :
+                                                            input(type="text" value=demoSchool.schoolCode class="form-control mb-3" readonly)
+                                                        else
+                                                            label School ID :
+                                                            input(type="text" value="Not assigned yet" class="form-control mb-3" readonly)
+                                                        label Email :
+                                                        input(type="text" value=demoSchool.schoolEmail class="form-control mb-3" readonly)
+                                                        label Username :
+                                                        input(type="text" value=demoSchool.schoolName class="form-control mb-3" readonly)
+                                                        label Full Name :
+                                                        input(type="text" value=demoSchool.schoolAdmin class="form-control mb-3" readonly)
+                                                        if demoSchool.password
+                                                            label Password :
+                                                            input(type="text" value=demoSchool.country class="form-control mb-3" readonly)
+                                                        label Address :
+                                                        - let address = demoSchool.address
+                                                        input(type="text" value=address class="form-control mb-3" readonly)
+                                                        if demoSchool.verified
+                                                            label Verified Email :
+                                                            input(type="text" value="Yes" class="form-control mb-3" readonly)
+                                                        else
+                                                            label Verified Email :
+                                                            input(type="text" value="No" class="form-control mb-3" readonly)
+                                                        label Expiry Date : 
+                                                        if(demoSchool.expiryDate != null)
+                                                            input(type="text" value=demoSchool.expiryDate.toDateString() class="form-control mb-3" readonly)
+                                                        if(demoSchool.expiryDate == null)
+                                                            input(type="text" value="Not updated yet." class="form-control mb-3" readonly)
+                                                        
+                                                        if !demoSchool.approved
+                                                            a(href="#" class="btn btn-info mt-1" data-toggle="modal" data-target="#approveModal") Approve Account
+
+                                                        div(class="modal fade" id="approveModal" tabindex="-1" role="dialog" aria-labelledby="searchModal" aria-hidden="true")
+                                                            div(class="modal-dialog" role="document")
+                                                                div(class="modal-content")
+                                                                    div(class="modal-header") Are you Sure?
+                                                                        button(type="button" class="close" data-dismiss="modal" aria-label="Close") ×
+                                                                    div(class="modal-body") 
+                                                                        p Clicking on Yes will enable the School to login with registered details.
+                                                                        - let approveUrl = "/202007/admin/demoschool/" + demoSchool._id + "/approve"
+                                                                    div(class="modal-footer")
+                                                                        a(href=approveUrl class="btn btn-info mr-2") Yes
+                                                                        a(href="#" class="btn btn-light" data-dismiss="modal" aria-label="Close") No
+
+                                                    if success
+                                                        if success.length != 0
+                                                            .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                                button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                                    span(aria-hidden="true") ×
+                                                                span #{success}
+
+                include includes/footer.pug

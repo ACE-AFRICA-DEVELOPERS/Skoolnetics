@@ -68,17 +68,20 @@ block content
                                                                 
                                             .col-md-4.mt-3
                                                 .row
+                                                    - let attendanceUrl = "/parent/student/" + studentDB._id + "/attendance"
+                                                    - let assignmentUrl = "/parent/student/" + studentDB._id + "/assignment"
+                                                    - let reportUrl = "/parent/student/" + studentDB._id + "/report-card"
                                                     - let feesUrl = "/parent/student/" + studentDB._id + "/finance-page"
                                                     .col-md-12.mb-3
-                                                        a(href="#")
+                                                        a(href=attendanceUrl)
                                                             .box-field.text-center
                                                                 p Attendance
                                                     .col-md-12.mb-3
-                                                        a(href="#")
+                                                        a(href=assignmentUrl)
                                                             .box-field.text-center
                                                                 p Assignment
                                                     .col-md-12.mb-3
-                                                        a(href="#")
+                                                        a(href=reportUrl)
                                                             .box-field.text-center
                                                                 p Report Card
                                                     .col-md-12.mb-3

@@ -41,10 +41,13 @@ block content
                                                                 td #{studentName[attend.student]}
                                                                 if attend.attendance.length > 0
                                                                     each att in attend.attendance
-                                                                        if att.mark == "Present"
-                                                                            td #[i(class="fa fa-check text-success")]
+                                                                        if att.holiday
+                                                                            td H
                                                                         else
-                                                                            td #[i(class="fa fa-times text-danger")]
+                                                                            if att.mark == "Present"
+                                                                                td #[i(class="fa fa-check text-success")]
+                                                                            else
+                                                                                td #[i(class="fa fa-times text-danger")]
                                                                 else
                                                                     td(colspan="5") No attendance for this week yet.
                                   

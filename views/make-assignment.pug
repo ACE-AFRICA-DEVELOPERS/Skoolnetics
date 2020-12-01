@@ -18,29 +18,24 @@ block content
                                             h5 Create Assignment
                                         div(class="card-body")
                                             p #{message}
-                                            form(action="", method="post" class="form-field")
+                                            form(method="post" class="report-field")
                                                 .row
-                                                    .col-md-3.col-sm-6.mt-2
-                                                        label(class="label") Subject
+                                                    .col-md-4.col-sm-6.mb-3
+                                                        label Subject & Class
                                                         select(name="subject" class="form-control custom-select")
                                                             option(value="" selected disabled="disabled") ------
                                                             each st in staff.teaching 
-                                                                option(value=st.subject) #{st.subject}
-                                                    .col-md-3.col-sm-6.mt-2
-                                                        label(class="label") Class
-                                                        select(name="className" class="form-control custom-select")
-                                                            option(value="" selected disabled="disabled") ------
-                                                            each ct in staff.teaching 
-                                                                option(value=ct.className) #{ct.className}
-                                                    .col-md-3.col-sm-6.mt-2
-                                                        label(class="label") Released Date
+                                                                option(value=st._id) #{st.subject} (#{st.className})
+                                                    
+                                                    .col-md-4.col-sm-6.mb-3
+                                                        label Released Date
                                                         input(type="date", name="releaseDate" class="form-control")
-                                                    .col-md-3.col-sm-6.mt-2
-                                                        label(class="label") Submission Date
+                                                    .col-md-4.col-sm-6.mb-3
+                                                        label Submission Date
                                                         input(type="date", name="submissionDate" class="form-control")
-                                                    .col-md-12.mt-2
-                                                        label(class="label") Content
+                                                    .col-md-12.mb-3
+                                                        label Content
                                                         textarea(name="contentDetail", cols="30", rows="10" class="form-control" placeholder="Notes")
                                                     .col-md-6
-                                                        button(type="submit").btn.main-btn.mt-3.pl-5.pr-5 Send Assignment
+                                                        button(type="submit").btn.btn-info.mt-3.pl-5.pr-5 Send Assignment
         include includes/footer.pug

@@ -45,8 +45,8 @@ block content
                                                             .col-md-6.mb-3
                                                                 .form-field
                                                                     form(method="POST")
-                                                                        label(class="label") Select an Exam
-                                                                        select(name="examType" class="form-control mb-3" id="examSelect" required)
+                                                                        label Select an Exam
+                                                                        select(name="examType" class="custom-select form-control mb-3" id="examSelect" required)
                                                                             option(value="" selected disabled="disabled") ----
                                                                             each compute in examCompute
                                                                                 option(value=compute.name) #{compute.name}
@@ -57,10 +57,25 @@ block content
                                                                         input(type="submit" value="Upload" class="btn btn-info")
                                                                         p#displayError
                                                             .col-md-6.mb-3
-                                                                p #[b #[u Exam Uploaded]]
+                                                                - let compute = []
+                                                                if courseUploaded
+                                                                    each e in courseUploaded
+                                                                        - compute.push(e.examType)
+                                                                if firstTermResult
+                                                                    - let ft = compute.find(s => s === 'First Term')
+                                                                    if !ft
+                                                                        - let firstUrl = '/staff/upload-result/' + pSubject + '/' + pClass + '/' + studentDB._id + '/First Term/' + firstTermResult.total
+                                                                        p #[i(class="feather icon-check")] 1st Term - #{firstTermResult.total} #[a(href=firstUrl class="ace-btn ml-4") #[i(class="feather icon-navigation")]]
+                                                                if secondTermResult
+                                                                    - let st = compute.find(s => s === 'Second Term')
+                                                                    if !st
+                                                                        - let secondUrl = '/staff/upload-result/' + pSubject + '/' + pClass + '/' + studentDB._id + '/Second Term/' + secondTermResult.total 
+                                                                        p #[i(class="feather icon-check")] 2nd Term - #{secondTermResult.total} #[a(href=secondUrl class="ace-btn ml-4") #[i(class="feather icon-navigation")]]
+                                                                p #[b #[u Results Uploaded]] (#{termS})
                                                                 if courseUploaded
                                                                     each course in courseUploaded
                                                                         p #[i(class="feather icon-check")] #{course.examType} - #{course.score}
+                                                                       
                                                                 else
                                                                     p None yet.
                                                 hr

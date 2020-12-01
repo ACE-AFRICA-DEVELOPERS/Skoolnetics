@@ -43,9 +43,9 @@ block content
                                                                     .col-3
                                                                         label(for="class" class="label") Class:
                                                                     .col-9
-                                                                        - if(studentDB.studentClass != null) 
+                                                                        - if(studentDB.className != null) 
                                                                             input(type="text" value= studentClass.name class="profile-form mb-4" readonly)
-                                                                        - else if(studentDB.studentClass == null)
+                                                                        - else 
                                                                             input(type="text" value=`Graduated, ${sessS}` class="profile-form mb-4" readonly)
                                                                     .col-3
                                                                         label(for="firstname" class="label") First Name:

@@ -1,0 +1,54 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                - for (let i = 1; i <= 13; i++){
+                                    - let weekUrl = "/parent/student/" + students._id + "/attendance/" + i
+                                    - let color
+                                    - if (week == i){
+                                        - color = 'btn-dark'
+                                    - }
+                                    a(href=weekUrl class=`btn btn-light ${color}`) Week#{i}
+                                - }
+                                .card.mt-3
+                                    .card-header
+                                        h5 #{students.lastName} #{students.firstName} #{students.lastName}
+                                    .card-body
+                                        h5 Week #{week}
+                                        if attendance
+                                            if attendance.length > 0
+                                                .card-block.table-border-style
+                                                    .table-responsive
+                                                        table.table.table-striped
+                                                            thead.thead-light
+                                                                tr
+                                                                    each d in attendance
+                                                                        - let attDate = d.date.getDate() + "/" + (d.date.getMonth() + 1) + "/" + d.date.getFullYear() + " " + `(${weekday[d.date.getDay()]})`
+                                                                        th #{attDate}
+                                                            tbody
+                                                                tr
+                                                                    each d in attendance
+                                                                        if d.holiday
+                                                                            td Holiday
+                                                                        else
+                                                                            if d.mark == "Present"
+                                                                                td Present
+                                                                            else
+                                                                                td Absent
+                                            else
+                                                p No attendance found for this week.
+                                        else
+                                            p No attendance found for this week.
+       
+        include includes/footer.pug

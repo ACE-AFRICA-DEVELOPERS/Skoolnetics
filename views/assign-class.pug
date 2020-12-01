@@ -33,7 +33,7 @@ block content
                                         span.d-block.m-t-5 Both fields are compulsory.
                                     .card-body
                                         .row
-                                            .col-md-6
+                                            .col-md-6.mb-3
                                                 .form-field
                                                     form(method="POST")
                                                         label(class="label") Class
@@ -47,5 +47,22 @@ block content
                                                             each subject in subjects.subjects
                                                                 option(value=subject) #{subject}
                                                         input(type="submit" value="Assign" class="btn btn-info")
+                                            .col-md-6.mb-3
+                                                if staffDB.teaching
+                                                    if staffDB.teaching.length > 0
+                                                        .row
+                                                            each teach in staffDB.teaching
+                                                                .col-md-6.mb-2
+                                                                    .form-field
+                                                                        .float-left
+                                                                            p #[b #{teach.className}]
+                                                                            p #[i #{teach.subject}]
+                                                                        .float-right
+                                                                            a(href="#" class="red-color") #[i.feather.icon-trash]
+                                                                        .clearfix
+                                                    else
+                                                        p You haven't assigned any class and subject to this teacher.
+                                                else
+                                                    p You haven't assigned any class and subject to this teacher.
 
         include includes/footer.pug

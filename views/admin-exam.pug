@@ -13,7 +13,7 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
-                                p #[a(href="#" data-toggle="modal" data-target="#add-exam" class="btn btn-info") New Exam #[i(class="fa fa-plus ml-1")]]
+                                p #[a(href="#" data-toggle="modal" data-target="#add-exam" class="btn btn-info") New CBT #[i(class="fa fa-plus ml-1")]]
                                 div(id="add-exam" class="modal fade")
                                     div(class="modal-dialog" role="document")
                                         div(class="modal-content")
@@ -23,27 +23,26 @@ block content
                                                     span(aria-hidden="true") &times;
                                             div(class="modal-body")
                                                 form(method="POST")
-                                                    label(class="label") Exam Name: 
+                                                    label Name: 
                                                     input(type="text" class="form-control mb-2" name="name")
-                                                    label(class="label") Start Date: 
+                                                    label Start Date: 
                                                     input(type="date" class="form-control mb-2" name="startDate" placeholder="Start Date")
-                                                    label(class="label") End Date:
+                                                    label End Date:
                                                     input(type="date" class="form-control mb-2" name="endDate" placeholder="End Date")
                                                     div(class="text-center")
                                                         button(type="submit" class="btn main-btn") Create
                                 .card
                                     if exams.length > 0
                                         .card-header
-                                            h5 Exams
+                                            h5 CBT
                                         .card-block.table-border-style
                                             .table-responsive
                                                 table.table.table-striped
                                                     thead.thead-light 
                                                         tr 
-                                                            th Exam Code
-                                                            th Exam Name
+                                                            th Code
+                                                            th Name
                                                             th Start Date
-                                                            th Time Table
                                                             th Questions
                                                             th Open
                                                             th Close
@@ -61,7 +60,6 @@ block content
                                                                 td #{code}
                                                                 td #{name}
                                                                 td #{startDateDay}/#{startDateMonth}/#{startDateYear}
-                                                                td #[a(href="#") View]
                                                                 td #[a(href=questionsUrl ) View]
                                                                 if !exam.available
                                                                     td #[a(href="#" data-toggle="modal" data-target=`#o${exam._id}` class="small-btn") Open]
@@ -83,7 +81,7 @@ block content
                                     else
                                         .card-header
                                             h5 Exams
-                                            span.d-block.m-t-5 No exam has been created. 
+                                            span.d-block.m-t-5 No CBT has been created. 
         
         script(src="/javascripts/populate.js" type="module")
         include includes/footer.pug

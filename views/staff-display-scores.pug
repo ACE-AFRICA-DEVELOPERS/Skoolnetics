@@ -30,15 +30,22 @@ block content
                                                         tr
                                                             th Name
                                                             th Student ID
+                                                            th Total
                                                             th Score
+                                                            th Percentage
+                                                            th Grade
                                                     tbody
                                                         each result, index in results
-                                                            tr
+                                                            tr(class="analytics-row")
                                                                 td #{studentName[result.student]}
                                                                 td #{studentID[result.student]}
                                                                 each res in result.result
                                                                     if res.courseName == pSubject
-                                                                        td(id="score") #{res.score}                
+                                                                        td #{res.total}
+                                                                        td(id="score") #{res.score} 
+                                                                        td.average #{res.percentage}
+                                                                        td.grade
+                                                                              
 
                                 else
                                     .card
@@ -46,5 +53,5 @@ block content
                                             h5 CBT Result sheet for #{pSubject}, #{pClass}
                                             span.d-block.m-t-5 No student has written this text/Exam.
                                     
-
+        script(src="/javascripts/library/grade-cbt.js" type="module")
         include includes/footer.pug

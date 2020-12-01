@@ -53,7 +53,8 @@ block content
                                                                     th Term
                                                                     th Start Date
                                                                     th End Date
-                                                                    th Current
+                                                                    th Current?
+                                                                    th Ended?
                                                             tbody 
                                                                 each sess in term
                                                                     - let name = sess.name
@@ -68,11 +69,22 @@ block content
                                                                         td #{name}
                                                                         td #{startDateDay}/#{startDateMonth}/#{startDateYear}
                                                                         td #{endDateDay}/#{endDateMonth}/#{endDateYear}
-                                                                        if sess.current
-                                                                            td Yes
+                                                                        if sess.ended
+                                                                            td Ended
                                                                         else
-                                                                            - let currentUrl = "/school/session/" + session._id + "/current/" + sess._id
-                                                                            td #[a(href=currentUrl class="ace-btn") Make Current]
+                                                                            if sess.current
+                                                                                td Yes
+                                                                            else
+                                                                                - let currentUrl = "/school/session/" + session._id + "/current/" + sess._id
+                                                                                td #[a(href=currentUrl class="ace-btn") Make Current]
+                                                                        if sess.current
+                                                                            if sess.ended
+                                                                                td Yes
+                                                                            else
+                                                                                - let endUrl = "/school/session/" + session._id + "/end/" + sess._id
+                                                                                td #[a(href=endUrl class="ace-btn") Set]
+                                                                        else
+                                                                            td ----
                                             else
                                                 .card-header
                                                     h5 Term

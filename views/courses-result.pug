@@ -19,16 +19,13 @@ block content
                                         span.d-block.m-t-5 Select one:
                                     if courses.length > 0
                                         .card-body
-                                            each course in courses
-                                                .col-md-4
-                                                    - let courseUrl = '/staff/cbt/cbt-results/' + exam.examCode + '/' + course.courseName + '/' + course.className
-                                                    a(href=courseUrl class="text-dark")
-                                                        .field-box
-                                                            p #[b #{course.courseName}]
-                                                            p (#{course.className})
-                                                            if course.release
-                                                                p #[b Result released]
-                                                            else
-                                                                p #[b Not yet released]
-
+                                            .row
+                                                each course in courses
+                                                    .col-md-4
+                                                        - let courseUrl = '/staff/cbt/cbt-results/' + exam.examCode + '/' + course.courseName + '/' + course.className
+                                                        a(href=courseUrl class="text-dark")
+                                                            .field-box
+                                                                p #[b #{course.courseName}]
+                                                                p (#{course.className})
+                                                            
         include includes/footer.pug

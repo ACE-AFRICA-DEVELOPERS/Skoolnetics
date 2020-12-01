@@ -1,0 +1,39 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 Students
+                                        
+                                    .card-body
+                                        .row
+                                            .col-md-3.mb-3
+                                                a(href='/staff/students/all' class="text-dark")
+                                                    .box-field
+                                                        p #[b All Students]
+                                            .col-md-3.mb-3
+                                                a(href='/staff/students/suspended' class="text-dark")
+                                                    .box-field
+                                                        p #[b Suspended Students]
+                                            .col-md-3.mb-3
+                                                a(href='/staff/students/revoked' class="text-dark")
+                                                    .box-field
+                                                        p #[b Revoked Students]
+                                            .col-md-3.mb-3
+                                                a(href='/staff/students/all-graduates' class="text-dark")
+                                                    .box-field
+                                                        p #[b Graduated Students]
+
+        include includes/footer.pug

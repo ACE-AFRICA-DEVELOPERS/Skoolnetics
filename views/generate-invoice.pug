@@ -14,7 +14,7 @@ block content
                         .main-body
                             .page-wrapper
                                 if invoices.length > 0
-                                    - let billUrl = "/school/fees/all-classes/" + singleClass._id + "/bill"
+                                    - let billUrl = "/staff/finance/all-classes/" + singleClass._id + "/bill"
                                     p #[a(href=billUrl class="btn btn-info" id="submit") View Bill]
                                     .card
                                         .card-header
@@ -34,7 +34,7 @@ block content
                                                                 td #{studentReg[invoice.student]}
                                                                 td #{invoice.invoiceNumber}
                                 else
-                                    p #[a(href="#" class="btn btn-info" id="submit") Generate]
+                                    p #[button(type="button" class="btn btn-info" id="submit") Generate]
                                     p#span-payment.d-none #{payments._id}
                                     p#span-class.d-none #{singleClass._id}
                                     p#displayMsg

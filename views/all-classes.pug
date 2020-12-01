@@ -22,7 +22,7 @@ block content
                                             .row
                                                 each c in classes
                                                     .col-md-3.mb-3
-                                                       - let classUrl = "/school/fees/all-classes/" + c._id
+                                                       - let classUrl = "/staff/finance/all-classes/" + c._id
                                                         a(href=classUrl class="text-dark")
                                                             .field-box
                                                                 p #[b #{c.name}]

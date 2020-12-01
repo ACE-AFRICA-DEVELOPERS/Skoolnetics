@@ -13,28 +13,22 @@ block content
                     .pcoded-inner-content 
                         .main-body
                             .page-wrapper
-                                div(class="d-flex justify-content-between mb-4")
-                                    h4 Class Timetable for #{classSchools.name}
-                                    p #[a(href="/school/timetable/class/" +classSchools._id+'/class-timetable/show-timetable' class="btn btn-info") Show Timetable #[i(class="fa fa-arrow-right ml-1")]]
+                                p #[a(href="/school/timetable/class/" +classSchools._id+'/class-timetable/' class="btn btn-info") #[i.feather.icon-clipboard] Show Timetable ]
                                 .card
                                     .card-header.mb-3
-                                        h5 Select the Week day you want to compute for.
-                                    .row.p-3
-                                        if classSchools
-                                            each d in day
-                                                - let dayUrl = "/school/timetable/class/" + classSchools._id + "/class-timetable/day/" + d._id + '/subject'
-                                                .col-md-12.mb-3
-                                                    a(href=dayUrl)
-                                                        div(class="box-field")
-                                                            span #{d.weekday}
-
-                                a(href="/school/timetable" class="btn btn-info mt-5")
-                                    i(class="fa fa-arrow-left ml-1")
-                                        span.ml-2 Back
-
-
-                                
-
-
+                                        h5 Class Timetable for #{classSchools.name}
+                                        span.d-block.m-t-5 Select the Week day you want to compute for.
+                                    .card-body
+                                        .row
+                                            if day.length > 0
+                                                each d in day
+                                                    - let dayUrl = "/school/timetable/class/" + classSchools._id + "/class-timetable/day/" + d._id + '/subject'
+                                                    .col-md-4.mb-3
+                                                        a(href=dayUrl)
+                                                            div(class="box-field")
+                                                                i.feather.icon-calendar.text-c-green.mr-2
+                                                                span #{d.weekday}
+                                            else
+                                                p You need to set days first.
 
             include includes/footer.pug

@@ -1,0 +1,33 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrappers
+                                .card
+                                    .card-header
+                                        h5 #{session.name} | #{term.name}
+                                        span.d-block.m-t-5 Please select a module you will like to see.
+                                    .card-body
+                                        .row
+                                            .col-md-3.mb-3
+                                                - let cbtUrl = '/staff/manage-sessions/' + session._id + '/' + term.name + '/cbt'
+                                                a(href=cbtUrl class="text-dark")
+                                                    .box-field
+                                                        p #[b CBT]
+                                            .col-md-3.mb-3
+                                                - let resultUrl = '/staff/manage-sessions/' + session._id + '/' + term.name + '/results'
+                                                a(href=resultUrl class="text-dark")
+                                                    .box-field
+                                                        p #[b Results]
+                            
+        include includes/footer.pug

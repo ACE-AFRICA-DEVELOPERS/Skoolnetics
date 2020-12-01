@@ -5,7 +5,7 @@ block content
         div(id="wrapper")
             nav(class="navbar")
                 div(class="container")
-                    a(class="navbar-brand") AceSkool
+                    a(class="navbar-brand") Skoolnetics
                     span(class="className" id=course.className)
                     span(class="courseName" id=course.courseName)
                     span(class="examName" id=exam.examCode)
@@ -25,7 +25,7 @@ block content
                             p(class="mt-2 question-para" id=currentQuestion._id) #{currentQuestion.mainQuestion}
                             if currentQuestion.image
                                 div(class="mt-1 text-center")
-                                    - let imageUrl = "/uploads/schools/" + code + "/" + "/exam-" + exam.examCode + "/" + course.courseName + "-" + course.className + "/" + currentQuestion.image
+                                    - let imageUrl = "/uploads/schools/" + code + "/" + "/exam-" + exam.examCode + "/" + currentQuestion.image
                                     p #[img(src=imageUrl height="150px" width="300px")]
                             div(class="radio-box")
                                 input(type="radio" class="" data-id=currentQuestion._id name="g" value=currentQuestion.options.optionA)
@@ -67,7 +67,7 @@ block content
                                     div(class="modal-body")
                                         p #[span(class="fa fa-info-circle") ] There's no going back once you click on submit.
                                         a(href="#" class="btn btn-info mr-3" id="quit") Submit
-                                        a(href="#" class="btn btn-danger" data-dismiss="modal" aria-label="Close") Cancel
+                                        a(href="#" class="btn btn-light" data-dismiss="modal" aria-label="Close") Cancel
 
             
 

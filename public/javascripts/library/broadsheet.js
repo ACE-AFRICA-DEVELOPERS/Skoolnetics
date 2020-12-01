@@ -15,6 +15,7 @@ const grade = Array.from(selectAll("#grade")).map(e => {
 const exam = Array.from(selectAll("#Exam")).map(e => {
     return e.textContent
 })
+console.log(total)
 
 const courseName = selector("#courseName").textContent
 const className = selector("#className").textContent

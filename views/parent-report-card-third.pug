@@ -1,0 +1,98 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p #[a(href="#" class="btn btn-info") #[i.feather.icon-printer] Print]
+                                .card
+                                    if broadsheet
+                                        .card-header
+                                            h5 Report Card
+                                        .card-body
+                                            .row
+                                                .col-md-8
+                                                    .report-field
+                                                        .d-flex.justify-content-between
+                                                            div
+                                                                p #[b #{schoolT.schoolName}]
+                                                                - let logoUrl = '/uploads/schools/' + schoolT.schoolCode + '/logo/' + schoolT.logo
+                                                                img(src=logoUrl height="150px" width="150px")
+                                                                
+                                                            div
+                                                                if students.profilePhoto
+                                                                    - let imageUrl = '/uploads/schools/' + schoolT.schoolCode + '/' + pClass + '/' + students.profilePhoto
+                                                                    img(src=imageUrl height="150px" width="150px")
+                                                                else
+                                                                    if students.gender = 'male'
+                                                                        img(src="/images/user/avatar-4.jpg" height="150px" width="150px")
+                                                                    else
+                                                                        img(src="/images/user/avatar-3.jpg" height="150px" width="150px")
+                                                                .mt-3
+                                                                    p
+                                                                        b Name:
+                                                                        span.ml-1 #{students.lastName} #{students.firstName} #{students.otherName}
+                                                                    p 
+                                                                        b Student ID:
+                                                                        span.ml-1 #{students.studentID}
+                                                                    p 
+                                                                        b Class:
+                                                                        span.ml-1 #{broadsheet.className}
+                                                        .table-responsive
+                                                            table.table.table-hover
+                                                                tbody
+                                                                    tr.unread
+                                                                            td
+                                                                                h5.text-c-green
+                                                                                i.feather.icon-message-square
+                                                                            td
+                                                                                h6.mb-1 #[b Subject]
+                                                                                p.m-0 #[b 1st Term | 2nd Term | 3rd Term]
+                                                                                
+                                                                            td
+                                                                                h6.text-muted
+                                                                                    i.fas.fa-circle.text-c-green.f-10.m-r-15
+                                                                                    | #[b Total]
+                                                                    each res in broadsheet.result
+                                                                        tr.unread
+                                                                            td
+                                                                                h5.text-c-green
+                                                                                i.feather.icon-message-square
+                                                                            td
+                                                                                h6.mb-1 #{res.courseName}
+                                                                                p.m-0 #{res.firstTerm} | #{res.secondTerm} | #{res.total}
+                                                                                
+                                                                            td
+                                                                                h6.text-muted
+                                                                                    i.fas.fa-circle.text-c-green.f-10.m-r-15
+                                                                                    | #{res.overall}
+                                                        hr
+                                                        .mt-2
+                                                            .d-flex.justify-content-between                    
+                                                                div
+                                                                    p #[b Total: ] #[span #{broadsheet.gTotal}]
+                                                                    p #[b Percentage: ] #[span #{broadsheet.gAverage}]
+                                                                div
+                                                                    p #[b Attendance: ] #[span --]
+                                                                    p #[b Position: ] #[span #{broadsheet.position}]
+                                                        hr
+                                                        .mt-2
+                                                            label Class teacher remarks:
+                                                            input(type="text" class="profile-form mb-3" readonly value=broadsheet.teacherRemark)
+                                                            label Principal remarks:
+                                                            input(type="text" class="profile-form mb-3" readonly value=broadsheet.principalRemark)
+                                    else
+                                        .card-header
+                                            h5 Report Card
+                                            span.d-block.m-t-5 Your report card hasn't been released.
+        
+        include includes/footer.pug

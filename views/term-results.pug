@@ -1,0 +1,65 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrappers
+                                .card
+                                    .card-header
+                                        h5 #{session.name} | #{term.name} ( #{className} Broadsheet)
+                                        
+                                    .card-body
+                                        if broadsheet.length > 0
+                                            .card-block.table-border-style
+                                                .table-responsive
+                                                    table.table.table-striped
+                                                        thead.thead-light
+                                                            tr 
+                                                                th Name
+                                                                th Reg Number
+                                                                each cls in firstResult.result
+                                                                    th(colspan="3" class="text-center") #{cls.courseName}
+                                                                th(colspan="2" class="text-center") Gross
+                                                                th Percentage
+                                                                th Position
+                                                                th Report Card
+                                                            tr
+                                                                th -----
+                                                                th -----
+                                                                each cls in firstResult.result
+                                                                    th CA
+                                                                    th Exam
+                                                                    th Total
+                                                                th Obtained
+                                                                th Obtainable
+                                                                th -------
+                                                                th -------
+                                                                th -------
+                                                        tbody
+                                                            each result in broadsheet
+                                                                tr(class="analytics-row")
+                                                                    td #{studentName[result.student]}
+                                                                    td #{studentID[result.student]}
+                                                                        each res in result.result
+                                                                            td #{res.ca}
+                                                                            td #{res.exam}
+                                                                            td.broad-total.data #{res.total} 
+                                                                    td(class="total") #{result.gTotal}
+                                                                    td(class="obtainable") #{result.result.length * 100}
+                                                                    td(class="average") #{result.gAverage}
+                                                                    td(class="position") #{result.position}
+                                                                    - let cardUrl = '/school/manage-sessions/' + session._id + '/' + term.name + '/results/' + className + '/' + result.id 
+                                                                    td #[a(href=cardUrl) View] 
+                                        else
+                                            p Nothing was found.                              
+                            
+        include includes/footer.pug

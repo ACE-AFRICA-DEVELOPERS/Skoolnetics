@@ -20,7 +20,7 @@ const staffStorage = multer.diskStorage({
 		cb(null ,  path.join(directoryName, '/public/uploads/profile/'))
 	} , 
 	filename : function(req , file , cb) { 
-	    let fileName =  req.session.staffCode + "-" + file.originalname 
+	    let fileName =  req.params.staffID + "-" + file.originalname 
 		cb(null , fileName) 
 	}
 })
@@ -31,7 +31,7 @@ const studentStorage = multer.diskStorage({
 	} , 
 	filename : function(req , file , cb) {  
 		let date = new Date().getDate() 
-	    let fileName =   req.session.regNumber + "-" + file.originalname 
+	    let fileName =   req.params.studentID + "-" + file.originalname 
 		cb(null , fileName) 
 	}
 }) 

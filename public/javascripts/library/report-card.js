@@ -13,6 +13,7 @@ let resultCells     = Analytics.selectAll(".total")
 let average = Analytics.selectAll(".average")
 let position = Analytics.selectAll(".position")
 let studentID = Analytics.selectAll(".studentID")
+let length = Analytics.selector("#length").textContent
 
 const AnalyseRowData = (rowForAnalytics , cellsForResult, cellsForAverage, cellsForID) => { 
     let dataObjects = [] 
@@ -36,7 +37,7 @@ const AnalyseRowData = (rowForAnalytics , cellsForResult, cellsForAverage, cells
         // Attach the total property to data object 
         data.total = total 
 
-        let average = (total / 200) * 100
+        let average = ((total / (Number(length) * 100)) * 100).toFixed(2)
         cellsForAverage[i].textContent = average
 
         data.average = average

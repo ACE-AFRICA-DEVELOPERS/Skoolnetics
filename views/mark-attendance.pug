@@ -19,11 +19,11 @@ block content
                                         
                                     .card-body
                                         .row
-                                            .col-sm-6.mb-3
-                                                label(class="label") Select Date
+                                            .col-sm-4.mb-3
+                                                label Select Date
                                                 input(type="date", name="date" class="form-control" id="dateData")
-                                            .col-sm-6
-                                                label(class="label") Select Week
+                                            .col-sm-4.mb-3
+                                                label Select Week
                                                 select(id="weekData" class="form-control custom-select")
                                                     option(value="" disabled="disabled" selected) ------------
                                                     option(value="1") Week 1
@@ -40,6 +40,13 @@ block content
                                                     option(value="12") Week 12
                                                     option(value="13") Week 13
                                                     option(value="14") Week 14
+                                            .col-sm-4.mb-3
+                                                label Holiday?
+                                                select(id="holiday" class="form-control custom-select")
+                                                    option(value="" disabled="disabled" selected) ------------
+                                                    option(value="Yes") Yes
+
+
                                         if students
                                             .table-responsive
                                                 table.table.table-striped
@@ -56,7 +63,7 @@ block content
                                                         
                                         .row
                                             .col-sm-3
-                                                button(type="button" href="#" class="btn btn-info" id="updateAll") Mark All  
+                                                button(type="button" class="btn btn-info" id="updateAll") Mark All  
                                             .col-sm-12
                                                 p.mt-3.err-msg 
                                                           

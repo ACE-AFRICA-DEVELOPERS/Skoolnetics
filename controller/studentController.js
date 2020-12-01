@@ -10,6 +10,7 @@ const SchoolAdmin = require('../model/schoolAdmin')
 const Session = require('../model/session')
 const Term = require('../model/term')
 const ExamPass = require('../model/generate-pass')
+const Broadsheet = require('../model/broadsheet')
 
 class App {
 
@@ -57,7 +58,7 @@ class App {
                 }
                 if(student){
                     res.render('student-dashboard' , { title  : "Dashboard", 
-                    student : student, code : school.schoolCode, className : className,
+                    student : student, code : school, className : className,
                     dash_active : "active", schoolT: school, termS: termS, sessS: sessionS })
                 }else{
                     throw{
@@ -84,7 +85,7 @@ class App {
                 session: session._id, term: term._id})
             
                 res.render('student-exam', {exams : exam, student : student,
-                code : school.schoolCode, className : className, title: 'CBT',
+                code : school, className : className, title: 'CBT',
                 exam_active : "active", sessS: session.name, termS: term.name})
                 
             }else{
@@ -100,20 +101,21 @@ class App {
             if(req.session.regNumber){
                 const student = await Student.findOne({studentID : req.session.regNumber})
                 const school = await SchoolAdmin.findOne({_id : student.school})
-                const exam = await Exam.findOne({
-                    school : student.school, available: true, 
-                    examCode: req.params.examCode
-                })
                 const session = await Session.findOne({school: school._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
+                const exam = await Exam.findOne({
+                    school : student.school, available: true, 
+                    examCode: req.params.examCode, session: session._id, term: term._id
+                })
                 if(exam){
                     let studentCourses = student.className
                     const classchool = await ClassSchool.findOne({_id : studentCourses})
                     const courses = await Course.find({
                         school : student.school, className : classchool.name,
-                        release : true, exam: exam._id})
+                        release : true, exam: exam._id
+                    })
                     res.render('student-courses', {courses : courses, exam : exam, 
-                    student : student, code : school.schoolCode, sessS: session.name, termS: term.name,
+                    student : student, code : school, sessS: session.name, termS: term.name,
                     className : classchool, exam_active : "active", title: 'Subjects'})
                 }else{
                     throw{
@@ -138,17 +140,19 @@ class App {
                 const term = await Term.findOne({session: session._id, current: true})
                 const exam = await Exam.findOne({
                     school : student.school, available: true, 
-                    examCode: req.params.examCode
+                    examCode: req.params.examCode, session: session._id, term: term._id
                 })
                 const course = await Course.findOne({
                     exam: exam._id, className: className.name, 
-                    release: true, courseName: req.params.courseName})
+                    release: true, courseName: req.params.courseName
+                })
                 const examPass = await ExamPass.findOne({
                     course: course._id, exam: exam._id, 
-                    student: student._id})
+                    student: student._id
+                })
             
                 res.render('verify-cbt', {exams : exam, student : student,
-                code : school.schoolCode, className : className, title: 'Verification',
+                code : school, className : className, title: 'Verification',
                 exam_active : "active", course: course, examPass: examPass,
                 sessS: session.name, termS: term.name})
                 
@@ -166,9 +170,11 @@ class App {
                 const student = await Student.findOne({studentID : req.session.regNumber})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const className = await ClassSchool.findOne({_id : student.className})
+                const session = await Session.findOne({school: school._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
                 const exam = await Exam.findOne({
                     school : student.school, available: true, 
-                    examCode: req.params.examCode
+                    examCode: req.params.examCode, session: session._id, term: term._id
                 })
                 const course = await Course.findOne({
                     exam: exam._id, className: className.name, 
@@ -193,9 +199,9 @@ class App {
                     })
                 }else{
                     res.render('verify-cbt', {exams : exam, student : student,
-                    code : school.schoolCode, className : className, title: 'Verification',
+                    code : school, className : className, title: 'Verification',
                     exam_active : "active", course: course, examPass: examPass,
-                    message: 'Access Denied!'})
+                    message: 'Access Denied!', sessS: session.name, termS: term.name})
                 }
             }else{
                 res.redirect(303, '/student')
@@ -215,7 +221,8 @@ class App {
                 const term = await Term.findOne({session: session._id, current: true})
                 const exam = await Exam.findOne({
                     school : student.school, available: true, 
-                    examCode: req.params.examCode
+                    examCode: req.params.examCode, session: session._id,
+                    term: term._id
                 })
                 const course = await Course.findOne({
                     exam: exam._id, className: className.name, 
@@ -231,15 +238,52 @@ class App {
                         }else{
                             mainResult = null
                         }
+                        
+                        res.render('start-exam', {exam : exam, student : student,
+                        code : school, className : className, title: 'Subjects',
+                        exam_active : "active", examQuestions: course, examPass: examPass,
+                        mainResult: mainResult, sessS: session.name, termS: term.name})
+                    }else{
+                        let redirectUrl = '/student/cbt/' + req.params.examCode + '/' + req.params.courseName + '/verify'
+                        res.redirect(303, redirectUrl)
+                    }
+                }else{
+                    res.redirect(303, '/student/dashboard')
+                }
+            }else{
+                res.redirect(303, '/student')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
 
+    countToExam = async (req, res, next) => {
+        try{
+            if(req.session.regNumber){
+                const student = await Student.findOne({studentID : req.session.regNumber})
+                const school = await SchoolAdmin.findOne({_id : student.school})
+                const className = await ClassSchool.findOne({_id : student.className})
+                const session = await Session.findOne({school: school._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const exam = await Exam.findOne({
+                    school : student.school, available: true, 
+                    examCode: req.params.examCode, session: session._id,
+                    term: term._id
+                })
+                const course = await Course.findOne({
+                    exam: exam._id, className: className.name, 
+                    release: true, courseName: req.params.courseName
+                })
+                const examPass = await ExamPass.findOne({course: course._id, exam: exam._id, student: student._id})
+                if(examPass){
+                    if(examPass.status){
                         let timeStarted = new Date()  
                         timeStarted.setMinutes(timeStarted.getMinutes() + course.duration)
                         req.session.endTime = timeStarted.toLocaleString().split(",")[1].trim()
-                        
-                        res.render('start-exam', {exam : exam, student : student,
-                        code : school.schoolCode, className : className, title: 'Subjects',
-                        exam_active : "active", examQuestions: course, examPass: examPass,
-                        mainResult: mainResult, sessS: session.name, termS: term.name})
+
+                        let redirectUrl = '/student/cbt/' + req.params.examCode + '/' + req.params.courseName + '/running'
+                        res.redirect(303, redirectUrl)
                     }else{
                         let redirectUrl = '/student/cbt/' + req.params.examCode + '/' + req.params.courseName + '/verify'
                         res.redirect(303, redirectUrl)
@@ -260,16 +304,20 @@ class App {
 		    if(req.session.regNumber){
                 const student = await Student.findOne({studentID : req.session.regNumber})
                 const school = await SchoolAdmin.findOne({_id : student.school})
+                const session = await Session.findOne({school: school._id, current: true})
+                const term = await Term.findOne({current: true, session: session._id})
                 const exam = await Exam.findOne({
                     school : student.school, available: true, 
-                    examCode: req.params.examCode
+                    examCode: req.params.examCode, term: term._id,
+                    session: session._id
                 })
                 
                 let studentClass = await ClassSchool.findOne({_id : student.className})
 				let course = req.params.courseName
                 const courseDB = await Course.findOne({
                     exam: exam._id, className: studentClass.name, 
-                    release: true, courseName: course})
+                    release: true, courseName: course
+                })
 				if ( courseDB ) { 
                     const examPass = await ExamPass.findOne({
                         course: courseDB._id, exam: exam._id, 
@@ -296,7 +344,8 @@ class App {
                                     currentTime :currentTime.toLocaleString().split(",")[1].trim(),
                                     endTime : req.session.endTime,
                                     code : school.schoolCode,
-                                    className : studentClass
+                                    className : studentClass,
+                                    code : school
                                 })
                             }else{
                                 res.render("exam-mode", {student : student, 
@@ -338,6 +387,7 @@ class App {
                 })  
                 let questions = await Question.findOne({course : writtenCourse._id }) 
                 let mainQuestion = questions.question
+                const total = mainQuestion.reduce((a, b) => a + b.mark, 0)
                 
                 function markExam(question , response) {
                     try {
@@ -362,17 +412,16 @@ class App {
                     }
                 } 
                 let studentScore = markExam(mainQuestion , response)
-                console.log(studentScore)
-                console.log(questions)
-                console.log(mainQuestion)
-                console.log(response)
+                let percentage = Math.round((studentScore / total) * 100)
 
                 let studentResult = await Result.findOne({student : validStudent._id, exam: exam._id})
                 if(studentResult){
                     let fromBody = {
                         courseName : courseName,
                         score : studentScore,
-                        option : response
+                        option : response,
+                        total: total,
+                        percentage: percentage
                     }
                     Result.findOneAndUpdate({studentNo : validStudent.regNumber}, {
                         $addToSet : {
@@ -394,7 +443,9 @@ class App {
                         result : [{
                             courseName : courseName,
                             score : studentScore,
-                            option : response
+                            option : response,
+                            total: total,
+                            percentage: percentage
                         }]
                     })
                     let saveExamination = await result.save()
@@ -431,16 +482,17 @@ class App {
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const className = await ClassSchool.findOne({_id : student.className})
                 const results = await Result.find({student : student._id, released : true})
-                const exams = await Exam.find({school: school._id})
                 const session = await Session.findOne({school: school._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
+                const exams = await Exam.find({school: school._id, session: session._id, term: term._id})
+                
                 let examName = {}
                 exams.map(e => {
                     examName[e._id] = e.name
                 })
 
                 res.render('select-result', {student : student, results : results, examName: examName,
-                code : school.schoolCode, className : className, result_active : "active",
+                code : school, className : className, result_active : "active",
                 cbtR_active: 'active', openresult_active: "pcoded-trigger", title: 'CBT Results',
                 sessS: session.name, termS: term.name})
                 
@@ -463,10 +515,37 @@ class App {
                 const term = await Term.findOne({session: session._id, current: true})
 
                 res.render('student-result', {student : student, results : results,
-                code : school.schoolCode, className : className, result_active : "active",
+                code : school, className : className, result_active : "active",
                 cbtR_active: 'active', openresult_active: "pcoded-trigger", title: 'CBT Results',
                 sessS: session.name, termS: term.name})
                 
+            }else{
+                res.redirect(303, '/student')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    getReportCard = async (req, res, next) => {
+        try{
+            if(req.session.regNumber){
+                const student = await Student.findOne({studentID : req.session.regNumber})
+                const school = await SchoolAdmin.findOne({_id : student.school})
+                const session = await Session.findOne({school: school._id, current: true})
+                const term = await Term.findOne({current: true, session: session._id})
+                const className = await ClassSchool.findOne({_id: student.className})
+                const broadsheet = await Broadsheet.findOne({
+                    session: session._id, term: term._id,
+                    school: school._id, student: student._id,
+                    released: true
+                })
+
+                res.render('student-report-card', {student : student, broadsheet: broadsheet,
+                code : school, result_active : "active", schoolT: school,
+                card_active: 'active', openresult_active: "pcoded-trigger", title: 'Report Card',
+                sessS: session.name, termS: term.name, className: className})
+
             }else{
                 res.redirect(303, '/student')
             }

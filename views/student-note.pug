@@ -13,7 +13,7 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
-                                
+                                p #[a(href="#" class="btn btn-info") #[i.feather.icon-printer] Print]
                                 div(class="card")
                                     .card-header
                                         h5 Lesson Note
@@ -50,6 +50,5 @@ block content
                                                 .col-sm-10
                                                     p.text-danger.font-weight-bold #{singleLessonNote.content.contentTopic.toUpperCase()}
                                                     p #{singleLessonNote.content.contentDetail}
-                                            .col-sm-12.text-center.mt-3
-                                                button.ace-btn.pl-5.pr-5 Print
+                                            
         include includes/footer.pug                      

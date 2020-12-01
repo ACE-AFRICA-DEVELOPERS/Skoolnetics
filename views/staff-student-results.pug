@@ -37,6 +37,7 @@ block content
                                 .col-xl-12
                                     .card
                                         if studentResults.length > 0
+                                            - let compute = []
                                             .card-header
                                                 h5 Spread Sheet for #{title}
                                         
@@ -47,17 +48,21 @@ block content
                                                             tr
                                                                 th Name
                                                                 th Reg Number
-                                                                each e in firstCourseResult.results
-                                                                    th #{e.examType} (#{e.total})
+                                                                each e in examCompute
+                                                                    - compute.push(e.name)
+                                                                    th #{e.name} (#{e.total})
                                                                 th Total
                                                                 th Grade
                                                         tbody
                                                             each student in studentResults
+                                                                - let sResult = student.results
                                                                 tr(class="analytics-row")
                                                                     td(class="sName" id=student.student) #{studentName[student.student]}
                                                                     td#id #{regNo[student.student]} 
-                                                                    each result, index in student.results
-                                                                        td(id=result.examType) #{result.score}
+                                                                    each r in compute
+                                                                        - let p = sResult.find(s => s.examType === r) 
+                                                                        - let result = p ? p.score : "-"
+                                                                        td(id=r) #{result}
                                                                     each total in sumTotal
                                                                         if student.student === total.id
                                                                             td#total #{total.total}
@@ -66,5 +71,6 @@ block content
                                             .card-header
                                                 h5 Spread Sheet for #{title}
                                                 span.d-block.m-t-5 No result has been uploaded.
+
         script(src="/javascripts/library/broadsheet.js" type="module")                                            
         include includes/footer.pug

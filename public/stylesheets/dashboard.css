@@ -3231,7 +3231,7 @@ p.text-muted {
   text-shadow: 1px 0 8px rgba(4, 169, 245, 0.9), 6px 0 8px rgba(0, 0, 0, 0.1);
   letter-spacing: -44px;
   -webkit-transform: rotate(180deg);
-          transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 .menu-styler .style-toggler > a:after {
   content: "\e8c3";
@@ -3245,8 +3245,6 @@ p.text-muted {
   color: #fff;
   -webkit-transition: 0.3s ease-in-out;
   transition: 0.3s ease-in-out;
-  -webkit-animation: anim-rotate 1.5s linear infinite;
-          animation: anim-rotate 1.5s linear infinite;
 }
 @media all and (-ms-high-contrast: none) {
   .menu-styler .style-toggler > a:after {
@@ -3296,6 +3294,19 @@ p.text-muted {
 }
 .menu-styler .radio input[type=radio] + .cr:after, .menu-styler .radio input[type=radio] + .cr:before {
   margin-right: 3px;
+}
+.menu-styler h5 {
+  position: relative;
+  margin: 10px 0 15px;
+}
+.menu-styler h5:after {
+  content: "";
+  background-color: #04a9f5;
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 40px;
+  height: 2px;
 }
 .menu-styler h6 {
   position: relative;
@@ -7002,6 +7013,9 @@ pre[class*=language-]:after, pre[class*=language-]:before {
 }
 textarea.form-control {
   height: 200px !important;
+}
+textarea.question-form.form-control {
+  height: 300px !important;
 }
 .multiple-select.form-control {
   height: 200px !important;

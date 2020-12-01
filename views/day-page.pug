@@ -31,16 +31,24 @@ block content
                                                     span(aria-hidden="true") &times;
                                             div(class="modal-body")
                                                 form(method="POST")
-                                                    label(class="label") Day: 
-                                                    input(type="text" class="form-control mb-2" name="weekday")
+                                                    label Day: 
+                                                    select(class="form-control custom-select mb-3" name="weekday")
+                                                        option(selected value="" disabled="disabled") Select one
+                                                        option(value="Monday") Monday
+                                                        option(value="Tuesday") Tuesday
+                                                        option(value="Wednesday") Wednesday
+                                                        option(value="Thursday") Thursday
+                                                        option(value="Friday") Friday
+                                                        option(value="Saturday") Saturday
+                                                        option(value="Sunday") Sunday
                                                     
                                                     div(class="text-center")
-                                                        button(type="submit" class="btn main-btn") Create
+                                                        button(type="submit" class="btn btn-info") Create
 
-                                if days
+                                if days.length > 0
                                     .card
                                         .card-header
-                                            h5 School Periods
+                                            h5 Days
                                         .card-block.table-border-style
                                             .table-responsive
                                                 table.table.table-striped
@@ -58,10 +66,13 @@ block content
                                                                 td.text-center #{++i}  
                                                                 td.text-center #{weekday}
                                                                 td.text-center
-                                                                    a(href=delUrl class="main-link")
-                                                                        i(class="fa fa-trash")
+                                                                    a(href=delUrl class="red-color")
+                                                                        i(class="feather icon-trash")
                                 else 
-                                    p No Day created.
+                                    .card
+                                        .card-header
+                                            h5 Days
+                                            span.d-block.m-t-5 No day has been set.
                                 
                         a(href="/school/period" class="btn btn-info mt-5")
                             i(class="fa fa-arrow-left ml-1 text-white")

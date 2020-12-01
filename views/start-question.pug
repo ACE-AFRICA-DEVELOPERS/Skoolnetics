@@ -20,6 +20,12 @@ block content
                                                 button.close(type="button" data-dismiss="alert" aria-label="close")
                                                     span(aria-hidden="true") ×
                                                 span #{success}
+                                    if error
+                                        if error.length != 0
+                                            .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                    span(aria-hidden="true") ×
+                                                span #{error}
                                 .card
                                     .card-header
                                         h5 #{pSubject}, #{pClass} (#{exam.name})
@@ -37,6 +43,8 @@ block content
                                                 a(href=questionsUrl class="btn btn-info mr-2") View Questions
                                                 a(href=previewUrl class="btn btn-info mr-2") Preview
                                                 a(href=passUrl class="btn btn-info mr-2") Generate Pass
+                                                if !examQuestions.release
+                                                    a(href="#" data-toggle="modal" data-target="#release-course" class="btn btn-info mr-2") Release
                                                 if !examQuestions.publish
                                                     a(href="#" class="btn btn-info" data-toggle="modal" data-target="#publish-exam") Publish
                                                     p(class="bolded-italic mt-3") Please ensure you click on 'PUBLISH' once you finish setting your questions.
@@ -55,6 +63,20 @@ block content
                                                             div(class="modal-footer")
                                                                 - let publishUrl = '/staff/cbt/quick-one/' + pSubject + '/' + pClass + '/' + exam.examCode + '/publish/'
                                                                 a(class="btn btn-info" href=publishUrl) Ok
+                                                                button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+                                                
+                                                div(id="release-course" class="modal fade")
+                                                    div(class="modal-dialog" role="document")
+                                                        div(class="modal-content")
+                                                            div(class="modal-header")
+                                                                h4(class="modal-title") Are you sure?
+                                                                button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                                    span(aria-hidden="true") &times;
+                                                            div(class="modal-body")
+                                                                p Clicking on okay means you are allowing students in this class to write this test.
+                                                            div(class="modal-footer")
+                                                                - let releaseUrl = '/staff/cbt/quick-one/' + pSubject + '/' + pClass + '/' + exam.examCode + '/release-course'
+                                                                a(class="btn btn-info" href=releaseUrl) Ok
                                                                 button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
                         
                                         else
@@ -78,5 +100,24 @@ block content
                                                                         input(type="number" class="form-control mb-2" name="duration" placeholder="Duration in minutes")
                                                                         div(class="text-center")
                                                                             button(type="submit" class="btn btn-info") Create
-                                        
+                                            hr
+                                            p Use available CBT for this class?   
+                                            if availableCourse.length > 0
+                                                each course in availableCourse
+                                                    p #[a(href="#" data-toggle="modal" data-target=`#add-e${course._id}`) Copy questions from #{course.courseName}, #{course.className}.]
+                                                    div(id=`add-e${course._id}` class="modal fade")
+                                                        div(class="modal-dialog" role="document")
+                                                            div(class="modal-content")
+                                                                div(class="modal-header")
+                                                                    h4(class="modal-title") Are you sure?
+                                                                    button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                                        span(aria-hidden="true") &times;
+                                                                div(class="modal-body") This will add all instructions and questions created in #{course.className} to #{pClass}.
+                                                                div(class="modal-footer")
+                                                                    - let addUrl = "/staff/cbt/quick-one/" + pSubject + "/" + pClass + "/" + exam.examCode + "/replicate/" + course.className
+                                                                    a(class="btn btn-info" href=addUrl) Ok
+                                                                    button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+                                            else
+                                                P Nothing available...
+                                                                     
         include includes/footer.pug

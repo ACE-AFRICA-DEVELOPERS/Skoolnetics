@@ -12,7 +12,8 @@ const AttendanceSchema = new Schema ({
         {
             date : Date,
             week : Number,
-            mark : String
+            mark : String,
+            holiday: {type: Boolean, default: false}
         }
     ]
 })

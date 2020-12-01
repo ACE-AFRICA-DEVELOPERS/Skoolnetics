@@ -62,7 +62,7 @@ block content
                                                        
                                                 if question.image
                                                     p   
-                                                        - let imageUrl = "/uploads/schools/" + code + "/" + "/exam-" + exam.examCode + "/" + course.courseName + "-" + course.className + "/" + question.image
+                                                        - let imageUrl = "/uploads/schools/" + code + "/" + "/exam-" + exam.examCode + "/" + question.image
                                                         a(href=imageUrl) #[img(src=imageUrl, alt="image" height="30px" width="50px")]
                                                 div
                                                     span.mr-5 #[strong Mark:] #{question.mark}

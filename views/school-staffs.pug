@@ -1,0 +1,57 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .row
+                                    .col-md-6
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
+                                    
+                                if allStaff.length > 0
+                                    .card
+                                        .card-header
+                                            h5 Staffs
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light 
+                                                        tr 
+                                                            th Staff ID
+                                                            th Full Name
+                                                            th Role
+                                                            th View
+                                                    tbody 
+                                                        each staf , index in allStaff
+                                                            - let id = staf.staffID
+                                                            - let name = `${staf.lastName} ${staf.firstName}`
+                                                            - let role = staf.role
+                                                            - let staffUrl = "/staff/school-staffs/" + staf._id
+                                                            - i++ 
+                                                            tr 
+                                                                td #{id}
+                                                                td #{name}
+                                                                if role == 'Teacher'
+                                                                    td #{role}
+                                                                else
+                                                                    td #{roleName[role]}
+                                                                td #[a(href=staffUrl) Check Profile]
+                                else
+                                    .card
+                                        .card-header
+                                            span.d-block.m-t-5 No Staff has been created.
+        include includes/footer.pug

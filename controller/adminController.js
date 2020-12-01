@@ -80,10 +80,14 @@ class App {
             if(req.session.adminEmail){
                 const validAdmin = await Admin.findOne({email : req.session.adminEmail})
                 if(validAdmin){
-                    const newSchools = await SchoolAdmin.find({approved : false})
-                    const approvedSchools = await SchoolAdmin.find({approved : true})
+                    const newSchools = await SchoolAdmin.find({approved : false, demo: false})
+                    const approvedSchools = await SchoolAdmin.find({approved : true, demo: false})
+                    const newDemoSchools = await SchoolAdmin.find({approved : false , demo : true})
+                    const apprDemoSchools = await SchoolAdmin.find({approved : true , demo : true})
+
                     res.render('adminDashboard', {admin : validAdmin, title : "Dashboard", newSchools : newSchools.length, 
-                        approvedSchools : approvedSchools.length, dash_active : "active"})
+                    approvedSchools : approvedSchools.length, dash_active : "active", apprDemoSchools : apprDemoSchools.length,
+                    newDemoSchools : newDemoSchools.length})
                 }else{
                     throw{
                         message: "Session not found or expired"
@@ -101,7 +105,7 @@ class App {
         try{
             if(req.session.adminEmail){
                 const validAdmin = await Admin.findOne({email : req.session.adminEmail})
-                const newSchools = await SchoolAdmin.find({approved : false})
+                const newSchools = await SchoolAdmin.find({approved : false, demo: false})
                     
                 res.render('admin-new-schools', {admin : validAdmin, title : "New Schools", 
                 newSchools : newSchools, new_active : "active"})
@@ -117,7 +121,7 @@ class App {
         try{
             if(req.session.adminEmail){
                 const validAdmin = await Admin.findOne({email : req.session.adminEmail})
-                const approvedSchools = await SchoolAdmin.find({approved : true})
+                const approvedSchools = await SchoolAdmin.find({approved : true, demo: false})
 
                 res.render('admin-approved-schools', {admin : validAdmin, title : "Approved Schools", 
                 approvedSchools : approvedSchools, approved_active : "active"})
@@ -154,7 +158,7 @@ class App {
     approveSchool = async (req, res, next) => {
         try{
             if(req.session.adminEmail){
-                const totalSchool = await SchoolAdmin.find({approved : true})
+                const totalSchool = await SchoolAdmin.find({approved : true, demo: false})
                 const code = GenerateAccount(totalSchool, "001", "schoolCode", 1, 3)
                 SchoolAdmin.findByIdAndUpdate(req.params.schoolID , {
                     approved : true, schoolCode : code
@@ -180,7 +184,7 @@ class App {
                         subjects.save()
 
                         req.flash('success', "You have approved this account. School is now free to login.")
-                        let redirectUrl = '/admin/school/' + req.params.schoolID 
+                        let redirectUrl = '/202007/admin/school/' + req.params.schoolID 
                         res.redirect(303, redirectUrl)
                     }
                 })

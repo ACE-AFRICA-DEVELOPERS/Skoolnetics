@@ -1,0 +1,42 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    if courses.length > 0
+                                        .card-header
+                                            h5 Questions that was published by teachers
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light
+                                                        tr
+                                                            th Class
+                                                            th Subject
+                                                            th Questions
+                                                    tbody
+                                                        each course in courses
+                                                            - let questionUrl = "/school/manage-sessions/" + session._id + "/" + term.name + "/cbt/" + exam._id + "/questions/" + course._id
+                                                            
+                                                            tr
+                                                                td #{course.className}
+                                                                td #{course.courseName}
+                                                                td #[a(href=questionUrl) View]
+                                        
+                                    else
+                                        .card-body
+                                            h5 Questions that was published by teachers
+                                            span.d-block.m-t-5 Nothing was found.       
+
+        include includes/footer.pug

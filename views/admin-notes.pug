@@ -13,11 +13,15 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
-                                p #[a(href=`/school/lesson-notes/${pClass}/all` class="btn btn-info") Check Approved Notes]
+                                if staff
+                                    p #[a(href=`/staff/principal/lesson-notes/all` class="btn btn-info") Check Approved Notes]
                                 .card
                                     if lessonNotes.length > 0
                                         .card-header
-                                            h5 Unapproved Lesson Notes
+                                            if staff
+                                                h5 Unapproved Lesson Notes
+                                            else
+                                                h5 Approved Lesson Notes
                                         .card-block.table-border-style
                                             .table-responsive
                                                 table.table.table-striped
@@ -28,29 +32,34 @@ block content
                                                             th Class
                                                             th Week
                                                             th View
-                                                            th Approve
+                                                            if staff
+                                                                th Approve
                                                     tbody
                                                         each lessonNote in lessonNotes
-                                                            -let singleLessonNote = '/school/lesson-notes/' + pClass + '/' + lessonNote._id
-                                                            -let approveUrl = '/school/lesson-notes/' + pClass + '/' + lessonNote._id + '/approve'
+                                                            -let singleLessonNote = '/staff/principal/lesson-notes/' + lessonNote._id
+                                                            - let adminSingle = '/school/lesson-notes/' + pClass + '/' + lessonNote._id
+                                                            -let approveUrl = '/staff/principal/lesson-notes/' + lessonNote._id + '/approve'
                                                             tr
                                                                 td #{staffName[lessonNote.staff]}
                                                                 td #{lessonNote.subject}
                                                                 td #{lessonNote.className}
                                                                 td #{lessonNote.week}
-                                                                td #[a(href=singleLessonNote class="main-link") view]
-                                                                td #[a(href="#" class="ace-btn" data-toggle="modal" data-target="#approveModal") #[i(class="fa fa-handshake-o")]]
-                                                                div(class="modal fade" id="approveModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
-                                                                    div(class="modal-dialog" role="document")
-                                                                        div(class="modal-content")
-                                                                            div(class="modal-header")
-                                                                                h5(class="modal-title" id="exampleModalLabel") Are you sure?
-                                                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
-                                                                                    span(aria-hidden="true") ×
-                                                                            div(class="modal-body") Are you sure you want to approve this note?
-                                                                            div(class="modal-footer")
-                                                                                a(class="ace-btn mr-3" href=approveUrl) Ok
-                                                                                button(class="cancel-btn" type="button" data-dismiss="modal") Cancel
+                                                                if staff
+                                                                    td #[a(href=singleLessonNote class="main-link") view]
+                                                                    td #[a(href="#" class="ace-btn" data-toggle="modal" data-target=`#a${lessonNote._id}`) #[i(class="feather icon-check")]]
+                                                                    div(class="modal fade" id=`a${lessonNote._id}` role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                        div(class="modal-dialog" role="document")
+                                                                            div(class="modal-content")
+                                                                                div(class="modal-header")
+                                                                                    h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                    button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                        span(aria-hidden="true") ×
+                                                                                div(class="modal-body") Are you sure you want to approve this note?
+                                                                                div(class="modal-footer")
+                                                                                    a(class="btn btn-info mr-3" href=approveUrl) Ok
+                                                                                    button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+                                                                else
+                                                                    td #[a(href=adminSingle class="main-link") view]
                                     else
                                         .card-header
                                             h5 Unapproved Lesson Notes

@@ -9,22 +9,32 @@ markCheck.addEventListener("click" , event => {
     let date = selector("#dateData").value.trim()
     let week = selector("#weekData").value.trim()
     let displayErr = selector(".err-msg")
+    let holiday = selector("#holiday").value.trim()
     Array.from(selectAll(".check")).map((e , i) => {
         if (date !== null && date !== "" && week !== null && week !== ""){ 
-            displayErr.textContent = " "
-            if(e.checked){
-                targetStudents.push({
-                    id : e.id , 
-                    date : date,
-                    week : Number(week),
-                    mark : "Present"
-                })
+            if(holiday != 'Yes'){
+                displayErr.textContent = " "
+                if(e.checked){
+                    targetStudents.push({
+                        id : e.id , 
+                        date : date,
+                        week : Number(week),
+                        mark : "Present"
+                    })
+                }else{
+                    targetStudents.push({
+                        id : e.id , 
+                        date : date,
+                        week : Number(week),
+                        mark : "Absent"
+                    })
+                }
             }else{
                 targetStudents.push({
                     id : e.id , 
                     date : date,
                     week : Number(week),
-                    mark : "Absent"
+                    holiday: true
                 })
             }
         }else{
@@ -33,6 +43,7 @@ markCheck.addEventListener("click" , event => {
         }
     })
     if (targetStudents.length > 0){
+        event.target.disabled = true
         //Send the id of students whose records need to be updated to the server
         sendData(`/staff/mark-attendance/${span.textContent}` , {targetStudents})
         .then(res => {

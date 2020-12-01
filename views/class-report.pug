@@ -15,11 +15,11 @@ block content
                             .page-wrapper
                                 if results.length > 0
                                     if firstResult.released
-                                        - let unReleaseUrl = '/school/report/' + exam.examCode + '/' + className + '/unrelease'
-                                        a(href=unReleaseUrl class="btn btn-info") Unrelease the results
+                                        - let unReleaseUrl = '/school/cbt-results/' + exam.examCode + '/' + className + '/unrelease'
+                                        p #[a(href=unReleaseUrl class="btn btn-info") Recall]
                                     else
-                                        - let releaseUrl = '/school/report/' + exam.examCode + '/' + className + '/release'
-                                        a(href=releaseUrl class="btn btn-info") Release results to Students
+                                        - let releaseUrl = '/school/cbt-results/' + exam.examCode + '/' + className + '/release'
+                                        p #[a(href=releaseUrl class="btn btn-info") Release results to Students]
                                     .card
                                         .card-header
                                             h5 Result Analysis for #{className}
@@ -31,14 +31,23 @@ block content
                                                             th Reg Number
                                                             th Name
                                                             each cls in firstResult.result
-                                                                th #{cls.courseName}
+                                                                th(colspan="3" class="text-center") #{cls.courseName}
+                                                        tr
+                                                            th --------
+                                                            th --------
+                                                            each cls in firstResult.result
+                                                                th Total
+                                                                th Score
+                                                                th Percentage
                                                     tbody 
                                                         each result, index in results 
                                                             tr
                                                                 td #{studentID[result.student]}
                                                                 td #{studentName[result.student]}
                                                                     each res in result.result
+                                                                        td #{res.total}
                                                                         td #{res.score}
+                                                                        td #{res.percentage}
                                 else
                                     .card
                                         .card-header

@@ -21,7 +21,7 @@ class App{
                 let className = {}
                 allClass.map(s => className[s._id] = s.name)
 
-                res.render('attendance-term', {staff: staff, code : school.schoolCode,
+                res.render('attendance-term', {staff: staff, code : school,
                     attendance_active : "active", title: 'Attendance', sessS: session.name,
                     classHead: classHead, className: className, termS: term.name
                 })
@@ -75,29 +75,37 @@ class App{
                             })
                             return week
                         })
-                        const attendanceWeek = week1Attendance[0].attendance
 
+                        week1Attendance.map(week => {
+                            week.attendance = week.attendance.sort((a, b) => {
+                                return new Date(a.date) - new Date(b.date)
+                            })
+                            return week
+                        })
+                        
+                        const attendanceWeek = week1Attendance[0].attendance
+                        console.log(attendanceWeek)
                         let weekday = new Array(7)
-                        weekday[0] = "M"
-                        weekday[1] = "T"
-                        weekday[2] = "W"
-                        weekday[3] = "Th"
-                        weekday[4] = "F"
-                        weekday[5] = "S"
+                        weekday[0] = "S"
+                        weekday[1] = "M"
+                        weekday[2] = "T"
+                        weekday[3] = "W"
+                        weekday[4] = "Th"
+                        weekday[5] = "F"
                         weekday[6] = "S"
 
-                        res.render('staff-attendance', {staff: staff, code : school.schoolCode,
+                        res.render('staff-attendance', {staff: staff, code : school,
                         attendance_active : "active", attendance : week1Attendance, studentName : studentName,
                         classSchool : classSchool, attendanceWeek : attendanceWeek, week : req.params.week,
                         weekday: weekday, sessS: session.name, termS: term.name})   
                     }else{
-                        res.render('staff-attendance', {staff: staff, code : school.schoolCode,
+                        res.render('staff-attendance', {staff: staff, code : school,
                             attendance_active : "active", classSchool : classSchool, 
                             noAttendance : "No attendance has been recorded.", week : req.params.week,
                             session : session, term : term, sessS: session.name, termS: term.name})
                     }
                 }else{
-                    res.render('staff-attendance', {staff: staff, code : school.schoolCode,
+                    res.render('staff-attendance', {staff: staff, code : school,
                         attendance_active : "active", noAttendance : "You can't access this page.",
                     })
                 }
@@ -120,7 +128,7 @@ class App{
                 const student = await Student.find({className : staff.classHead})
 
                 res.render('mark-attendance', {staff: staff, students : student, 
-                    code : school.schoolCode, attendance_active : "active", 
+                    code : school, attendance_active : "active", 
                     sessS : session.name, termS : term.name, pClass: req.params.className})
                 
             }else{
@@ -160,7 +168,8 @@ class App{
                                     {
                                         date : student.date,
                                         week : student.week,
-                                        mark : student.mark
+                                        mark : student.mark,
+                                        holiday: student.holiday
                                     }
                                 ]
                             })
@@ -173,7 +182,8 @@ class App{
                                         {
                                             date : student.date,
                                             week : student.week,
-                                            mark : student.mark
+                                            mark : student.mark,
+                                            holiday: student.holiday
                                         }
                                     ]}
                                 }, {
@@ -191,6 +201,43 @@ class App{
         }catch(err){
             res.render("error-page", {error: err})
         }     
+    }
+
+    removeMarkedAttendance = async(req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const session = await Session.findOne({school: staff.school, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const className = await ClassSchool.findOne({school: staff.school, name: req.params.className})
+                const attendances = await Attendance.find({
+                    session: session.id, term: term._id,
+                    className: className._id, staff: staff._id,
+                    school: staff.school
+                })
+                let count = attendances.length 
+                while(count > 0){
+                    for (let student of attendances){ 
+                        let att = student.attendance
+                        let findAtt = att.find(a => a.date == req.params.date)
+                        if(findAtt){
+                            await Attendance.findByIdAndUpdate(student._id, {
+                                $pullAll : {
+                                    attendance : [findAtt] }
+                            }, {new : true, useFindAndModify : false})
+                        }
+                        count -= 1
+                    }
+                }
+                
+                let redirectUrl = '/staff/attendance/' + req.params.className + '/' + req.params.week 
+                res.redirect(303, redirectUrl)
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
     }
 }
 

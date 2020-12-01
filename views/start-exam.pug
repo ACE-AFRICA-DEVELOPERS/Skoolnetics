@@ -30,7 +30,7 @@ block content
                                                 p #[strong Duration] : #[i #{examQuestions.duration} minutes]
                                                 p #[strong Instructions] : #[i #{examQuestions.instruction}]
                                                 p #[strong Note] : #[i You can't attempt this exam multiple times. Once you click on start exam, ensure you don't close your browser while writing your exam. If your time lapses, your answers are submitted automatically.]
-                                                - let examUrl = '/student/cbt/' + exam.examCode + '/' + examQuestions.courseName + '/running'
+                                                - let examUrl = '/student/cbt/' + exam.examCode + '/' + examQuestions.courseName + '/count'
                                                 .p
                                                     a(class="btn btn-info" href=examUrl) Start Exam
 

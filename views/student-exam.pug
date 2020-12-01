@@ -19,8 +19,8 @@ block content
                                             h5 CBT
                                         .card-body
                                             .row
-                                                .col-md-4
-                                                    each ex in exams
+                                                each ex in exams
+                                                    .col-md-4
                                                         - let viewUrl = '/student/cbt/' + ex.examCode
                                                         a(href=viewUrl class="text-dark")
                                                             .field-box

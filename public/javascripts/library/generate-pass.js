@@ -18,7 +18,7 @@ markCheck.addEventListener("change" , event => {
 })
 
 submit.addEventListener("click", event => {
-    event.preventDefault()
+    event.target.disabled = true
     let targetStudents = []
     Array.from(selectAll(".check")).map((e , i) => {
         if(e.checked){

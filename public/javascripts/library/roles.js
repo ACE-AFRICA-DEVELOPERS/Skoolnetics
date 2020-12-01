@@ -1,6 +1,7 @@
 import {sendData , selector} from "./api.js"
 
 let form1 = selector("#r-1")
+console.log(form1)
 if(form1){
     form1.addEventListener("click" , event => { 
         event.preventDefault()

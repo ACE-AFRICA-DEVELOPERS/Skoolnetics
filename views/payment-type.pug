@@ -25,7 +25,8 @@ block content
                                                 form(method="post")
                                                     label Payment Type : 
                                                     input(type="text" class="form-control mb-3" placeholder="School Fees" name="paymentFor" required)
-                                    
+                                                    input(type="checkbox" name="importance" class="mr-1") 
+                                                    label Compulsory?
                                                     div(class="text-center")
                                                         input(type="submit", value="Add" class="btn btn-info")
                                 .card
@@ -57,14 +58,17 @@ block content
                                                             tr
                                                                 th S/N
                                                                 th Payment Type
+                                                                th Importance
                                                                 th Action
                                                         tbody
                                                             each pay, index in paymentTypes
                                                                 - let viewUrl = "#"
                                                                 - let name = pay.paymentFor
+                                                                - let importance = pay.importance
                                                                 tr
                                                                     td #{index + 1}  
                                                                     td #{name}
+                                                                    td #{importance}
                                                                     td #[a(href=viewUrl) View]
                                     else
                                         .card-header

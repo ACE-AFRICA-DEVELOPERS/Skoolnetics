@@ -10,7 +10,7 @@ searchDates.addEventListener('click', event => {
     displayMsg.textContent = "Loading..."
     if(startDate.value !== "" && endDate.value !== ""){
         setTimeout(() => {
-            window.location.replace(`/school/fees/transactions/logs/today/${startDate.value}/${endDate.value}`) 
+            window.location.replace(`/staff/finance/transactions/logs/today/${startDate.value}/${endDate.value}`) 
         } , 1000)
     }else{
         displayMsg.textContent = "You need to select a start and end date"

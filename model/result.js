@@ -10,6 +10,8 @@ const ResultSchema = new Schema ({
     result : [{
         courseName : String,
         score : Number,
+        total: Number,
+        percentage: Number,
         option : []
     }]
 })

@@ -14,8 +14,11 @@ block content
                         .main-body
                             .page-wrapper
                                 .card
-                                    .card-body
-                                        if lessonNotes
+                                    if lessonNotes.length > 0
+                                        .card-header
+                                            h5 Lesson Notes
+                                            span.d-block.m-t-5 Here are approved lesson notes for you.
+                                        .card-body
                                             .card-block.table-border-style
                                                 .table-responsive
                                                     table.table.table-striped
@@ -34,6 +37,8 @@ block content
                                                                     td #{lessonNote.week}
                                                                     td #[a(href=singleLessonNote class="main-link") view]
 
-                                        else
-                                            p.text-small #{noNote}
+                                    else
+                                        .card-header
+                                            h5 Lesson Notes
+                                            span.d-block.m-t-5 No lesson note has been sent.
         include includes/footer.pug
