@@ -30,7 +30,7 @@ block content
                                                 .row
                                                     .col-md-4.mb-3
                                                         if studentDB.profilePhoto
-                                                            - let profileUrl = '/uploads/schools/' + code + '/' + pClass + '/' + studentDB.profilePhoto
+                                                            - let profileUrl = '/uploads/schools/' + code.schoolCode + '/' + pClass + '/' + studentDB.profilePhoto
                                                             img(src=profileUrl width="150px" height="200px")
                                                         else
                                                             if studentDB.gender == 'male'
@@ -49,7 +49,7 @@ block content
                                                                 each e in courseUploaded
                                                                     - comp.push(e.examType)
                                                         - let filter = arr.filter(s => !comp.includes(s))
-                                                        p #{filter}
+                                                        
                                                         .row
                                                             .col-md-6.mb-3
                                                                 .form-field

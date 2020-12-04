@@ -26,17 +26,20 @@ block content
                                                             th School ID
                                                             th School Name
                                                             th Email
+                                                            th Approved By
                                                             th Action
                                                     tbody
                                                         each school in approvedSchools
                                                             - let name = school.schoolName
                                                             - let email = school.schoolEmail
                                                             - let code = school.schoolCode
+                                                            - let approval = school.approvedBy
                                                             - let viewUrl = "/202007/admin/school/" + school._id 
                                                             tr
                                                                 td #{code}
                                                                 td #{name}
                                                                 td #{email}
+                                                                td #{approval}
                                                                 td #[a(href=viewUrl class="main-link") View]
                                     else
                                         .card-header

@@ -575,9 +575,15 @@ class App {
                 const {firstName , lastName, otherName, gender, className, pNumber,
                         address, blood, religion, dob} = req.body
                 const totalStudent = await Student.find({school : schoolAdmin._id})
+                let start, code
+                if(schoolAdmin.demo){
+                    start = "0" + schoolAdmin.demoCode
+                    code = `D${GenerateAccount(totalStudent, start, "studentID", 1, 3)}`
+                }else{
+                    start = req.session.schoolCode + "001"
+                    code = `S${GenerateAccount(totalStudent, start, "studentID", 1, 6)}`
+                }
                 
-                let start = req.session.schoolCode + "001"
-                let code = `S${GenerateAccount(totalStudent, start, "studentID", 1, 6)}`
                 const studentPass = await bcrypt.hash(lastName.toUpperCase() , 10)
                 
                 const student = await new Student({
@@ -604,7 +610,6 @@ class App {
                     throw {
                         message : "Unable to save the exam"
                     }
-                    return 
                 }
                 	
             }else {
@@ -855,15 +860,22 @@ class App {
 		    if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const {firstName , lastName, otherName, email, number, gender, role, classHead} = req.body
-                const totalStaff = await Staff.find({school : schoolAdmin._id})
                 let checkStaffEmail = await Staff.findOne({email : email, school : schoolAdmin._id})
                 let checkStaffNumber = await Staff.findOne({number : number, school : schoolAdmin._id})
                 if(checkStaffEmail || checkStaffNumber){
                     req.flash('error', "Staff already exists.")
                     res.redirect('/school/staff/new')
                 }else{
-                    let start = req.session.schoolCode + "01"
-                    let code = GenerateAccount(totalStaff, start, "staffID", 1, 5)
+                    const totalStaff = await Staff.find({school : schoolAdmin._id})
+                    let start, code
+                    if(schoolAdmin.demo){
+                        start = schoolAdmin.demoCode
+                        code = `D${GenerateAccount(totalStaff, start, "staffID", 1, 2)}`
+                    }else{
+                        start = req.session.schoolCode + "01"
+                        code = GenerateAccount(totalStaff, start, "staffID", 1, 5)
+                    }
+                    
                     const staffPass = await bcrypt.hash(lastName.toUpperCase() , 10)
                     const staff = await new Staff({
                         firstName : firstName ,  
@@ -1132,9 +1144,15 @@ class App {
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const {name, surname, title, email, number, relationship, ward} = req.body
                 const totalParent = await Parent.find({school : schoolAdmin._id})
+                let start, code
+                if(schoolAdmin.demo){
+                    start = schoolAdmin.demoCode
+                    code = `K${GenerateAccount(totalParent, start, "parentID", 1, 2)}`
+                }else{
+                    start = req.session.schoolCode + "001"
+                    code = `P${GenerateAccount(totalParent, start, "parentID", 1, 6)}`
+                }
                
-                let start = req.session.schoolCode + "001"
-                let code = `P${GenerateAccount(totalParent, start, "parentID", 1, 6)}`
                 const parentPass = await bcrypt.hash(surname.toUpperCase() , 10)
                 
                 const parent = await new Parent({

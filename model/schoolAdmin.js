@@ -18,7 +18,10 @@ const SchoolAdminSchema = new Schema({
     token : String,
     approved : {type : Boolean , default : false} ,
     demo : {type: Boolean, default: false},
+    demoCode: String,
     expiryDate : Date ,
+    creationDate: {type: Date, default: Date.now()},
+    approvedBy: String
 })
 
 module.exports = mongoose.model('SchoolAdmin' , SchoolAdminSchema)

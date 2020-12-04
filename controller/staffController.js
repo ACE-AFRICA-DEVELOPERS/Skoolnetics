@@ -823,7 +823,6 @@ class App {
                 }else{
                     courseSheet = null
                 }
-                console.log(courseSheet)
                 
                 let studentName = {}
                 students.map(sess => studentName[sess._id] = sess.firstName + " " + sess.lastName)
@@ -922,7 +921,6 @@ class App {
                     return item
                 })
                 const firstCourseResult = resultArray[0]
-                console.log(resultArray)
 
                 res.render("staff-student-results-third", {staff: staff, code : school,
                 pSubject: req.params.subject, upload_active: 'active', title: title, students: students,
@@ -952,7 +950,7 @@ class App {
                     for (let student of target){ 
                         const broadsheet = await BroadSheet.findOne({
                             student : student.name, session: session._id,
-                            term: term._id
+                            term: term._id, className: req.params.className
                         }) 
                         if(!broadsheet){
                             const newSheet = await new BroadSheet({
@@ -996,6 +994,54 @@ class App {
                     }
                 }
                 res.json({message : "Sent!"})
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render('error-page', {error: err.message})
+        }
+    }
+
+    recallResult = async (req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const session = await Session.findOne({school : staff.school, current : true})
+                const term = await Term.findOne({session : session._id, current: true})
+                const broadsheet = await BroadSheet.find({
+                    session: session._id,
+                    term: term._id, className: req.params.className
+                }) 
+                if(broadsheet.length > 0){
+                    let count = broadsheet.length
+                    while(count > 0){
+                        for(let b of broadsheet){
+                            let result = b.result
+                            let mapIt = result.find(e => e.courseName == req.params.subject)
+                            await BroadSheet.findByIdAndUpdate(b._id, {
+                                $pullAll : {
+                                    result : [
+                                        mapIt
+                                    ]}
+                                }, {
+                                    new : true, 
+                                    useFindAndModify : false
+                                }
+                            ) 
+                            console.log('Success')
+                            
+                            count -= 1
+                        }
+                    }
+                    req.flash('success', 'Results has been recalled.')
+                    let redirectUrl = '/staff/upload-result/' + req.params.subject + '/' + req.params.className + '/sheet'
+                    res.redirect(303, redirectUrl)
+                }else{
+                    req.flash('error', 'Nothing was found to recall.')
+                    let redirectUrl = '/staff/upload-result/' + req.params.subject + '/' + req.params.className + '/sheet'
+                    res.redirect(303, redirectUrl)
+                }
+               
             }else{
                 res.redirect(303, '/staff')
             }
@@ -1261,21 +1307,7 @@ class App {
                         res.redirect(303, redirectUrl)
                     }
                 })
-                // if(studentResult) {
-                //     const delResult = await StudentResult.findByIdAndDelete(studentResult._id)
-                //     if(delResult){
-                //         let redirectUrl = "/staff/upload-result/" + req.params.subject + '/' + req.params.className + '/' + req.params.studentID
-                //         res.redirect(303, redirectUrl)
-                //     }else{
-                //         throw{
-                //             message : "Cannot delete this result"
-                //         }
-                //     }
-                // }else{
-                //     throw{
-                //         message : "This student does not have a result"
-                //     }
-                // }
+               
             }else{
                 throw{
                     message : "This staff does not exist"
