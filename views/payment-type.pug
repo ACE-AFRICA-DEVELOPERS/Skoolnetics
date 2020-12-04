@@ -9,10 +9,26 @@ block content
         include includes/usernav.pug
         .pcoded-main-container
             .pcoded-wrapper
+
                 .pcoded-content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
+                                .row.justify-content-center
+                                    .col-md-8
+                                        if error
+                                            if error.length != 0
+                                                .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{error}
+
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
                                 p #[a(href="#" data-toggle="modal" data-target="#addModal" class="btn btn-info") New Payment Type #[i(class="fa fa-plus ml-1")]]
                                 div(class="modal fade" id="addModal" role="dialog" aria-hidden="true")
                                     div(class="modal-dialog" role="document")
@@ -35,21 +51,6 @@ block content
                                             h5 Payment Types
                                             span.d-block.m-t-5 Click on New Payment Type button to create more.
                                         .card-body
-                                            .row.justify-content-center
-                                                .col-md-8
-                                                    if error
-                                                        if error.length != 0
-                                                            .alert.alert-danger.alert-dismissible.fade-in(role="alert")
-                                                                button.close(type="button" data-dismiss="alert" aria-label="close")
-                                                                    span(aria-hidden="true") ×
-                                                                span #{error}
-
-                                                    if success
-                                                        if success.length != 0
-                                                            .alert.alert-success.alert-dismissible.fade-in(role="alert")
-                                                                button.close(type="button" data-dismiss="alert" aria-label="close")
-                                                                    span(aria-hidden="true") ×
-                                                                span #{success}
 
                                             .card-block.table-border-style
                                                 .table-responsive
@@ -69,7 +70,20 @@ block content
                                                                     td #{index + 1}  
                                                                     td #{name}
                                                                     td #{importance}
-                                                                    td #[a(href=viewUrl) View]
+                                                                    td 
+                                                                        p #[a(href="#" data-toggle="modal" data-target=`#add-e${pay._id}`) #[i(class="red-color feather icon-trash")]]
+                                                                        div(id=`add-e${pay._id}` class="modal fade")
+                                                                            div(class="modal-dialog" role="document")
+                                                                                div(class="modal-content")
+                                                                                    div(class="modal-header")
+                                                                                        h4(class="modal-title") Are you sure?
+                                                                                        button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                                                            span(aria-hidden="true") &times;
+                                                                                    div(class="modal-body") This Payment Type will be deleted.
+                                                                                    div(class="modal-footer")
+                                                                                       -let delPayment = "/school/fees/payment-type/" + pay._id + "/delete"
+                                                                                        a(class="btn btn-info" href=delPayment) Ok
+                                                                                        button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
                                     else
                                         .card-header
                                             h5 Payment Types

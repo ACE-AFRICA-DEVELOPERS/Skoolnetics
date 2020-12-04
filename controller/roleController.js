@@ -35,7 +35,7 @@ class App {
 
                             res.render('payment-type' , {title : "Payment Type" , staff : staff , code : school, 
                             openfinance_active : 'pcoded-trigger', sessS: session.name, termS: term.name,
-                            finance_active : 'active', payment_active : 'active', paymentTypes : paymentTypes})
+                            error : req.flash('error'), success : req.flash('success') , finance_active : 'active', payment_active : 'active', paymentTypes : paymentTypes})
                         }else{
                             res.render('sess-term-error', {school: school, title: 'Payment Type',
                             finance_active: 'active', openfinance_active: "pcoded-trigger",code : school,
@@ -76,6 +76,7 @@ class App {
                 const saveType = await paymentType.save()
                 console.log(saveType)      
                 if (saveType) {
+                    req.flash('success' , 'Payment Type saved successfully')
                     res.redirect(303 , '/staff/finance/payment-type')
                     return
                 }else {
@@ -88,6 +89,54 @@ class App {
                 res.redirect(303, '/staff')
             }
         }catch (err) {
+            res.render("error-page", {error: err})
+        }
+    }
+
+    deletePaymentType = async ( req , res , next) => {
+        try {
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
+                if(staff.role == 'r-2'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const paymentTypes = await PaymentType.findById(req.params.paymentTypeId)
+                    const session = await Session.findOne({school: school._id, current: true})
+                    if(session){
+                        const term = await Term.findOne({session: session._id, current: true})
+                        if(term){
+                            const invoice = await Invoice.find({school: school._id, session: session._id})
+                            console.log(invoice)
+                            if(invoice.length > 0){
+                                req.flash('error' , 'This Payment Type is connected to an Invoice')
+                                res.redirect(303 , '/staff/finance/payment-type')
+                            }else {
+                                let delPaymentType = await PaymentType.findByIdAndDelete(paymentTypes._id)
+                                if(delPaymentType) {
+                                    req.flash('success' , 'Payment Type has been deleted.')
+                                    res.redirect(303 , '/staff/finance/payment-type')
+                                }else{
+                                    throw{
+                                        message : "Unable to delete the Payment Type"
+                                    }
+                                }
+                            }
+                        }else{
+                            throw{
+                                message : "Unable to delete the Payment Type"
+                            }
+                        }
+                    } else{
+                        throw{
+                            message : "Unable to delete the Payment Type"
+                        }
+                    }   
+                }else {
+                    res.redirect(303, '/staff')
+                }
+            }else {
+                res.redirect(303, '/staff')
+            }
+        } catch (err) {
             res.render("error-page", {error: err})
         }
     }

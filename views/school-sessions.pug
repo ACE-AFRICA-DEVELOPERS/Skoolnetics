@@ -60,7 +60,7 @@ block content
                                                                     - let name = sess.name
                                                                     - let viewUrl = "/school/session/" + sess._id
                                                                     tr
-                                                                        th(scope='row') #{index + 1}  
+                                                                        td(scope='row') #{index + 1}  
                                                                         td #{name}
                                                                         if sess.ended
                                                                             td Ended
@@ -68,14 +68,40 @@ block content
                                                                             if sess.current
                                                                                 td Yes
                                                                             else
-                                                                                - let currentUrl = "/school/session/current/" + sess._id
-                                                                                td #[a(href=currentUrl class="ace-btn") Make Current]
+                                                                                td #[a(href="#" data-toggle="modal" data-target=`#P${sess._id}` class="ace-btn") Make Current]
+                                                                                    div(class="modal fade" id=`P${sess._id}`  role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                                        div(class="modal-dialog" role="document")
+                                                                                            div(class="modal-content")
+                                                                                                div(class="modal-header")
+                                                                                                    h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                                    button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                                        span(aria-hidden="true") ×
+                                                                                                div(class="modal-body") Clicking Ok makes the session the current session
+                                                                                                div(class="modal-footer")
+                                                                                                    - let currentUrl = "/school/session/current/" + sess._id
+                                                                                                    a(href=currentUrl class="ace-btn btn") Ok
+                                                                                                    button(class="cancel-btn btn" type="button" data-dismiss="modal") Cancel
+                                                                                
+                                                                                
                                                                         if sess.current
                                                                             if sess.ended
                                                                                 td Yes
                                                                             else
-                                                                                - let endUrl = "/school/session/end/" + sess._id 
-                                                                                td #[a(href=endUrl class="ace-btn") Set]
+                                                                                td #[a(href="#" data-toggle="modal" data-target=`#Q${sess._id}`  class="ace-btn") Set]
+                                                                                div(class="modal fade" id=`Q${sess._id}`  role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                                    div(class="modal-dialog" role="document")
+                                                                                        div(class="modal-content")
+                                                                                            div(class="modal-header")
+                                                                                                h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                                    span(aria-hidden="true") ×
+                                                                                            div(class="modal-body") Clicking Set will end this session
+                                                                                                div(class="modal-footer")
+                                                                                                    - let endUrl = "/school/session/end/" + sess._id
+                                                                                                    a(href=endUrl class="ace-btn btn") End Session
+                                                                                                    button(class="cancel-btn btn" type="button" data-dismiss="modal") Cancel
+                                                                                 
+                                                                                
                                                                         else
                                                                             td ---
                                                                         td #[a(href=viewUrl) View]

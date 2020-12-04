@@ -24,6 +24,7 @@ const Broadsheet = require('../model/broadsheet')
 const Parent = require('../model/parent')
 const Role = require('../model/role')
 const PaymentType = require('../model/paymentType')
+const subject = require('../model/subject')
 
 class App {
 
@@ -718,6 +719,7 @@ class App {
                             firstName : req.body.firstName,
                             lastName : req.body.lastName,
                             gender : req.body.gender,
+                            dateOfBirth : req.body.dateOfBirth,
                             otherName : req.body.otherName ,
                             status : req.body.status
                         }, {new : true, useAndModify : false}, (err , item) => {
@@ -738,6 +740,7 @@ class App {
                             lastName : req.body.lastName,
                             gender : req.body.gender,
                             otherName : req.body.otherName ,
+                            dateOfBirth : req.body.dateOfBirth,
                             status : req.body.status
                         }, {new : true, useAndModify : false}, (err , item) => {
                             if(err){
@@ -1099,6 +1102,7 @@ class App {
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
                 const term = await Term.findOne({current: true, session: session._id})
                 const parents = await Parent.find({school: schoolAdmin._id})
+                
                 
                 let foundStudent = []
                 if(parents.length > 0){

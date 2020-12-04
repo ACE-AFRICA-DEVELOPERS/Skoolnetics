@@ -19,14 +19,39 @@ block content
                                             p Sheet has been submitted.
                                         else
                                             .d-flex.justify-content-between
-                                                p #[a(href="#" class="btn btn-info" id="submitResult") Submit Result Sheet] #[span#displayMsg ]
+                                                p #[a(href="#" class="btn btn-info" data-toggle="modal" data-target="#submitBTN") Submit Result Sheet]
+                                                div(id=`submitBTN` class="modal fade")
+                                                    div(class="modal-dialog" role="document")
+                                                        div(class="modal-content")
+                                                            div(class="modal-header")
+                                                                h4(class="modal-title") Are you sure?
+                                                                button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                                    span(aria-hidden="true") &times;
+                                                            div(class="modal-body") This Broadsheet will be sent, do you want to proceed?
+                                                            div(class="modal-footer")
+                                                            
+                                                                p #[a(href="#" class="btn ace-btn" id="submitResult") Ok] #[span#displayMsg ]
+                                                                button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+                                                
                                                 - let uploadUrl = '/staff/upload-result/' + pSubject + '/' + pClass 
                                                 p #[a(href=uploadUrl class="btn btn-info") Upload a result]
                                                 span#courseName.d-none #{pSubject}
                                                 span#className.d-none #{pClass}
                                     else 
                                         .d-flex.justify-content-between
-                                            p #[a(href="#" class="btn btn-info" id="submitResult") Submit Result Sheet] #[span#displayMsg ]
+                                            p #[a(href="#" class="btn btn-info" data-toggle="modal" data-target="#submitBTN") Submit Result Sheet]
+                                            div(id=`submitBTN` class="modal fade")
+                                                div(class="modal-dialog" role="document")
+                                                    div(class="modal-content")
+                                                        div(class="modal-header")
+                                                            h4(class="modal-title") Are you sure?
+                                                            button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                                span(aria-hidden="true") &times;
+                                                        div(class="modal-body") This Broadsheet will be sent, do you want to proceed?
+                                                        div(class="modal-footer")
+                                                            
+                                                            p #[a(href="#" class="btn ace-btn" id="submitResult") Ok] #[span#displayMsg ]
+                                                            button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
                                             - let uploadUrl = '/staff/upload-result/' + pSubject + '/' + pClass 
                                             p #[a(href=uploadUrl class="btn btn-info") Upload a result]
                                             span#courseName.d-none #{pSubject}

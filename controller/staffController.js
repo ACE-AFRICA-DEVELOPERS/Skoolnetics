@@ -26,7 +26,7 @@ class App {
     postStaffLogin = async (req , res , next) => {
         try { 
             const {code, email, password} = req.body
-            let staff = await Staff.findOne({staffID : code, email : email})
+            let staff = await Staff.findOne({staffID : code})
             console.log(staff)
             if(staff){
                 console.log(staff)
@@ -798,7 +798,7 @@ class App {
                 const classSchool = await ClassSchool.findOne({school: school._id, name: req.params.className})
                 const students = await Student.find({school: school._id, className: classSchool._id})
                 const session = await Session.findOne({current: true, school: school._id})
-                const term = await Term.findOne({current: true, school: school._id})
+                const term = await Term.findOne({current: true, session: session._id})
                 if(term.name == 'Third Term'){
                     let redirectUrl = '/staff/upload-result/' + req.params.subject + '/' + req.params.className + '/sheet/third-term'
                     res.redirect(303, redirectUrl)
@@ -1083,8 +1083,9 @@ class App {
                 let title = student.firstName + " " + student.lastName
                 const school = await SchoolAdmin.findOne({_id : staff.school})
                 const session = await Session.findOne({current: true, school: school._id})
-                const term = await Term.findOne({current: true, school: school._id})
+                const term = await Term.findOne({current: true, session: session._id})
                 const examCompute = await ExamCompute.find({school: school._id, session: session._id, term: term._id})
+                console.log(examCompute)
                 const studentResult = await StudentResult.findOne({
                     school: school._id, student: req.params.studentID,
                     term: term._id, session: session._id
@@ -1145,7 +1146,7 @@ class App {
                 const staff = await Staff.findOne({staffID : req.session.staffCode})
                 const school = await SchoolAdmin.findOne({_id : staff.school})
                 const session = await Session.findOne({current: true, school: school._id})
-                const term = await Term.findOne({current: true, school: school._id})
+                const term = await Term.findOne({current: true, session: session._id})
                 const examCompute = await ExamCompute.findOne({school: school._id, session: session._id, 
                     term: term._id, name: req.body.examType})
                 
@@ -1164,6 +1165,7 @@ class App {
     postStudentResults = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
+                const {examType, total, score} = req.body
                 const staff = await Staff.findOne({staffID : req.session.staffCode})
                 const school = await SchoolAdmin.findOne({_id : staff.school})
                 const student = await Student.findOne({_id: req.params.studentID})
@@ -1174,7 +1176,7 @@ class App {
                     session: session._id,
                     term: term._id
                 })
-                const {examType, total, score} = req.body
+                console.log(studentResult)
                 if(!studentResult){
                     const firstDetails = await new StudentResult({
                         student : req.params.studentID,
@@ -1227,6 +1229,61 @@ class App {
         }catch(err){
             res.json({error: err.message})
         }
+    }
+
+    deleteStudentResult = async (req, res, next) => {
+      try{
+          if(req.session.staffCode) {
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const school = await SchoolAdmin.findOne({_id : staff.school})
+                const student = await Student.findOne({_id: req.params.studentID})
+                const session = await Session.findOne({school: school._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const studentResult = await StudentResult.findOne({
+                    student: req.params.studentID, 
+                    session: session._id,
+                    term: term._id
+                })
+                console.log(studentResult)
+                let mapIt = studentResult.results.find( elem => elem.examType == req.params.examType)
+                console.log(mapIt)
+                StudentResult.findByIdAndUpdate(studentResult._id, {
+                    $pullAll : {
+                        results : [mapIt]
+                    }
+                }, {new : true, useAndModify : false}, (err , item) => {
+                    if(err){
+                        res.status(500)
+                        return
+                    }else {
+                        req.flash('success', "Your deletion was successful.")
+                        let redirectUrl = "/staff/upload-result/" + req.params.subject + '/' + req.params.className + '/' + req.params.studentID 
+                        res.redirect(303, redirectUrl)
+                    }
+                })
+                // if(studentResult) {
+                //     const delResult = await StudentResult.findByIdAndDelete(studentResult._id)
+                //     if(delResult){
+                //         let redirectUrl = "/staff/upload-result/" + req.params.subject + '/' + req.params.className + '/' + req.params.studentID
+                //         res.redirect(303, redirectUrl)
+                //     }else{
+                //         throw{
+                //             message : "Cannot delete this result"
+                //         }
+                //     }
+                // }else{
+                //     throw{
+                //         message : "This student does not have a result"
+                //     }
+                // }
+            }else{
+                throw{
+                    message : "This staff does not exist"
+                }
+            }
+        }catch(err){
+            res.json({error: err.message})
+        }  
     }
 
     postFirstorSecond = async (req, res, next) => {

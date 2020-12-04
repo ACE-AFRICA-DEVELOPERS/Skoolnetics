@@ -24,8 +24,10 @@ block content
                                                 h6 Upload an Image for #{parents.name}
                                                 form(method='POST' enctype="multipart/form-data")
                                                     div(class="text-center mt-2")
-                                                        label(class="btn-file") #[i(class="fa fa-camera pr-2")] 
-                                                            input(type="file" accept="image/*" name='picture' id='picture' required)
+                                                        label Upload Image
+                                                        div(class="form-group")
+                                                            div(class="file-loading")
+                                                                input(id="file-1" type="file" name="picture" class="file" data-show-upload="false" data-overwrite-initial="false" data-theme="fas" required)
                                                     div(class="text-center mt-2")
                                                         input(type="submit" class="btn btn-info mr-4" value="Complete")
                                                         - let skipUrl = "/school/parent/" + parents._id
@@ -36,5 +38,8 @@ block content
                                                     div(class="removePicture")
                                                         a(href="#" id="removeImage") #[i(class="fa fa-times")]
 
-
+        script(src="/javascripts/jquery.min.js")                               
+        script(src="/fileinput/js/fileinput.js" type="text/javascript")
+        script(src="/fileinput/themes/fas/theme.js" type="text/javascript") 
+        script(src="/javascripts/library/handle_upload.js")
         include includes/footer.pug

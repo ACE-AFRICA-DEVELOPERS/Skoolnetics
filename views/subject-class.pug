@@ -40,8 +40,10 @@ block content
                                                 div(class="col-md-6")
                                                     div(class="form-field hide-form")
                                                         form(method="POST")
-                                                            input(type="text" class="form-control mb-3" name="subject" placeholder="Subject")
-                                                            input(type="submit" class="btn btn-primary" value="Add")
-                                                            a(href="#" class="btn btn-light ml-3" id="cancel") Cancel
+                                                            select(class="multiple-selecting form-control" name="subject")
+                                                                each subject in  subjects.subjects
+                                                                    option(value=subject) #{subject}
+                                                            input(type="submit" class="btn btn-primary mt-3" value="Add")
+                                                            a(href="#" class="btn btn-light ml-3 mt-3" id="cancel") Cancel
         script(src="/javascripts/library/subjects.js")
         include includes/footer.pug

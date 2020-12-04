@@ -13,6 +13,22 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
+
+                                .row.justify-content-center
+                                    .col-md-8
+                                        if error
+                                            if error.length != 0
+                                                .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{error}
+
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
                                 div
                                     p #[a(href="#" data-toggle="modal" data-target="#add-session" class="btn btn-info") New #[i(class="fa fa-plus ml-1")]]
                                     div(id="add-session" class="modal fade")
@@ -51,14 +67,30 @@ block content
                                                                     th S/N
                                                                     th Exam Type
                                                                     th Total Score
-                                                                    th Action
+                                                                    if !(studentResult.length > 0)
+                                                                        th Action
                                                             tbody 
                                                                 each exam, index in examCompute
                                                                     tr
                                                                         td #{index + 1}
                                                                         td #{exam.name}
                                                                         td #{exam.total}
-                                                                        td #[a(href="#" class="main-link") Edit]
+                                                                        if !(studentResult.length > 0)
+                                                                            td 
+                                                                                a(href="#" data-toggle="modal" data-target=`#E${exam._id}` class="ace-btn") Remove
+                                                                                div(class="modal fade" id=`E${exam._id}` role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                                    div(class="modal-dialog" role="document")
+                                                                                        div(class="modal-content")
+                                                                                            div(class="modal-header")
+                                                                                                h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                                    span(aria-hidden="true") ×
+                                                                                            div(class="modal-body") Clicking Ok deletes this Exam.
+                                                                                            div(class="modal-footer")
+                                                                                                
+                                                                                                -let delExam = "/school/exam-settings/" + exam._id + "/delete"
+                                                                                                a(href=delExam class="ace-btn btn") Ok
+                                                                                                button(class="cancel-btn btn" type="button" data-dismiss="modal") Cancel
                                             else
                                                 .card-header
                                                     h5 Exam Settings

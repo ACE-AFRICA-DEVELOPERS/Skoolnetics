@@ -67,7 +67,7 @@ block content
                                                                         label(for="dateOfBirth" class="label") Date of Birth:
                                                                     .col-9
                                                                         - let age = studentDB.dateOfBirth.getDate() + "/" + (studentDB.dateOfBirth.getMonth() + 1) + "/" + studentDB.dateOfBirth.getFullYear()
-                                                                        input(type="text" value=age class="profile-form mb-4" readonly)
+                                                                        input(type="text" value=age class="profile-form mb-4" name="dateOfBirth")
                                                                     .col-3
                                                                         label(for="pNumber" class="label") Parent's No:
                                                                     .col-9
@@ -75,7 +75,7 @@ block content
                                                                     .col-3
                                                                         label(for="status" class="label") Status:
                                                                     .col-9
-                                                                        input(type="text" value= studentDB.status class="profile-form mb-4" name="status")
+                                                                        input(type="text" value= studentDB.status class="profile-form mb-4" name="status" readonly)
                                                                     div(class="col-md-12 mt-3 text-center")
                                                                         input(type="submit" class="btn btn-info" value="Update")
 

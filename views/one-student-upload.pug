@@ -41,6 +41,15 @@ block content
                                                         p #[b Class:] #{pClass}
                                                         p #[b Total Attendance:] -
                                                     .col-md-8.mb-3
+                                                        - let arr = []
+                                                        each c in examCompute
+                                                            - arr.push(c.name)
+                                                        - let comp = []
+                                                            if courseUploaded
+                                                                each e in courseUploaded
+                                                                    - comp.push(e.examType)
+                                                        - let filter = arr.filter(s => !comp.includes(s))
+                                                        p #{filter}
                                                         .row
                                                             .col-md-6.mb-3
                                                                 .form-field
@@ -48,12 +57,12 @@ block content
                                                                         label Select an Exam
                                                                         select(name="examType" class="custom-select form-control mb-3" id="examSelect" required)
                                                                             option(value="" selected disabled="disabled") ----
-                                                                            each compute in examCompute
-                                                                                option(value=compute.name) #{compute.name}
+                                                                            each c in filter
+                                                                                option(value=c) #{c}
                                                                         label(class="total") Total
                                                                         input(type="number" readonly name="total" id="total" class="form-control mb-3")
                                                                         label(class="score") Score
-                                                                        input(type="number" class="form-control mb-3" name="score" required)
+                                                                        input(type="number" class="form-control mb-3" name="score" id="max" required)
                                                                         input(type="submit" value="Upload" class="btn btn-info")
                                                                         p#displayError
                                                             .col-md-6.mb-3
@@ -74,7 +83,9 @@ block content
                                                                 p #[b #[u Results Uploaded]] (#{termS})
                                                                 if courseUploaded
                                                                     each course in courseUploaded
-                                                                        p #[i(class="feather icon-check")] #{course.examType} - #{course.score}
+                                                                        - let delUrl = '/staff/upload-result/' + pSubject + '/' + pClass + '/' + studentDB._id + "/" + course.examType + '/delete'
+                                                                        p #[i(class="feather icon-check")] #{course.examType} - #{course.score} 
+                                                                            a(href=delUrl) #[i(class="red-color feather icon-trash")]
                                                                        
                                                                 else
                                                                     p None yet.

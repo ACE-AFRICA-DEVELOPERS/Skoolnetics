@@ -232,9 +232,10 @@ class App {
                 let title = `Subjects offered in ${req.params.classname}`
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 let classchool = await ClassSchool.findOne({name : req.params.classname, school : schoolAdmin._id})
+                const subjects = await Subject.findOne({ school: schoolAdmin._id })
                 res.render("subject-class", {title : title, schoolAdmin : schoolAdmin, 
                     classchools : classchool, success : req.flash('success'), 
-                    mainClass : req.params.classname, class_active : "active",
+                    mainClass : req.params.classname, class_active : "active", subjects : subjects,
                     session_active: 'active', opensession_active: "pcoded-trigger"}) 
             }else{
                 res.redirect(303, '/school')

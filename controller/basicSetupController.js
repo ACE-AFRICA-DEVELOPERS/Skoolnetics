@@ -7,6 +7,8 @@ const Term = require('../model/term')
 const ExamCompute = require('../model/exam-settings')
 const Grade = require('../model/grade')
 const Role = require('../model/role')
+const StudentResults = require('../model/studentResults')
+
 
 class App {
 
@@ -152,8 +154,10 @@ class App {
                     const term = await Term.findOne({session: session._id, current: true})
                     if(term){
                         const gradeCompute = await Grade.find({school: schoolAdmin._id})
+                        const studentResult = await StudentResults.find({school: schoolAdmin._id, session: session._id, term: term._id})
+                        console.log(gradeCompute)
                         res.render('grade-computation', {schoolAdmin: schoolAdmin, gradeCompute: gradeCompute, title: 'Grade Settings',
-                        grade_active: 'active', opensession_active: "pcoded-trigger",
+                        grade_active: 'active', opensession_active: "pcoded-trigger", studentResult : studentResult, 
                         sessS: session.name, termS: term.name, session_active: 'active'})
                     }else{
                         res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Grade Settings',
@@ -178,16 +182,21 @@ class App {
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
-                const grade = await Grade.findOne({session: session._id, rangeLowest : {$lte: 100}, rangeHighest: {$gte: 70}})
-                console.log(grade)
-
+            
                 if(session){
                     const term = await Term.findOne({school: schoolAdmin._id, session: session._id, current: true})
                     if(term){
                         const examCompute = await ExamCompute.find({school: schoolAdmin._id, session: session._id, term: term._id})
+                        const studentResult = await StudentResults.find({school: schoolAdmin._id, session: session._id, term: term._id})
+
+                        let sum = examCompute.reduce((a, b) => a + Number(b.total), 0)
+                        if(sum > 100 ){
+                            req.flash()
+                        }
+                        
                         res.render('exam-settings', {schoolAdmin: schoolAdmin, title: 'Exam Settings', 
-                        examCompute: examCompute, session_active: 'active', opensession_active: "pcoded-trigger",
-                        ca_active: 'active', sessS: session.name, termS: term.name})
+                        error : req.flash('error'), success : req.flash('success') , examCompute: examCompute, session_active: 'active', opensession_active: "pcoded-trigger",
+                        studentResult : studentResult , ca_active: 'active', sessS: session.name, termS: term.name})
                     }else{
                         res.render('sess-term-error', {schoolAdmin: schoolAdmin, title: 'Exam Settings',
                         session_active: 'active', opensession_active: "pcoded-trigger",
@@ -209,31 +218,83 @@ class App {
     postExamComputations = async (req, res, next) => {
         try{
             if(req.session.schoolCode){
+                const{name, total} = req.body
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
                 const term = await Term.findOne({school: schoolAdmin._id, session: session._id, current: true})
-                const examCompute = await new ExamCompute({
-                    school : schoolAdmin._id,  
-                    session: session._id,
-                    term: term._id,
-                    name : req.body.name, 
-                    total : req.body.total
-                })
-                const saveCompute = await examCompute.save()
-                if ( saveCompute ) { 
+                
+                const exam = await ExamCompute.findOne({name : name})
+                if(!exam){
+
+                    const examTotal = await ExamCompute.find({school: schoolAdmin._id, session: session._id, term: term._id})
+                    let sum = examTotal.reduce((a, b) => a + Number(b.total), 0)
+                    let w = sum + Number(total)
+
+                    if(!(w > 100)) {
+                        
+                            const examCompute = await new ExamCompute({
+                                school : schoolAdmin._id,  
+                                session: session._id,
+                                term: term._id,
+                                name : name, 
+                                total : total
+                            })
+                            const saveCompute = await examCompute.save()
+                            if ( saveCompute ) { 
+                                let redirectUrl = "/school/exam-settings"
+                                res.redirect(303, redirectUrl)
+                                return 
+                            }else{
+                                throw{
+                                    message : "Unable to save the school admin"
+                                }
+                            }
+                    }else{
+                        req.flash('error', 'Sum of Exam Types cannot exceed 100.')
+                        let redirectUrl = "/school/exam-settings"
+                        res.redirect(303, redirectUrl)
+                    }   
+                }else{
+                    req.flash('error', 'Cannot upload an existing Exam Type')
                     let redirectUrl = "/school/exam-settings"
                     res.redirect(303, redirectUrl)
-                    return 
-                }else{
-                    throw{
-                        message : "Unable to save the school admin"
-                    }
                 }
             }else{
                 res.redirect(303, '/school')
             }
         }catch(err){
             res.render('error-page', {error : err})
+        }
+    }
+
+    delExamComputations = async(req, res, next) => {
+        try{
+            if(req.session.schoolCode) {
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({school: schoolAdmin._id, session: session._id, current: true})
+                let exam = await ExamCompute.findById(req.params.examComputeId)
+                const studentResult = await StudentResults.find({school: schoolAdmin._id, session: session._id, term: term._id})
+                if(studentResult.length == 0){
+                    let delExam = await ExamCompute.findByIdAndDelete(exam._id)
+                    if(delExam){
+                        let redirectUrl = "/school/exam-settings"
+                        res.redirect(303, redirectUrl)
+                    }else{
+                        throw{
+                            message : "Unable to save the school admin"
+                        }
+                    }
+                }else{
+                    req.flash('error' , `You can't delete an Exam Type that is in use`)
+                    let redirectUrl = "/school/exam-settings"
+                    res.redirect(303, redirectUrl)
+                }
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error : err}) 
         }
     }
 
@@ -300,6 +361,49 @@ class App {
             }
         }catch(err){
             res.render('error-page', {error : err})
+        }
+    }
+
+    deleteGrade = async(req, res, next) => {
+        try{
+            if(req.session.schoolCode) {
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                let grade = await Grade.findById(req.params.gradeId)
+                if(grade){
+                    let delGrade = await Grade.findByIdAndRemove(grade._id)
+                    if(delGrade){
+                        let redirectUrl = "/school/grade-settings"
+                        res.redirect(303, redirectUrl)
+                    }else{
+                        throw{
+                            message : "Unable to save the school admin"
+                        }
+                    }
+                }else{
+                    throw{
+                        message : "This grade does not exist"
+                    }
+                }
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error : err}) 
+        }
+    }
+
+    getUpdateGrade = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode) {
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({current: true, school: schoolAdmin._id})
+                const term = await Term.findOne({current: true, session: session._id})
+                let grade = await Grade.findByOne({term : term._id})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error : err}) 
         }
     }
 

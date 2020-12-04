@@ -76,9 +76,11 @@ router.post('/school/assign-roles', BasicSetupController.createRole)
 
 router.get('/school/exam-settings', BasicSetupController.getExamComputations)
 router.post('/school/exam-settings', BasicSetupController.postExamComputations)
+router.get("/school/exam-settings/:examComputeId/delete", BasicSetupController.delExamComputations)
 router.get('/school/exam-settings/use-prev', BasicSetupController.usePreviousTermExam)
 router.get('/school/grade-settings', BasicSetupController.getGradeComputations)
 router.post('/school/grade-settings', BasicSetupController.postGradeComputations)
+router.get("/school/grade-settings/:gradeId/delete", BasicSetupController.deleteGrade)
 
 router.get('/school/subjects', ClassController.getSubjects) 
 router.post('/school/subjects', ClassController.addASubject)
@@ -247,6 +249,7 @@ router.post('/staff/upload-result/:subject/:className/sheet/third-term', StaffCo
 router.post('/fetch-grade', StaffController.fetchGrade)
 router.get('/staff/upload-result/:subject/:className/:studentID', StaffController.getOneStudentUpload)
 router.post('/staff/upload-result/:subject/:className/:studentID', StaffController.postStudentResults)
+router.get('/staff/upload-result/:subject/:className/:studentID/:examType/delete', StaffController.deleteStudentResult)
 router.get('/staff/upload-result/:subject/:className/:studentID/:examType/:score', StaffController.postFirstorSecond)
 router.post('/fetch-total-score', StaffController.fetchTotalExamScore)
 
@@ -323,6 +326,7 @@ router.get('/staff/manage-sessions/:sessionID/:termName', SessionController.getT
 /**--------------- Secretary Special Routes --------------- */
 router.get('/staff/finance/payment-type' , RoleController.createPaymentType)
 router.post('/staff/finance/payment-type' , RoleController.postPaymentType)
+router.get("/school/fees/payment-type/:paymentTypeId/delete" , RoleController.deletePaymentType )
 router.get('/staff/finance/all-classes' , RoleController.getAllClass)
 router.get('/staff/finance/all-classes/:classID' , RoleController.getSingleClass)
 router.post('/staff/finance/all-classes/:classID' , RoleController.postSingleClass)
