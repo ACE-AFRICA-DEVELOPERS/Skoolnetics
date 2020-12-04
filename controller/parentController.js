@@ -161,7 +161,9 @@ class App {
                 const paymentTypes = await PaymentType.find({ school : school._id })
 
                 let paymentName = {}
+                let type = {}
                 paymentTypes.map(pay => paymentName[pay._id] = pay.paymentFor)
+                paymentTypes.map(pay => type[pay._id] = pay.importance)
                 let sum, invoice
                 if(payments){
                     let paymentFees = payments.fees
@@ -172,7 +174,7 @@ class App {
                 res.render('child-fees' , {title : 'Child Fees Page' , parent : parent , students : student, card_active : 'active',
                 className : className, termS : term.name, sessS : session.name , school : school, singleClass : singleClass ,
                 sum : sum  , payments : payments , paymentTypes : paymentTypes , paymentName : paymentName,
-                ward_active: 'active', invoice: invoice, code: school})
+                ward_active: 'active', invoice: invoice, code: school, type})
             }else{
                 res.redirect(303, '/parent')
             }

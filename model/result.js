@@ -13,7 +13,15 @@ const ResultSchema = new Schema ({
         total: Number,
         percentage: Number,
         option : []
-    }]
+    }],
+    session : {
+        type : Schema.Types.ObjectId,
+        ref : "SchoolSession"
+    },
+    term : {
+        type : Schema.Types.ObjectId,
+        ref : "Term"
+    },
 })
 
 module.exports = mongoose.model("Result" , ResultSchema)

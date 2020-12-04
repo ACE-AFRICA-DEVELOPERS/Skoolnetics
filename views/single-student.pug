@@ -1,0 +1,82 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p #[a(href="/staff/students" class="btn btn-info") View all Students]
+                                .card
+                                    .card-header
+                                        h5 Profile
+                                    .card-body
+                                        .row.justify-content-center
+                                            .col-md-10
+                                                .row
+                                                    .col-md-4.mb-3
+                                                        if studentDB.profilePhoto
+                                                            - let imageUrl = "/uploads/schools/" + schoolAdmin.schoolCode + '/' + studentClass.name + '/' + studentDB.profilePhoto
+                                                            img(src=imageUrl alt="" width="100%" height="300px")
+                                                        else
+                                                            if studentDB.gender == 'male'
+                                                                img(src="/images/user/avatar-4.jpg" alt="" width="100%" height="300px")
+                                                            else 
+                                                                img(src="/images/user/avatar-3.jpg" alt="" width="100%" height="300px")  
+                                                        label(class="btn-file2 mt-4") #[i(class="fa fa-upload pr-2")] Change Image
+                                                            input(type="file" name='picture' id='picture')
+                                                    div(class="col-md-8")
+                                                        div(class="card-box")
+                                                            form(action="", method="post")
+                                                                .row
+                                                                    .col-3
+                                                                        label(for="ID" class="label") Student ID:
+                                                                    .col-9
+                                                                        input(type="text" value= studentDB.studentID class="profile-form mb-4" readonly)
+                                                                    .col-3
+                                                                        label(for="class" class="label") Class:
+                                                                    .col-9
+                                                                        - if(studentDB.className != null) 
+                                                                            input(type="text" value= studentClass.name class="profile-form mb-4" readonly)
+                                                                        - else 
+                                                                            input(type="text" value=`Graduated, ${sessS}` class="profile-form mb-4" readonly)
+                                                                    .col-3
+                                                                        label(for="firstname" class="label") First Name:
+                                                                    .col-9
+                                                                        input(type="text" value= studentDB.firstName class="profile-form mb-4" name="firstName")
+                                                                    .col-3
+                                                                        label(for="lastname" class="label") Last Name:
+                                                                    .col-9
+                                                                        input(type="text" value= studentDB.lastName class="profile-form mb-4" name="lastName")
+                                                                    .col-3
+                                                                        label(for="pthername" class="label") Other Name:
+                                                                    .col-9
+                                                                        input(type="text" value= studentDB.otherName class="profile-form mb-4" name="otherName")
+                                                                    .col-3
+                                                                        label(for="gender" class="label") Gender:
+                                                                    .col-9
+                                                                        input(type="text" value= studentDB.gender class="profile-form mb-4" name="gender")
+                                                                    .col-3
+                                                                        label(for="dateOfBirth" class="label") Date of Birth:
+                                                                    .col-9
+                                                                        - let age = studentDB.dateOfBirth.getDate() + "/" + (studentDB.dateOfBirth.getMonth() + 1) + "/" + studentDB.dateOfBirth.getFullYear()
+                                                                        input(type="text" value=age class="profile-form mb-4" name="dateOfBirth")
+                                                                    .col-3
+                                                                        label(for="pNumber" class="label") Parent's No:
+                                                                    .col-9
+                                                                        input(type="text" value= studentDB.parentsNumber class="profile-form mb-4" name="pNumber")
+                                                                    .col-3
+                                                                        label(for="status" class="label") Status:
+                                                                    .col-9
+                                                                        input(type="text" value= studentDB.status class="profile-form mb-4" name="status" readonly)
+                                                                    div(class="col-md-12 mt-3 text-center")
+                                                                        input(type="submit" class="btn btn-info" value="Update")
+
+        include includes/footer.pug

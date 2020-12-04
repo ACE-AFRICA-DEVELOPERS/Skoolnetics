@@ -32,6 +32,7 @@ class App {
                             sessS: session.name,
                             termS: term.name ,
                             success : req.flash('success'),
+                            error : req.flash('error'),
                             period_active: 'active',
                             timetable_active : "active" ,
                             opentimetable_active: "pcoded-trigger",
@@ -115,12 +116,18 @@ class App {
             if(req.session.schoolCode){ 
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const periods = await Period.findOne({school : schoolAdmin._id}) 
-                const allPeriods = periods.weekday
-                let mapIt = allPeriods.find( elem => elem._id == req.params.day)
-                Period.findByIdAndUpdate(periods._id, {
-                    $pullAll : {
-                        weekday : [mapIt] }
-                }, {new : true, useAndModify : false}, (err , item) => {
+                const classTimeTable = await ClassTimetable.find({school : schoolAdmin._id})
+                if(classTimeTable.length > 0){
+                    req.flash('error', "You cannot delete this Period")
+                    let redirectUrl = '/school/period'
+                    res.redirect(303, redirectUrl)
+                }else{
+                    const allPeriods = periods.weekday
+                    let mapIt = allPeriods.find( elem => elem._id == req.params.day)
+                    Period.findByIdAndUpdate(periods._id, {
+                        $pullAll : {
+                            weekday : [mapIt] }
+                    }, {new : true, useAndModify : false}, (err , item) => {
                     if(err){
                         res.status(500) 
                         return
@@ -129,6 +136,7 @@ class App {
                         res.redirect(303, '/school/period')
                     }
                 })
+                }
             }else{
                 res.redirect(303, '/school')
             }

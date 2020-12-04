@@ -51,7 +51,7 @@ class App{
                 
                 res.render('quick-cbt-settings', {title: 'Quick CBT', staff: staff,
                 quick_active : "active", cbt_active: 'active', code: school,
-                opencbt_active: "pcoded-trigger", success: req.flash('success'),
+                opencbt_active: "pcoded-trigger", success: req.flash('success'), error : req.flash('error'),
                 allExam: allExam, pClass: req.params.className, pSubject: req.params.subject,
                 sessS: session.name, termS: term.name})
             }else{
@@ -99,7 +99,39 @@ class App{
                     }
                 }
             }else {
-                res.redirect(303, '/school')
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render('error-page', {error : err})
+        }
+    }
+
+    deleteQuickCBT = async (req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const school = await SchoolAdmin.findOne({_id : staff.school})
+                const session = await Session.findOne({school: school._id, current: true})
+                const term = await Term.findOne({school: school._id, session: session._id, current: true})
+                const course = await Course.find({ exam : req.params.examId})
+                if(course.length > 0){
+                    req.flash('error', 'This Exam already contains Instructions.')
+                    let redirectUrl = '/staff/cbt/quick-one/' + req.params.subject + '/' + req.params.className
+                    res.redirect(303, redirectUrl)
+                }else {
+                    let delExam = await Exam.findByIdAndDelete(req.params.examId)
+                    if(delExam){
+                        req.flash('success', 'Successfully Deleted.')
+                        let redirectUrl = '/staff/cbt/quick-one/' + req.params.subject + '/' + req.params.className
+                        res.redirect(303, redirectUrl)
+                    }else{
+                        req.flash('error', 'Unable to delete this Exam.')
+                        let redirectUrl = '/staff/cbt/quick-one/' + req.params.subject + '/' + req.params.className
+                        res.redirect(303, redirectUrl)
+                    }
+                }
+            }else {
+                res.redirect(303, '/staff')
             }
         }catch(err){
             res.render('error-page', {error : err})
@@ -639,6 +671,40 @@ class App{
                 })
                 Course.findByIdAndUpdate(course._id, {
                     release : true,
+                }, {new : true, useAndModify : false}, (err , item) => {
+                    if(err){
+                        res.status(500)
+                        return
+                    }else {
+                        let redirectUrl = '/staff/cbt/quick-one/' + req.params.subject + '/' + req.params.className
+                        res.redirect(303, redirectUrl)
+                    }
+                })	
+                
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    unreleaseCourse = async (req, res, next) => {
+        try{ 
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const session = await Session.findOne({school: staff.school, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const exam = await Exam.findOne({
+                    examCode : req.params.examCode, school : staff.school,
+                    session: session._id, term: term._id
+                })
+                const course = await Course.findOne({
+                    exam: exam._id, examiner : staff._id,
+                    className: req.params.className, courseName: req.params.subject
+                })
+                Course.findByIdAndUpdate(course._id, {
+                    release : false,
                 }, {new : true, useAndModify : false}, (err , item) => {
                     if(err){
                         res.status(500)

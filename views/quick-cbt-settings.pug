@@ -14,6 +14,13 @@ block content
                         .main-body
                             .page-wrapper
                                 .col-md-6
+                                    if error
+                                        if error.length != 0
+                                            .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                    span(aria-hidden="true") ×
+                                                span #{error}
+
                                     if success
                                         if success.length != 0
                                             .alert.alert-success.alert-dismissible.fade-in(role="alert")
@@ -57,6 +64,7 @@ block content
                                                                 th View
                                                                 th Open
                                                                 th Close 
+                                                                th Delete
                                                         tbody
                                                             each exam in allExam
                                                                 - let startDateYear = exam.startDate.getFullYear()
@@ -89,5 +97,12 @@ block content
                                                                     else
                                                                         td Opened
                                                                     td #[a(href=closeUrl) Close]
+                                                                    if !exam.available
+                                                                        td 
+                                                                            - let delExam = '/staff/cbt/quick-one/' + pSubject + '/' + pClass + '/' + exam._id + "/delete"
+                                                                            a(href=delExam) Delete
+                                                                    else
+                                                                        td Done
+                                                                    
 
         include includes/footer.pug
