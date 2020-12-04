@@ -94,7 +94,18 @@ block content
                                             else
                                                 .card-header
                                                     h5 Exam Settings
-                                                    span.d-block.m-t-5 No setup found. Create one or #[a(href="/school/exam-settings/use-prev") use previous' term settings.]
+                                                    span.d-block.m-t-5 No setup found. Create one or #[a(href="#" data-toggle="modal" data-target=`#useModal`) use previous' term settings.]
+                                                    div(id=`useModal` class="modal fade")
+                                                        div(class="modal-dialog" role="document")
+                                                            div(class="modal-content")
+                                                                div(class="modal-header")
+                                                                    h4(class="modal-title") Are you sure?
+                                                                    button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                                        span(aria-hidden="true") &times;
+                                                                div(class="modal-body") Are you sure you want to use settings from previous term?
+                                                                div(class="modal-footer")
+                                                                    a(class="btn btn-info" href="/school/exam-settings/use-prev") Yes
+                                                                    button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
 
                                             
         include includes/footer.pug

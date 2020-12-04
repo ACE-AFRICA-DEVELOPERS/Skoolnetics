@@ -70,7 +70,7 @@ block content
                                                                         each pay, index in payments.fees
                                                                             tr  
                                                                                 td.invoice #{index + 1}
-                                                                                td.invoice #{paymentName[pay.paymentFor]}
+                                                                                td.invoice #{paymentName[pay.paymentFor]} (#{type[pay.paymentFor]})
                                                                                 td.invoice ##{pay.amount.toLocaleString()}
                                                     .row
                                                         .col-sm-12

@@ -188,8 +188,9 @@ class App {
                     const singleClass = await ClassSchool.findOne({ _id : req.params.classID , school: school._id})
                     const payments = await Payment.findOne({ 
                         class: req.params.classID , school: school._id,
-                        session: session._id, term: term._id 
+                        session: session._id, term: term._id
                     })
+
                     const availablePayments = await Payment.find({
                         school: school._id, session: session._id, term: term._id
                     })
@@ -200,7 +201,7 @@ class App {
                             payment: payments._id
                         })
                     }
-                    console.log(invoices)
+                    console.log(payments)
 
                     let paymentName = {}
                     paymentTypes.map(pay => paymentName[pay._id] = pay.paymentFor)
@@ -228,10 +229,14 @@ class App {
             if( req.session.staffCode ){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
                 const school = await SchoolAdmin.findOne({_id : staff.school})
-                const paymentt = await Payment.findOne({ class: req.params.classID , school: school._id })
                 const session = await Session.findOne({school: school._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
+                const paymentt = await Payment.findOne({ 
+                    class: req.params.classID , school: school._id,
+                    session: session._id, term: term._id
+                })
                 const { paymentFor , amount } = req.body
+                console.log(paymentt)
                 if(!paymentt) {
                     
                     const payment = new Payment ({
@@ -337,28 +342,32 @@ class App {
         try {
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({current: true, school: school._id})
-                const term = await Term.findOne({current: true, session: session._id})
-                const paymentt = await Payment.findOne({ 
-                    class: req.params.classID , school: school._id,
-                    session: session._id, term: term._id
-                })
-                let allFees = paymentt.fees
-                let mapAll = allFees.find(elem => elem._id == req.params.feeID)
-                
-                Payment.findByIdAndUpdate(paymentt._id , {
-                    $pullAll : {
-                        fees : [mapAll]}
-                } , {new : true , useFindAndModify : false} , ( err , item) => {
-                    if(err){
-                        res.status(500)
-                        return
-                    }else{
-                        let redirectUrl = '/staff/finance/all-classes/' + req.params.classID 
-                        res.redirect(303, redirectUrl)
-                    }
-                })
+                if(staff.role == "r-2") {
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({current: true, school: school._id})
+                    const term = await Term.findOne({current: true, session: session._id})
+                    const paymentt = await Payment.findOne({ 
+                        class: req.params.classID , school: school._id,
+                        session: session._id, term: term._id
+                    })
+                    let allFees = paymentt.fees
+                    let mapAll = allFees.find(elem => elem._id == req.params.feeID)
+                    
+                    Payment.findByIdAndUpdate(paymentt._id , {
+                        $pullAll : {
+                            fees : [mapAll]}
+                    } , {new : true , useFindAndModify : false} , ( err , item) => {
+                        if(err){
+                            res.status(500)
+                            return
+                        }else{
+                            let redirectUrl = '/staff/finance/all-classes/' + req.params.classID 
+                            res.redirect(303, redirectUrl)
+                        }
+                    })
+                }else{
+                    res.redirect(303, '/staff')
+                }
             }else{
                 res.redirect(303, '/staff')
             }
@@ -371,28 +380,32 @@ class App {
         try {
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({ school : school._id , current : true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const payments = await Payment.findOne({ 
-                    class : req.params.classID , school : school._id,
-                    session: session._id, term: term._id 
-                })
-                const invoices = await Invoice.find({payment: payments._id})
-                const singleClass = await ClassSchool.findOne({ _id : req.params.classID , school: school._id})
-                const students = await Student.find({school: school._id, className: req.params.classID})
-                let title = `Generating Invoice for ${singleClass.name}`
+                if(staff.role == "r-2") {
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({ school : school._id , current : true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const payments = await Payment.findOne({ 
+                        class : req.params.classID , school : school._id,
+                        session: session._id, term: term._id 
+                    })
+                    const invoices = await Invoice.find({payment: payments._id})
+                    const singleClass = await ClassSchool.findOne({ _id : req.params.classID , school: school._id})
+                    const students = await Student.find({school: school._id, className: req.params.classID})
+                    let title = `Generating Invoice for ${singleClass.name}`
 
-                let studentName = {}
-                students.map(s => studentName[s._id] = s.lastName + ' ' + s.firstName + ' ' + s.otherName)
-                let studentReg = {}
-                students.map(reg => studentReg[reg._id] = reg.studentID)
+                    let studentName = {}
+                    students.map(s => studentName[s._id] = s.lastName + ' ' + s.firstName + ' ' + s.otherName)
+                    let studentReg = {}
+                    students.map(reg => studentReg[reg._id] = reg.studentID)
 
-                res.render('generate-invoice' , { title : title , staff : staff , code : school,
-                sessS: session.name , termS : term.name , payments : payments , studentDB: students,
-                openfinance_active : 'pcoded-trigger', singleClass : singleClass, 
-                finance_active : 'active', amount_active : 'active', invoices: invoices,
-                studentName: studentName, studentReg: studentReg})
+                    res.render('generate-invoice' , { title : title , staff : staff , code : school,
+                    sessS: session.name , termS : term.name , payments : payments , studentDB: students,
+                    openfinance_active : 'pcoded-trigger', singleClass : singleClass, 
+                    finance_active : 'active', amount_active : 'active', invoices: invoices,
+                    studentName: studentName, studentReg: studentReg})
+                }else{
+                    res.redirect('/staff')
+                }
             }else{
                 res.redirect('/staff')
             }
@@ -405,44 +418,48 @@ class App {
         try {
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                let getname = school.schoolName
-                let sessionName = session.name
-                const sess = sessionName.substring(5, 9)
+                if(staff.role == "r-2") {
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    let getname = school.schoolName
+                    let sessionName = session.name
+                    const sess = sessionName.substring(5, 9)
 
-                function getInitials(name){
-                    let names = name.split(' ')
-                    let initials = ''
-                    for(let i = 0; i < names.length; i++){
-                        if(names[i].length > 0 && names[i] !== ''){
-                            initials += names[i][0]
+                    function getInitials(name){
+                        let names = name.split(' ')
+                        let initials = ''
+                        for(let i = 0; i < names.length; i++){
+                            if(names[i].length > 0 && names[i] !== ''){
+                                initials += names[i][0]
+                            }
+                        }
+                        return initials
+                    }
+                    const initialName = getInitials(getname)
+                    const {target, payment} = req.body
+                    let count = target.length 
+                    while(count > 0){ 
+                        for (let student of target){ 
+                            const totalInvoice = await Invoice.find({session: session._id , school : school._id})
+                            console.log(totalInvoice)
+                            let start = "0001"
+                            let code = GenerateInvoice(totalInvoice, start, "invoiceNumber", 1, 4)
+                            const newInvoice = await new Invoice({
+                                student : student.id,
+                                session: session._id,
+                                payment: payment,
+                                school: school._id,
+                                invoiceNumber: sess + initialName + code
+                            })
+                            
+                            await newInvoice.save()  
+                            count -= 1 
                         }
                     }
-                    return initials
+                    res.json({message : "Invoice has been generated."})
+                }else{
+                    res.redirect('/staff')
                 }
-                const initialName = getInitials(getname)
-                const {target, payment} = req.body
-                let count = target.length 
-                while(count > 0){ 
-                    for (let student of target){ 
-                        const totalInvoice = await Invoice.find({session: session._id , school : school._id})
-                        console.log(totalInvoice)
-                        let start = "0001"
-                        let code = GenerateInvoice(totalInvoice, start, "invoiceNumber", 1, 4)
-                        const newInvoice = await new Invoice({
-                            student : student.id,
-                            session: session._id,
-                            payment: payment,
-                            school: school._id,
-                            invoiceNumber: sess + initialName + code
-                        })
-                        
-                        await newInvoice.save()  
-                        count -= 1 
-                    }
-                }
-                res.json({message : "Invoice has been generated."})
             }else{
                 res.redirect('/staff')
             }
@@ -455,33 +472,37 @@ class App {
         try {
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const classes = await ClassSchool.find({school : school._id})
-                const session = await Session.findOne({ school : school._id , current : true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const payments = await Payment.findOne({ class : req.params.classID , school : school._id })
-                
-                let paymentFees = payments.fees
+                if(staff.role == "r-2") {
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const classes = await ClassSchool.find({school : school._id})
+                    const session = await Session.findOne({ school : school._id , current : true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const payments = await Payment.findOne({ class : req.params.classID , school : school._id })
+                    
+                    let paymentFees = payments.fees
 
-                let sum = paymentFees.reduce((a, b) => a + Number(b.amount), 0)
+                    let sum = paymentFees.reduce((a, b) => a + Number(b.amount), 0)
 
-                const paymentTypes = await PaymentType.find({ school : school._id })
-                const singleClass = await ClassSchool.findOne({ _id : req.params.classID , school: school._id})
+                    const paymentTypes = await PaymentType.find({ school : school._id })
+                    const singleClass = await ClassSchool.findOne({ _id : req.params.classID , school: school._id})
 
-                let title = `Bill for ${singleClass.name}`
+                    let title = `Bill for ${singleClass.name}`
 
-                let paymentName = {}
-                paymentTypes.map(pay => paymentName[pay._id] = pay.paymentFor)
+                    let paymentName = {}
+                    paymentTypes.map(pay => paymentName[pay._id] = pay.paymentFor)
 
-                const invoices = await Invoice.find({
-                    payment: payments._id
-                })
+                    const invoices = await Invoice.find({
+                        payment: payments._id
+                    })
 
-                res.render('single-class-bill' , { title : title , staff : staff , code : school,
-                sessS: session.name , termS : term.name , payments : payments , paymentTypes : paymentTypes,
-                paymentName : paymentName, openfinance_active : 'pcoded-trigger', school : school,
-                classes : classes , singleClass : singleClass, sum: sum , 
-                finance_active : 'active', amount_active : 'active', invoices: invoices})
+                    res.render('single-class-bill' , { title : title , staff : staff , code : school,
+                    sessS: session.name , termS : term.name , payments : payments , paymentTypes : paymentTypes,
+                    paymentName : paymentName, openfinance_active : 'pcoded-trigger', school : school,
+                    classes : classes , singleClass : singleClass, sum: sum , 
+                    finance_active : 'active', amount_active : 'active', invoices: invoices})
+                }else{
+                    res.redirect('/staff')
+                }
             }else{
                 res.redirect('/staff')
             }
@@ -494,31 +515,36 @@ class App {
         try {
             if( req.session.staffCode ){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const classes = await ClassSchool.find({school : school._id})
-                const session = await Session.findOne({school: school._id, current: true})
-                if(session){
-                    const term = await Term.findOne({session: session._id, current: true})
-                    if(term){
-                        const students = await Student.find({school: school._id})
-                        const paymentType = await PaymentType.find({school: school._id})
-                        const paymentProof = await PaymentProof.find({
-                            session: session._id, term: term._id, 
-                            school: school._id, recorded: false
-                        })
-                        res.render('transaction-uploads' , { title : 'Upload Transactions' , staff : staff, 
-                        classes : classes , openfinance_active : 'pcoded-trigger', students: students,
-                        finance_active : 'active', uploadT_active : 'active', sessS: session.name, termS: term.name,
-                        paymentType: paymentType, code : school, success: req.flash('success'), paymentProof: paymentProof})
+                if(staff.role == "r-2") {
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const classes = await ClassSchool.find({school : school._id})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    if(session){
+                        const term = await Term.findOne({session: session._id, current: true})
+                        if(term){
+                            const students = await Student.find({school: school._id})
+                            const paymentType = await PaymentType.find({school: school._id})
+                            const paymentProof = await PaymentProof.find({
+                                session: session._id, term: term._id, 
+                                school: school._id, recorded: false
+                            })
+                            res.render('transaction-uploads' , { title : 'Upload Transactions' , staff : staff, 
+                            classes : classes , openfinance_active : 'pcoded-trigger', students: students,
+                            finance_active : 'active', uploadT_active : 'active', sessS: session.name, termS: term.name,
+                            paymentType: paymentType, code : school, success: req.flash('success'), paymentProof: paymentProof})
+                        }else{
+                            res.render('sess-term-error', {staff: staff, title: 'Upload Transactions',
+                            finance_active: 'active', openfinance_active: "pcoded-trigger",
+                            uploadT_active : "active"})
+                        }
                     }else{
                         res.render('sess-term-error', {staff: staff, title: 'Upload Transactions',
                         finance_active: 'active', openfinance_active: "pcoded-trigger",
                         uploadT_active : "active"})
                     }
+                    
                 }else{
-                    res.render('sess-term-error', {staff: staff, title: 'Upload Transactions',
-                    finance_active: 'active', openfinance_active: "pcoded-trigger",
-                    uploadT_active : "active"})
+                    res.redirect(303 , '/staff')
                 }
             }else{
                 res.redirect(303, '/staff')
@@ -549,26 +575,108 @@ class App {
         try {
             if( req.session.staffCode ){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const classes = await ClassSchool.find({school : school._id})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const paymentProof = await PaymentProof.find({
-                    session: session._id, term: term._id, 
-                    school: school._id, recorded: false
-                })
-                const students = await Student.find({school: school._id})
+                if(staff.role == "r-2"){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const classes = await ClassSchool.find({school : school._id})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const paymentProof = await PaymentProof.find({
+                        session: session._id, term: term._id, 
+                        school: school._id, recorded: false
+                    })
+                    const students = await Student.find({school: school._id})
 
-                let studentName = {}
-                students.map(name => studentName[name._id] = name.firstName + " " + name.lastName + " " + `(${name.studentID})`)
-                let className = {}
-                classes.map(cls => className[cls._id] = cls.name)
+                    let studentName = {}
+                    students.map(name => studentName[name._id] = name.firstName + " " + name.lastName + " " + `(${name.studentID})`)
+                    let className = {}
+                    classes.map(cls => className[cls._id] = cls.name)
 
-                res.render('transaction-proof' , { title : 'Upload Transactions' , staff : staff, school : school,
-                classes : classes , code : school, openfinance_active : 'pcoded-trigger', paymentProof: paymentProof,
-                finance_active : 'active', uploadT_active : 'active', sessS: session.name, termS: term.name,
-                className: className, studentName: studentName})
-                
+                    res.render('transaction-proof' , { title : 'Upload Transactions' , staff : staff, school : school,
+                    classes : classes , code : school, openfinance_active : 'pcoded-trigger', paymentProof: paymentProof,
+                    finance_active : 'active', uploadT_active : 'active', sessS: session.name, termS: term.name,
+                    error : req.flash('error'), success : req.flash('success') , className: className, studentName: studentName})
+
+                }else{
+                    res.redirect(303, '/staff')
+                }
+                                
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch (err) {
+            res.render("error-page", {error: err})
+        }
+    }
+
+    getRecordedPayment = async ( req , res , next ) => {
+        try {
+            if( req.session.staffCode ){
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
+                if(staff.role == "r-2"){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const classes = await ClassSchool.find({school : school._id})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const paymentProof = await PaymentProof.find({
+                        session: session._id, term: term._id, 
+                        school: school._id, recorded: true
+                    })
+                    const students = await Student.find({school: school._id})
+
+                    let studentName = {}
+                    students.map(name => studentName[name._id] = name.firstName + " " + name.lastName + " " + `(${name.studentID})`)
+                    let className = {}
+                    classes.map(cls => className[cls._id] = cls.name)
+
+                    res.render('transaction-proof' , { title : 'Upload Transactions' , staff : staff, school : school,
+                    classes : classes , code : school, openfinance_active : 'pcoded-trigger', paymentProof: paymentProof,
+                    finance_active : 'active', uploadT_active : 'active', sessS: session.name, termS: term.name,
+                    error : req.flash('error'), success : req.flash('success') , className: className, studentName: studentName})
+
+                }else{
+                    res.redirect(303, '/staff')
+                }
+                                
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch (err) {
+            res.render("error-page", {error: err})
+        }
+    }
+
+    getPaymentProofUpdate = async ( req , res , next ) => {
+        try {
+            if( req.session.staffCode ){
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
+                if(staff.role == "r-2"){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const classes = await ClassSchool.find({school : school._id})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const paymentProof = await PaymentProof.findOne({
+                        session: session._id, term: term._id, 
+                        school: school._id, recorded: false,
+                        _id : req.params.paymentProofId
+                    })
+                    if(paymentProof){
+                        PaymentProof.findByIdAndUpdate(req.params.paymentProofId, {
+                            recorded : true
+                        }, {new : true, useFindAndModify : false}, (err, item) => {
+                            if(err){
+                                res.status(500)
+                                return 
+                            }else{
+                                req.flash('success', "Transaction has been marked as Recorded")
+                                let redirectUrl = '/staff/finance/transactions/upload/proofs'
+                                res.redirect(303, redirectUrl)
+                            }
+                        })
+                    }
+                }else{
+                    res.redirect(303, '/staff')
+                }
+                                
             }else{
                 res.redirect(303, '/staff')
             }
@@ -605,33 +713,38 @@ class App {
             if(req.session.staffCode){
                 const {studentID, target} = req.body
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school.id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const student = await Student.findOne({_id : studentID})
-                if(student){
-                    const transaction= new Transaction ({
-                        school: school._id,
-                        student: studentID,
-                        session: session._id,
-                        term: term._id,
-                        className: student.className,
-                        payment: target,
-                        status: 'Completed'
-                    })
-                    const saveTransaction = await transaction.save()
-                    if(saveTransaction){
-                        if(req.body.proof){
-                            await PaymentProof.findByIdAndUpdate(req.body.proof , {
-                                recorded: true
-                            } ,{new : true, useFindAndModify : false})
-                            console.log(req.body.proof)
+                if(staff.role == "r-2"){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school.id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const student = await Student.findOne({_id : studentID})
+                    if(student){
+                        const transaction= new Transaction ({
+                            school: school._id,
+                            student: studentID,
+                            session: session._id,
+                            term: term._id,
+                            className: student.className,
+                            payment: target,
+                            status: 'Completed'
+                        })
+                        const saveTransaction = await transaction.save()
+                        if(saveTransaction){
+                            if(req.body.proof){
+                                await PaymentProof.findByIdAndUpdate(req.body.proof , {
+                                    recorded: true
+                                } ,{new : true, useFindAndModify : false})
+                                console.log(req.body.proof)
+                            }
+                            res.json({message: "Transaction sent!"})
+                        }else{
+                            throw 'Error in Saving'
                         }
-                        res.json({message: "Transaction sent!"})
-                    }else{
-                        throw 'Error in Saving'
                     }
+                }else{
+                    res.redirect(303, '/staff')
                 }
+                
             }else{
                 res.redirect(303, '/staff')
             }
@@ -645,25 +758,29 @@ class App {
             if( req.session.staffCode ){
                 const {studentID, target} = req.body
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const classes = await ClassSchool.find({school : school._id})
-                const session = await Session.findOne({school: school._id, current: true})
-                if(session){
-                    const term = await Term.findOne({session: session._id, current: true})
-                    if(term){
-                        res.render('transaction-logs' , { title : 'Upload Transactions' , staff : staff, 
-                        classes : classes , code : school, openfinance_active : 'pcoded-trigger',
-                        finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name})
+                if(staff.role = "r-2"){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const classes = await ClassSchool.find({school : school._id})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    if(session){
+                        const term = await Term.findOne({session: session._id, current: true})
+                        if(term){
+                            res.render('transaction-logs' , { title : 'Upload Transactions' , staff : staff, 
+                            classes : classes , code : school, openfinance_active : 'pcoded-trigger',
+                            finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name})
+                        }else{
+                            res.render('sess-term-error', {staff: staff, title: 'Upload Transactions',
+                            finance_active: 'active', openfinance_active: "pcoded-trigger",
+                            transaction_active : "active"})
+                        }
                     }else{
                         res.render('sess-term-error', {staff: staff, title: 'Upload Transactions',
                         finance_active: 'active', openfinance_active: "pcoded-trigger",
                         transaction_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {staff: staff, title: 'Upload Transactions',
-                    finance_active: 'active', openfinance_active: "pcoded-trigger",
-                    transaction_active : "active"})
-                }
+                    res.redirect(303, '/staff')
+                }    
             }else{
                 res.redirect(303, '/staff')
             }
@@ -676,55 +793,60 @@ class App {
         try {
             if( req.session.staffCode ){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const classes = await ClassSchool.find({school : school._id})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                let today = new Date()
-                today.setHours(today.getHours() - 24)
-                const transactions = await Transaction.find({
-                    session: session._id, term: term._id,
-                    paymentDate: {$gte: today}
-                }) 
-                const paymentType = await PaymentType.find({
-                    school: school._id
-                })
-
-                let compulsoryPayments = await PaymentType.find({
-                    school: school._id, importance: 'Compulsory'
-                })
-                let compulsory = [] 
-                compulsoryPayments.map(e => {
-                    compulsory.push(e.paymentFor)
-                })
-                let totalCompulsory, totalOptional, totalAll
-                if(transactions.length > 0){
-                    let cPayments = []
-                    let oPayments = []
-                    transactions.map(t => {
-                        let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
-                        let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
-                        let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
-                        let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
-                        cPayments.push(sumC)
-                        oPayments.push(sumO)
+                if(staff.role == "r-2"){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const classes = await ClassSchool.find({school : school._id})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    let today = new Date()
+                    today.setHours(today.getHours() - 24)
+                    const transactions = await Transaction.find({
+                        session: session._id, term: term._id,
+                        paymentDate: {$gte: today}
+                    }) 
+                    const paymentType = await PaymentType.find({
+                        school: school._id
                     })
-                    totalCompulsory = cPayments.reduce((a, b) => a + b)
-                    totalOptional = oPayments.reduce((a, b) => a + b)
-                    totalAll = totalCompulsory + totalOptional
-                }
 
-                const students = await Student.find({school: school._id})
-                let studentName = {}
-                students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
-                let studentReg = {}
-                students.map(r => studentReg[r._id] = r.studentID)
+                    let compulsoryPayments = await PaymentType.find({
+                        school: school._id, importance: 'Compulsory'
+                    })
+                    let compulsory = [] 
+                    compulsoryPayments.map(e => {
+                        compulsory.push(e.paymentFor)
+                    })
+                    let totalCompulsory, totalOptional, totalAll
+                    if(transactions.length > 0){
+                        let cPayments = []
+                        let oPayments = []
+                        transactions.map(t => {
+                            let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
+                            let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
+                            let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
+                            let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
+                            cPayments.push(sumC)
+                            oPayments.push(sumO)
+                        })
+                        totalCompulsory = cPayments.reduce((a, b) => a + b)
+                        totalOptional = oPayments.reduce((a, b) => a + b)
+                        totalAll = totalCompulsory + totalOptional
+                    }
 
-                res.render('today-logs' , { title : 'Transactions' , staff : staff, code : school,
-                classes : classes , openfinance_active : 'pcoded-trigger', today: today, transactions: transactions,
-                finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
-                paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional})
+                    const students = await Student.find({school: school._id})
+                    let studentName = {}
+                    students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
+                    let studentReg = {}
+                    students.map(r => studentReg[r._id] = r.studentID)
+
+                    res.render('today-logs' , { title : 'Transactions' , staff : staff, code : school,
+                    classes : classes , openfinance_active : 'pcoded-trigger', today: today, transactions: transactions,
+                    finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
+                    paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional})
                     
+                }else{
+                    res.redirect(303, '/staff')
+                }
+                
             }else{
                 res.redirect(303, '/staff')
             }
@@ -737,53 +859,58 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const transactions = await Transaction.find({
-                    session: session._id, term: term._id,
-                    paymentDate: {$gte: req.params.startDate, $lte: req.params.endDate}
-                })
-                const paymentType = await PaymentType.find({
-                    school: school._id
-                })
-
-                let compulsoryPayments = await PaymentType.find({
-                    school: school._id, importance: 'Compulsory'
-                })
-                let compulsory = [] 
-                compulsoryPayments.map(e => {
-                    compulsory.push(e.paymentFor)
-                })
-                let totalCompulsory, totalOptional, totalAll
-                if(transactions.length > 0){
-                    let cPayments = []
-                    let oPayments = []
-                    transactions.map(t => {
-                        let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
-                        let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
-                        let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
-                        let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
-                        cPayments.push(sumC)
-                        oPayments.push(sumO)
+                if(staff.role == "r-2"){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const transactions = await Transaction.find({
+                        session: session._id, term: term._id,
+                        paymentDate: {$gte: req.params.startDate, $lte: req.params.endDate}
                     })
-                    totalCompulsory = cPayments.reduce((a, b) => a + b)
-                    totalOptional = oPayments.reduce((a, b) => a + b)
-                    totalAll = totalCompulsory + totalOptional
+                    const paymentType = await PaymentType.find({
+                        school: school._id
+                    })
+
+                    let compulsoryPayments = await PaymentType.find({
+                        school: school._id, importance: 'Compulsory'
+                    })
+                    let compulsory = [] 
+                    compulsoryPayments.map(e => {
+                        compulsory.push(e.paymentFor)
+                    })
+                    let totalCompulsory, totalOptional, totalAll
+                    if(transactions.length > 0){
+                        let cPayments = []
+                        let oPayments = []
+                        transactions.map(t => {
+                            let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
+                            let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
+                            let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
+                            let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
+                            cPayments.push(sumC)
+                            oPayments.push(sumO)
+                        })
+                        totalCompulsory = cPayments.reduce((a, b) => a + b)
+                        totalOptional = oPayments.reduce((a, b) => a + b)
+                        totalAll = totalCompulsory + totalOptional
+                    }
+
+                    const students = await Student.find({school: school._id})
+                    let studentName = {}
+                    students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
+                    let studentReg = {}
+                    students.map(r => studentReg[r._id] = r.studentID)
+
+                    res.render('daily-logs' , { title : 'Transactions' , staff : staff, 
+                    openfinance_active : 'pcoded-trigger', transactions: transactions,
+                    code : school, finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
+                    paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional,
+                    startDate: req.params.startDate, endDate: req.params.endDate})
+
+                }else{
+                    res.redirect(303, '/school')
                 }
-
-                const students = await Student.find({school: school._id})
-                let studentName = {}
-                students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
-                let studentReg = {}
-                students.map(r => studentReg[r._id] = r.studentID)
-
-                res.render('daily-logs' , { title : 'Transactions' , staff : staff, 
-                openfinance_active : 'pcoded-trigger', transactions: transactions,
-                code : school, finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
-                paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional,
-                startDate: req.params.startDate, endDate: req.params.endDate})
-
+                
             }else{
                 res.redirect(303, '/school')
             }
@@ -796,55 +923,60 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const className = await ClassSchool.findOne({school: school._id, name: req.params.className})
-                const classes = await ClassSchool.find({school: school._id})
-                const transactions = await Transaction.find({
-                    session: session._id, term: term._id,
-                    className: className._id
-                })
-                const paymentType = await PaymentType.find({
-                    school: school._id
-                })
-
-                let compulsoryPayments = await PaymentType.find({
-                    school: school._id, importance: 'Compulsory'
-                })
-                let compulsory = [] 
-                compulsoryPayments.map(e => {
-                    compulsory.push(e.paymentFor)
-                })
-                let totalCompulsory, totalOptional, totalAll
-                if(transactions.length > 0){
-                    let cPayments = []
-                    let oPayments = []
-                    transactions.map(t => {
-                        let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
-                        let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
-                        let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
-                        let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
-                        cPayments.push(sumC)
-                        oPayments.push(sumO)
+                if(staff.role == "r-2"){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const className = await ClassSchool.findOne({school: school._id, name: req.params.className})
+                    const classes = await ClassSchool.find({school: school._id})
+                    const transactions = await Transaction.find({
+                        session: session._id, term: term._id,
+                        className: className._id
                     })
-                    totalCompulsory = cPayments.reduce((a, b) => a + b)
-                    totalOptional = oPayments.reduce((a, b) => a + b)
-                    totalAll = totalCompulsory + totalOptional
+                    const paymentType = await PaymentType.find({
+                        school: school._id
+                    })
+
+                    let compulsoryPayments = await PaymentType.find({
+                        school: school._id, importance: 'Compulsory'
+                    })
+                    let compulsory = [] 
+                    compulsoryPayments.map(e => {
+                        compulsory.push(e.paymentFor)
+                    })
+                    let totalCompulsory, totalOptional, totalAll
+                    if(transactions.length > 0){
+                        let cPayments = []
+                        let oPayments = []
+                        transactions.map(t => {
+                            let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
+                            let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
+                            let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
+                            let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
+                            cPayments.push(sumC)
+                            oPayments.push(sumO)
+                        })
+                        totalCompulsory = cPayments.reduce((a, b) => a + b)
+                        totalOptional = oPayments.reduce((a, b) => a + b)
+                        totalAll = totalCompulsory + totalOptional
+                    }
+
+                    const students = await Student.find({school: school._id})
+                    let studentName = {}
+                    students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
+                    let studentReg = {}
+                    students.map(r => studentReg[r._id] = r.studentID)
+
+                    res.render('class-logs' , { title : 'Transactions' , staff : staff, 
+                    openfinance_active : 'pcoded-trigger', transactions: transactions, classes: classes,
+                    code : school, finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
+                    paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional,
+                    pClass: req.params.className})
+
+                }else{
+                    res.redirect(303, '/staff')
                 }
-
-                const students = await Student.find({school: school._id})
-                let studentName = {}
-                students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
-                let studentReg = {}
-                students.map(r => studentReg[r._id] = r.studentID)
-
-                res.render('class-logs' , { title : 'Transactions' , staff : staff, 
-                openfinance_active : 'pcoded-trigger', transactions: transactions, classes: classes,
-                code : school, finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
-                paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional,
-                pClass: req.params.className})
-
+                
             }else{
                 res.redirect(303, '/staff')
             }
@@ -859,40 +991,45 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                if(session){
-                    const term = await Term.findOne({school: school._id, session: session._id, current: true})
-                    if(term){
-                        const allStaff= await Staff.find({school : school._id})
-                        const roles = await Role.find({school: school._id})
+                if(staff.role == "r-1"){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    if(session){
+                        const term = await Term.findOne({school: school._id, session: session._id, current: true})
+                        if(term){
+                            const allStaff= await Staff.find({school : school._id})
+                            const roles = await Role.find({school: school._id})
 
-                        let roleName = {}
-                        roles.map(r => roleName[r.role] = r.name)
+                            let roleName = {}
+                            roles.map(r => roleName[r.role] = r.name)
 
-                        res.render("school-staffs" , {
-                            title : "School Staffs",
-                            staff : staff ,
-                            allStaff,
-                            code : school,
-                            success : req.flash('success'),
-                            staff_active : "active",
-                            users_active: 'active',
-                            openuser_active: "pcoded-trigger",
-                            sessS: session.name,
-                            termS: term.name,
-                            roleName : roleName
-                        })
+                            res.render("school-staffs" , {
+                                title : "School Staffs",
+                                staff : staff ,
+                                allStaff,
+                                code : school,
+                                success : req.flash('success'),
+                                staff_active : "active",
+                                users_active: 'active',
+                                openuser_active: "pcoded-trigger",
+                                sessS: session.name,
+                                termS: term.name,
+                                roleName : roleName
+                            })
+                        }else{
+                            res.render('sess-term-error', {staff: staff, title: 'School Staffs',
+                            users_active: 'active', openuser_active: "pcoded-trigger",
+                            staff_active : "active"})
+                        }
                     }else{
-                        res.render('sess-term-error', {staff: staff, title: 'School Staffs',
+                        res.render('sess-term-error', {staff: staff, title: 'Staffs',
                         users_active: 'active', openuser_active: "pcoded-trigger",
                         staff_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {staff: staff, title: 'Staffs',
-                    users_active: 'active', openuser_active: "pcoded-trigger",
-                    staff_active : "active"})
+                    res.redirect(303, '/staff')
                 }
+                
             }else{
                 res.redirect(303, '/staff')
             }
@@ -905,19 +1042,23 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const roles = await Role.find({school: school._id})
-
-                let roleName = {}
-                roles.map(r => roleName[r.role] = r.name)
-
-                res.render('single-principal-staff' , { title  : "School Staff", staffDB: staff, school : school,
-                staff : staff, success : req.flash('success'), staff_active : "active",
-                code : school, users_active: 'active', openuser_active: "pcoded-trigger",
-                sessS: session.name, termS: term.name, roleName: roleName})
-                
+                if(staff.role == "r-1"){
+                    const singleStaff = await Staff.findOne({_id : req.params.staffId})
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const roles = await Role.find({school: school._id})
+    
+                    let roleName = {}
+                    roles.map(r => roleName[r.role] = r.name)
+    
+                    res.render('single-principal-staff' , { title  : "School Staff", staffDB: singleStaff, school : school,
+                    staff : staff, success : req.flash('success'), staff_active : "active",
+                    code : school, users_active: 'active', openuser_active: "pcoded-trigger",
+                    sessS: session.name, termS: term.name, roleName: roleName})
+                }else{
+                    res.redirect(303, '/staff')
+                }
             }else{
                 res.redirect(303, '/staff')
             }
@@ -1115,10 +1256,11 @@ class App {
                 const session = await Session.findOne({school: school._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
                 const students = await Student.find({school: school._id , status: 'Graduated'})
+                const classchool = await ClassSchool.find({school: school._id})
 
                 res.render('principal-graduates', {title: 'Graduated Students', staff : staff,
                 code : school, users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
-                sessS: session.name, termS: term.name, students: students})
+                sessS: session.name, termS: term.name, students: students , classchool : classchool})
 
             }else{
                 res.redirect(303, '/staff')
@@ -1135,11 +1277,12 @@ class App {
                 const school = await SchoolAdmin.findOne({_id : staff.school})
                 const session = await Session.findOne({school: school._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
+                const students = await Student.find({school: school._id , status: 'Graduated'})
                 const classchool = await ClassSchool.find({school: school._id})
 
                 res.render('principal-graduate-students', {title: 'Graduate Students', staff : staff,
                 code : school, users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
-                sessS: session.name, termS: term.name, classchool: classchool})
+                sessS: session.name, termS: term.name, classchool: classchool, students : students})
             }else{
                 res.redirect(303, '/staff')
             }

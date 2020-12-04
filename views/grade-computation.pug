@@ -61,7 +61,8 @@ block content
                                                                     th Grade
                                                                     th Range
                                                                     if !(studentResult.length > 0)
-                                                                        th Action
+                                                                        th Delete
+                                                                        th Edit
                                                             tbody 
                                                                 each exam in gradeCompute
                                                                     tr
@@ -82,6 +83,9 @@ block content
                                                                                                 - let delGrade = "/school/grade-settings/" + exam._id + "/delete"
                                                                                                 a(href=delGrade class="ace-btn btn") Ok
                                                                                                 button(class="cancel-btn btn" type="button" data-dismiss="modal") Cancel
+                                                                            td
+                                                                                -let updateGrade = "/school/grade-settings/" + exam._id + "/update"
+                                                                                a(href=updateGrade) Edit
                                             else
                                                 .card-header
                                                     h5 Grade Settings.

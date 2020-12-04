@@ -83,10 +83,10 @@ block content
                                                                 p #[b #[u Results Uploaded]] (#{termS})
                                                                 if courseUploaded
                                                                     each course in courseUploaded
-                                                                        - let delUrl = '/staff/upload-result/' + pSubject + '/' + pClass + '/' + studentDB._id + "/" + course.examType + '/delete'
-                                                                        p #[i(class="feather icon-check")] #{course.examType} - #{course.score} 
-                                                                            a(href=delUrl) #[i(class="red-color feather icon-trash")]
-                                                                       
+                                                                        p #[i(class="feather icon-check pr-2")] #{course.examType} - #{course.score}
+                                                                            - let delUrl = '/staff/upload-result/' + pSubject + '/' + pClass + '/' + studentDB._id + "/" + course.examType + '/delete'
+                                                                            a(href=delUrl data-toggle="modal" data-target=`#studentUpload`) #[i(class="pl-3 red-color feather icon-trash")]
+                                                                             
                                                                 else
                                                                     p None yet.
                                                 hr

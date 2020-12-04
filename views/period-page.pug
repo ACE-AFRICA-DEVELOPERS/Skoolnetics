@@ -13,14 +13,21 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
+                                .col-md-8
+                                    if error
+                                        if error.length != 0
+                                            .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                    span(aria-hidden="true") ×
+                                                span #{error}
+                                    if success
+                                        if success.length != 0
+                                            .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                    span(aria-hidden="true") ×
+                                                span #{success}
                                 .row
                                     .col-md-6
-                                        if success
-                                            if success.length != 0
-                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
-                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
-                                                        span(aria-hidden="true") ×
-                                                    span #{success}
                                 .row.justify-content-between.p-3
                                     p #[a(href="#" data-toggle="modal" data-target="#add-period" class="btn btn-info") New Period #[i(class="fa fa-plus ml-1")]]
                                     p #[a(href="/school/day" class="btn btn-info") Set Weekdays #[i(class="fa fa-arrow-right ml-1")]]
@@ -59,15 +66,25 @@ block content
                                                     tbody 
                                                         each period, index in periods
                                                             each week in period.weekday
-                                                                - let viewUrl = "/school/period/" + week._id
+                                                                - let deleteUrl = "/school/period/" + week._id
                                                                 - let periodnum = week.periodNum
                                                                 - let timedur = week.startTime +" - "+week.endTime
                                                                 tr
                                                                     td #{periodnum}
                                                                     td #{timedur}
-                                                                    td 
-                                                                        a(href=viewUrl class="red-color") 
-                                                                            i(class="feather icon-trash")
+                                                                    td #[a(href="#" data-toggle="modal" class="red-color" data-target="#payment") #[i(class="red-color feather icon-trash")]]
+
+                                                                div(class="modal fade" id="payment" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                    div(class="modal-dialog" role="document")
+                                                                        div(class="modal-content")
+                                                                            div(class="modal-header")
+                                                                                h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                    span(aria-hidden="true") ×
+                                                                            div(class="modal-body") Deleting this will delete this class permanently.
+                                                                            div(class="modal-footer")
+                                                                                a(class="btn btn-info" href=deleteUrl) Ok
+                                                                                button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
                                 else
                                     .card
                                         .card-header

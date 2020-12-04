@@ -394,16 +394,21 @@ class App {
 
     getUpdateGrade = async (req, res, next) => {
         try{
-            if(req.session.schoolCode) {
+            if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                const session = await Session.findOne({current: true, school: schoolAdmin._id})
-                const term = await Term.findOne({current: true, session: session._id})
-                let grade = await Grade.findByOne({term : term._id})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const gradeCompute = await Grade.find({school: schoolAdmin._id})
+                const studentResult = await StudentResults.find({school: schoolAdmin._id, session: session._id, term: term._id})
+                console.log(gradeCompute)
+                res.render('update-grade', {schoolAdmin: schoolAdmin, gradeDB: gradeCompute, title: 'Grade Update',
+                grade_active: 'active', opensession_active: "pcoded-trigger", studentResult : studentResult, 
+                sessS: session.name, termS: term.name, session_active: 'active'})
             }else{
                 res.redirect(303, '/school')
             }
         }catch(err){
-            res.render('error-page', {error : err}) 
+            res.render('error-page', {error : err})
         }
     }
 
