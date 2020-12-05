@@ -26,7 +26,7 @@ block content
                                                                 - let logoUrl = '/uploads/schools/' + school.schoolCode + '/logo/' + school.logo
                                                                 img(src=logoUrl height="100px" width="100px")
                                                             else
-                                                                p #[b School Logo appears here.]
+                                                                img(src='/images/logo-stamp/logo.jpeg' height="100px" width="100px")
                                                     tr
                                                         td #{school.schoolName}
                                                     tr
@@ -87,7 +87,9 @@ block content
                                                             - let stampUrl = '/uploads/schools/' + school.schoolCode + '/logo/' + school.stamp
                                                             img(src=stampUrl height="100px" width="100px")
                                                         else
-                                                            p #[b School stamp will appear here.]
+                                                            img(src='/images/logo-stamp/stamp.jpg' height="100px" width="100px")
+                                            p 
+                                                b NB: The abbreviation (C) indicates the compulsory payment for each Class.
 
     script(src='/javascripts/pdf.js')
     include includes/footer.pug

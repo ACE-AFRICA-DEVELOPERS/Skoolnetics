@@ -1504,11 +1504,9 @@ class App {
                     session: session._id, term: term._id
                 })
                 const course = await Course.findOne({
-                    exam: exam._id, examiner : staff._id,
-                    className: req.params.className, courseName: req.params.subject
+                    _id : req.params.courseID
                 })
                 if(course){
-                    console.log(course)
                     let courseID = course._id
                     Course.findByIdAndUpdate(courseID, {
                         publish : false,
