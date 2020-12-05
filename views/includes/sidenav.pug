@@ -247,6 +247,13 @@ block content
                                         a(href='/staff/timetable') Class Timetable
                                     li(class=examtime_active)
                                         a(href='/staff/exam-timetable') Exam Timetable
+                            li.nav-item.pcoded-menu-caption
+                                label Broadsheet
+                            li(class=`nav-item ${broadsheet_active}`)
+                                a.nav-link(href='/staff/principal/broadsheet')
+                                    span.pcoded-micon
+                                        i.feather.icon-folder
+                                    span.pcoded-mtext Results
                             li(class=`nav-item ${notes_active}`)
                                 a.nav-link(href='/staff/principal/lesson-notes')
                                     span.pcoded-micon
