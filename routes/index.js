@@ -105,6 +105,7 @@ router.get('/school/staff/:staffID', SchoolAdminController.getSingleStaff)
 router.post('/school/staff/:staffID',  FileController.staffUpload.single('picture'), SchoolAdminController.updateSingleStaff)
 router.get('/school/staff/:staffID/assign', SchoolAdminController.getAssignPage)
 router.post('/school/staff/:staffID/assign', SchoolAdminController.postAssignPage)
+router.get('/school/staff/:staffID/assign/delete/:teach', SchoolAdminController.deleteAssignClass)
 
 router.get('/school/students', SchoolAdminController.getStudentsPage)
 router.get('/school/students/all', SchoolAdminController.getAllStudents)
@@ -241,6 +242,9 @@ router.get('/staff', IndexController.getStaffPage)
 router.post('/staff', StaffController.postStaffLogin)
 router.get('/staff/dashboard', StaffController.getDashboard)
 router.get('/staff/logout', StaffController.getLogout)
+
+router.get('/staff/settings', StaffController.getSettings)
+router.post('/change-staff-password', StaffController.changePassword)
 
 router.get('/staff/upload-result', StaffController.getUploadResult)
 router.get('/staff/upload-result/:subject/:className', StaffController.getUploadClass)
@@ -379,6 +383,10 @@ router.get('/staff/principal/lesson-notes/:noteID/approve', RoleController.appro
 router.get('/parent', IndexController.getParentPage)
 router.post('/parent', ParentController.postParentLogin)
 router.get('/parent/dashboard', ParentController.getDashboard)
+
+router.get('/parent/settings', ParentController.getSettings)
+router.post('/change-parent-password', ParentController.changePassword)
+
 router.get("/parent/student", ParentController.getChildren)
 router.get('/parent/student/:studentID', ParentController.getSingleChild)
 router.get('/parent/student/:studentID/finance-page' , ParentController.getFinancePage)
@@ -400,6 +408,10 @@ router.get('/parent/logout', ParentController.getLogout)
 router.get('/student', IndexController.getStudentPage)
 router.post('/student', StudentController.postStudentLogin)
 router.get('/student/dashboard', StudentController.getDashboard)
+
+router.get('/student/settings', StudentController.getSettings)
+router.post('/change-student-password', StudentController.changePassword)
+
 router.get('/student/cbt', StudentController.getExams)
 router.get('/student/cbt/:examCode', StudentController.getExamCourses)
 router.get('/student/cbt/:examCode/:courseName/verify', StudentController.getVerifyCBT)

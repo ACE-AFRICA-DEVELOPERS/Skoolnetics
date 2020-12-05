@@ -1004,9 +1004,9 @@ class App {
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const staff = await Staff.findOne({_id : req.params.staffID})
+                console.log(req.file)
                 if(staff){	
                     if(req.file){
-                        
                         FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/staffs/" + staff.profilePhoto) 
                         
                         let originalName = req.params.staffID + "-" + req.file.originalname
@@ -1014,8 +1014,8 @@ class App {
                             profilePhoto : originalName,
                             firstName : req.body.firstName,
                             lastName : req.body.lastName,
-                            gender : req.body.gender ,
-                            status : req.body.status
+                            otherName : req.body.otherName,
+                            email : req.body.email
                         }, {new : true, useAndModify : false}, (err , item) => {
                             if(err){
                                 res.status(500)
@@ -1040,8 +1040,9 @@ class App {
                         Staff.findByIdAndUpdate(req.params.staffID, {
                             firstName : req.body.firstName,
                             lastName : req.body.lastName,
-                            gender : req.body.gender ,
-                            status : req.body.status
+                            otherName : req.body.otherName,
+                            gender : req.body.gender,
+                            email : req.body.email
                         }, {new : true, useAndModify : false}, (err , item) => {
                             if(err){
                                 res.status(500)
@@ -1306,7 +1307,7 @@ class App {
                 if(validStaff){
                     res.render('assign-class' , { title  : "Staff", staffDB: validStaff, 
                     schoolAdmin : schoolAdmin, success : req.flash('success'), staff_active : "active",
-                    users_active: 'active', openuser_active: "pcoded-trigger",
+                    users_active: 'active', openuser_active: "pcoded-trigger", error : req.flash('error'),
                     subjects: subjects, classSchool: classSchool, sessS: session.name,
                     termS: term.name})
                 }else{
@@ -1325,9 +1326,20 @@ class App {
     postAssignPage = async (req , res , next) => {
         try{
             if(req.session.schoolCode){
-                let validStaff = await Staff.findOne({_id : req.params.staffID})
-                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                if(validStaff){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode: req.session.schoolCode})
+                const findStaff = await Staff.find({school: schoolAdmin._id, role: 'Teacher'})
+                const validStaff = await Staff.findOne({_id : req.params.staffID})
+                let findTeachClass, findTeachSubject
+                findStaff.map(e => {
+                    findTeachClass = e.teaching.find(i => i.className == req.body.className)
+                    findTeachSubject = e.teaching.find(i => i.subject == req.body.subject)
+                })
+                if(findTeachClass && findTeachSubject){
+                    req.flash('error', "A teacher has that class and subject already.")
+                    let redirectUrl = '/school/staff/' + validStaff._id + '/assign'
+                    res.redirect(303, redirectUrl)
+                    return
+                }else{
                     let fromBody = {
                         className: req.body.className,
                         subject: req.body.subject
@@ -1344,12 +1356,35 @@ class App {
                             let redirectUrl = '/school/staff/' + validStaff._id + '/assign'
                             res.redirect(303, redirectUrl)
                         }
-                    })	
-                }else{
-                    throw{
-                        message : "Staff not found"
-                    }
+                    })
                 }
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error : err})
+        }
+    }
+
+    deleteAssignClass = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const staff = await Staff.findOne({_id: req.params.staffID})
+                const teach = staff.teaching
+                let mapIt = teach.find( elem => elem._id == req.params.teach)
+                Staff.findByIdAndUpdate(staff._id, {
+                    $pullAll : {
+                        teaching : [mapIt] }
+                }, {new : true, useAndModify : false}, (err , item) => {
+                    if(err){
+                        res.status(500)
+                        return
+                    }else {
+                        req.flash('success', "You just deleted a class and a subject.")
+                        let redirectUrl = '/school/staff/' + req.params.staffID + '/assign' 
+                        res.redirect(303, redirectUrl)
+                    }
+                })
             }else{
                 res.redirect(303, '/school')
             }
@@ -1598,7 +1633,9 @@ class App {
                 const result = await Result.find({
                     className : className, 
                     school : schoolAdmin._id,
-                    exam: exam._id
+                    exam: exam._id,
+                    session: session._id,
+                    term: term._id
                 })
                 const students = await Student.find({school: schoolAdmin._id})
 
@@ -1640,7 +1677,9 @@ class App {
                     session: session._id, term: term._id
                 })
                 
-                Result.updateMany({className : req.params.className, school : schoolAdmin._id, exam: exam._id}, {
+                Result.updateMany({className : req.params.className, 
+                    school : schoolAdmin._id, exam: exam._id, 
+                    session: session._id, term: term._id}, {
                         $set : {released : true}
                 }, {new : true, useAndModify : false}, (err , item) => {
                     if(err){
@@ -1670,7 +1709,9 @@ class App {
                     session: session._id, term: term._id
                 })
 
-                Result.updateMany({className : req.params.className, school : schoolAdmin._id, exam: exam._id}, {
+                Result.updateMany({className : req.params.className, 
+                    school : schoolAdmin._id, exam: exam._id, session: session._id, 
+                    term: term._id}, {
                         $set : {released : false}
                 }, {new : true, useAndModify : false}, (err , item) => {
                     if(err){

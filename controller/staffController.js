@@ -86,6 +86,53 @@ class App {
         }
     }
 
+    getSettings = async (req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const school = await SchoolAdmin.findOne({_id : staff.school})
+                res.render('staff-settings', {title : 'Settings', staff, code : school, 
+                error : req.flash('error'), success : req.flash('success')})
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render('error-page', {error : err})
+        }
+    }
+
+    changePassword = async(req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                const {oldPassword, newPassword, cNewPassword} = req.body
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                if(newPassword == cNewPassword){
+                    let validPassword = await bcrypt.compare(oldPassword , staff.password)
+                    if(validPassword){
+                        let harshedPassword = await bcrypt.hash(newPassword , 10)
+                        Staff.findByIdAndUpdate(staff._id, {
+                            password : harshedPassword
+                        }, {new : true, useFindAndModify : false}, (err, item) => {
+                            if(err) {
+                                console.log(err)
+                            }else {
+                                res.json({message: "Password changed successfully.", status: 200})
+                            }
+                        })
+                    }else{
+                        res.json({message: "Old Password is incorrect", status: 500})
+                    }
+                }else{
+                    res.json({message: "Passwords does not match.", status: 500})
+                }
+            }else{
+                res.rson({message: "Access denied", status: 500})
+            }
+        }catch(err) {
+            res.render('error-page', {error : err})
+        }
+    }
+
     getExams = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){

@@ -20,22 +20,23 @@ block content
                                     .card-body
                                         .row.justify-content-center
                                             .col-md-10
-                                                .row
-                                                    .col-md-4.mb-3
-                                                        if staffDB.profilePhoto
-                                                            - let imageUrl = "/uploads/schools/" + schoolAdmin.schoolCode + "/staffs/" + staffDB.profilePhoto
-                                                            img(src=imageUrl alt="" width="100%" height="300px")
-                                                        else
-                                                            if staffDB.gender == 'male'
-                                                                img(src="/images/user/avatar-4.jpg" alt="" width="100%" height="300px")
+                                                form(method="post" enctype="multipart/form-data")
+                                                    .row
+                                                        .col-md-4.mb-3
+                                                            if staffDB.profilePhoto
+                                                                - let imageUrl = "/uploads/schools/" + schoolAdmin.schoolCode + "/staffs/" + staffDB.profilePhoto
+                                                                img(src=imageUrl alt="" width="100%" height="300px" id="imageU")
                                                             else
-                                                                img(src="/images/user/avatar-3.jpg" alt="" width="100%" height="300px")  
-                                                        label(class="btn-file2 mt-4") #[i(class="fa fa-upload pr-2")] Change Image
-                                                            input(type="file" name='picture' id='picture')
+                                                                if staffDB.gender == 'male'
+                                                                    img(src="/images/user/avatar-4.jpg" alt="" width="100%" height="300px" id="imageU")
+                                                                else
+                                                                    img(src="/images/user/avatar-3.jpg" alt="" width="100%" height="300px" id="imageU")  
+                                                            label(class="btn-file2 mt-4") #[i(class="fa fa-upload pr-2")] Change Image
+                                                                input(type="file" name='picture' id='picture')
 
-                                                    div(class="col-md-8")
-                                                        div(class="card-box")
-                                                            form(action="", method="post")
+                                                        div(class="col-md-8")
+                                                            div(class="card-box")
+                                                            
                                                                 .row
                                                                     .col-3
                                                                         label(for="ID" class="label") Staff ID:
@@ -50,9 +51,13 @@ block content
                                                                     .col-9
                                                                         input(type="text" value= staffDB.lastName class="profile-form mb-4" name="lastName")
                                                                     .col-3
+                                                                        label(for="othername" class="label") Other Name:
+                                                                    .col-9
+                                                                        input(type="text" value= staffDB.otherName class="profile-form mb-4" name="otherName")
+                                                                    .col-3
                                                                         label(for="othername" class="label") Email:
                                                                     .col-9
-                                                                        input(type="text" value= staffDB.email class="profile-form mb-4" name="otherName")
+                                                                        input(type="text" value= staffDB.email class="profile-form mb-4" name="email")
                                                                     .col-3
                                                                         label(for="role" class="label") Role:
                                                                     .col-9
@@ -70,7 +75,7 @@ block content
                                                                     .col-3
                                                                         label(for="status" class="label") Status:
                                                                     .col-9
-                                                                        input(type="text" value= staffDB.status class="profile-form mb-4" name="status")
+                                                                        input(type="text" value= staffDB.status class="profile-form mb-4" name="status" readonly)
                                                                     div(class="col-md-12 mt-3 text-center")
                                                                         input(type="submit" class="btn btn-info"  value="Update")
                                                 hr
@@ -78,4 +83,5 @@ block content
                                                     -let assignUrl = '/school/staff/' + staffDB._id + '/assign'
                                                     p #[a(href=assignUrl) Assign Classes and Subjects to this teacher?]
         
+        script(src="/javascripts/library/handleImage.js")
         include includes/footer.pug

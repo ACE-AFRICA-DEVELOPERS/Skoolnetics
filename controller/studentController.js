@@ -73,6 +73,53 @@ class App {
         }
     }
 
+    getSettings = async (req, res, next) => {
+        try{
+            if(req.session.regNumber){
+                const student = await Student.findOne({studentID : req.session.regNumber})
+                const school = await SchoolAdmin.findOne({_id : student.school})
+                res.render('student-settings', {title : 'Settings', student, code : school, 
+                error : req.flash('error'), success : req.flash('success')})
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render('error-page', {error : err})
+        }
+    }
+
+    changePassword = async(req, res, next) => {
+        try{
+            if(req.session.regNumber){
+                const {oldPassword, newPassword, cNewPassword} = req.body
+                const student = await Student.findOne({studentID : req.session.regNumber})
+                if(newPassword == cNewPassword){
+                    let validPassword = await bcrypt.compare(oldPassword , student.password)
+                    if(validPassword){
+                        let harshedPassword = await bcrypt.hash(newPassword , 10)
+                        Student.findByIdAndUpdate(student._id, {
+                            password : harshedPassword
+                        }, {new : true, useFindAndModify : false}, (err, item) => {
+                            if(err) {
+                                console.log(err)
+                            }else {
+                                res.json({message: "Password changed successfully.", status: 200})
+                            }
+                        })
+                    }else{
+                        res.json({message: "Old Password is incorrect", status: 500})
+                    }
+                }else{
+                    res.json({message: "Passwords does not match.", status: 500})
+                }
+            }else{
+                res.rson({message: "Access denied", status: 500})
+            }
+        }catch(err) {
+            res.render('error-page', {error : err})
+        }
+    }
+
     getExams = async (req, res, next) => {
         try{ 
             if(req.session.regNumber){
@@ -377,6 +424,8 @@ class App {
             if(req.session.regNumber){
                 const {response , courseName, className} = req.body 
                 const validStudent = await Student.findOne({studentID: req.session.regNumber})
+                const session = await Session.findOne({school: validStudent.school, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
                 const exam = await Exam.findOne({
                     school : validStudent.school, available: true, 
                     examCode: req.params.examCode
@@ -414,7 +463,10 @@ class App {
                 let studentScore = markExam(mainQuestion , response)
                 let percentage = Math.round((studentScore / total) * 100)
 
-                let studentResult = await Result.findOne({student : validStudent._id, exam: exam._id})
+                let studentResult = await Result.findOne({
+                    student : validStudent._id, exam: exam._id,
+                    session: session._id, term: term._id
+                })
                 if(studentResult){
                     let fromBody = {
                         courseName : courseName,
@@ -440,6 +492,8 @@ class App {
                         school : validStudent.school,
                         className : className,
                         exam : exam._id,
+                        session: session._id,
+                        term: term._id,
                         result : [{
                             courseName : courseName,
                             score : studentScore,
@@ -481,9 +535,12 @@ class App {
                 let student = await Student.findOne({studentID: req.session.regNumber})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const className = await ClassSchool.findOne({_id : student.className})
-                const results = await Result.find({student : student._id, released : true})
                 const session = await Session.findOne({school: school._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
+                const results = await Result.find({
+                    student : student._id, released : true,
+                    session: session._id, term: term._id
+                })
                 const exams = await Exam.find({school: school._id, session: session._id, term: term._id})
                 
                 let examName = {}

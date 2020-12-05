@@ -797,7 +797,8 @@ class App{
                 
                 const results = await Result.find({
                     className: req.params.className, exam: exam._id,
-                    school: staff.school
+                    school: staff.school, session: session._id,
+                    term: term._id
                 })
                 
                 const firstResult = results[0]
@@ -830,8 +831,12 @@ class App{
                 const staff = await Staff.findOne({staffID : req.session.staffCode})
                 const schoolAdmin = await SchoolAdmin.findOne({_id: staff.school})
                 const exam = await Exam.findOne({school: schoolAdmin._id, examCode: req.params.examCode})
+                const session = await Session.findOne({school: schoolAdmin.schoolCode, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
                 
-                Result.updateMany({className: req.params.className, exam: exam._id, school: staff.school}, {
+                Result.updateMany({className: req.params.className, 
+                exam: exam._id, school: staff.school, session: session._id,
+                term: term._id}, {
                         $set : {released : true}
                 }, {new : true, useAndModify : false}, (err , item) => {
                     if(err){

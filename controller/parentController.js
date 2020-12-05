@@ -69,6 +69,53 @@ class App {
         }
     }
 
+    getSettings = async (req, res, next) => {
+        try{
+            if(req.session.regNumber){
+                const parent = await Parent.findOne({parentID : req.session.parentCode})
+                const school = await SchoolAdmin.findOne({_id : parent.school})
+                res.render('parent-settings', {title : 'Settings', parent, code : school, 
+                error : req.flash('error'), success : req.flash('success')})
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render('error-page', {error : err})
+        }
+    }
+
+    changePassword = async(req, res, next) => {
+        try{
+            if(req.session.parentCode){
+                const {oldPassword, newPassword, cNewPassword} = req.body
+                const parent = await Parent.findOne({parentID : req.session.parentCode})
+                if(newPassword == cNewPassword){
+                    let validPassword = await bcrypt.compare(oldPassword , parent.password)
+                    if(validPassword){
+                        let harshedPassword = await bcrypt.hash(newPassword , 10)
+                        Parent.findByIdAndUpdate(parent._id, {
+                            password : harshedPassword
+                        }, {new : true, useFindAndModify : false}, (err, item) => {
+                            if(err) {
+                                console.log(err)
+                            }else {
+                                res.json({message: "Password changed successfully.", status: 200})
+                            }
+                        })
+                    }else{
+                        res.json({message: "Old Password is incorrect", status: 500})
+                    }
+                }else{
+                    res.json({message: "Passwords does not match.", status: 500})
+                }
+            }else{
+                res.rson({message: "Access denied", status: 500})
+            }
+        }catch(err) {
+            res.render('error-page', {error : err})
+        }
+    }
+
     getChildren = async(req, res, next) => {
         try{
             if(req.session.parentCode){
