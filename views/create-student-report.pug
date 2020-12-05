@@ -88,10 +88,10 @@ block content
                                                                 p #[b Position: ] #[span #{broadsheet.position}]
                                                     hr
                                                     .mt-2
-                                                        label Class teacher remarks:
-                                                        input(type="text" class="profile-form mb-3" readonly value=broadsheet.teacherRemark)
-                                                        label Principal remarks:
-                                                        input(type="text" class="profile-form mb-3" readonly value=broadsheet.principalRemark)
+                                                        label #[b Class teacher remarks:]
+                                                        input(type="text" class="profile-form text-muted mb-3" readonly value=broadsheet.teacherRemark)
+                                                        label #[b Principal remarks:]
+                                                        input(type="text" class="profile-form text-muted mb-3" readonly value=broadsheet.principalRemark)
                                                     p.text-right
                                                         if schoolDB.stamp
                                                             - let stampUrl = '/uploads/schools/' + code.schoolCode + '/logo/' + schoolDB.stamp
