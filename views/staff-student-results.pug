@@ -16,23 +16,13 @@ block content
                                 if studentResults.length > 0
                                     if courseSheet
                                         if courseSheet.length > 0
-                                            p Sheet has been submitted.
+                                            .d-flex.justify-content-between
+                                                p #[a(href="#" class="btn btn-info" data-toggle="modal" data-target="#recallBTN") Recall]
+                                        
                                         else
                                             .d-flex.justify-content-between
                                                 p #[a(href="#" class="btn btn-info" data-toggle="modal" data-target="#submitBTN") Submit Result Sheet]
-                                                div(id=`submitBTN` class="modal fade")
-                                                    div(class="modal-dialog" role="document")
-                                                        div(class="modal-content")
-                                                            div(class="modal-header")
-                                                                h4(class="modal-title") Are you sure?
-                                                                button(type="button" class="close" data-dismiss="modal" aria-label="Close")
-                                                                    span(aria-hidden="true") &times;
-                                                            div(class="modal-body") This Broadsheet will be sent, do you want to proceed?
-                                                            div(class="modal-footer")
-                                                            
-                                                                p #[a(href="#" class="btn ace-btn" id="submitResult") Ok] #[span#displayMsg ]
-                                                                button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
-                                                
+                                        
                                                 - let uploadUrl = '/staff/upload-result/' + pSubject + '/' + pClass 
                                                 p #[a(href=uploadUrl class="btn btn-info") Upload a result]
                                                 span#courseName.d-none #{pSubject}
@@ -40,18 +30,7 @@ block content
                                     else 
                                         .d-flex.justify-content-between
                                             p #[a(href="#" class="btn btn-info" data-toggle="modal" data-target="#submitBTN") Submit Result Sheet]
-                                            div(id=`submitBTN` class="modal fade")
-                                                div(class="modal-dialog" role="document")
-                                                    div(class="modal-content")
-                                                        div(class="modal-header")
-                                                            h4(class="modal-title") Are you sure?
-                                                            button(type="button" class="close" data-dismiss="modal" aria-label="Close")
-                                                                span(aria-hidden="true") &times;
-                                                        div(class="modal-body") This Broadsheet will be sent, do you want to proceed?
-                                                        div(class="modal-footer")
-                                                            
-                                                            p #[a(href="#" class="btn ace-btn" id="submitResult") Ok] #[span#displayMsg ]
-                                                            button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+                                            
                                             - let uploadUrl = '/staff/upload-result/' + pSubject + '/' + pClass 
                                             p #[a(href=uploadUrl class="btn btn-info") Upload a result]
                                             span#courseName.d-none #{pSubject}
@@ -96,6 +75,35 @@ block content
                                             .card-header
                                                 h5 Spread Sheet for #{title}
                                                 span.d-block.m-t-5 No result has been uploaded.
+                                div(id=`submitBTN` class="modal fade")
+                                    div(class="modal-dialog" role="document")
+                                        div(class="modal-content")
+                                            div(class="modal-header")
+                                                h4(class="modal-title") Are you sure?
+                                                button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                    span(aria-hidden="true") &times;
+                                            div(class="modal-body") 
+                                                p This Broadsheet will be sent, do you want to proceed?
+                                                p#displayMsg 
+                                            div(class="modal-footer")
+                                                a(href="#" class="btn ace-btn" id="submitResult") Ok
+                                                button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+
+                                div(id=`recallBTN` class="modal fade")
+                                    div(class="modal-dialog" role="document")
+                                        div(class="modal-content")
+                                            div(class="modal-header")
+                                                h4(class="modal-title") Are you sure?
+                                                button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                    span(aria-hidden="true") &times;
+                                            div(class="modal-body") 
+                                                p You really want to recall the results you've sent?
+                                                p#displayMsg 
+                                            div(class="modal-footer")
+                                                - let recallUrl = '/staff/upload-result/' + pSubject + '/' + pClass + '/sheet/recall-result'
+                                                a(href=recallUrl class="btn btn-info") Ok
+                                                button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+
 
         script(src="/javascripts/library/broadsheet.js" type="module")                                            
         include includes/footer.pug

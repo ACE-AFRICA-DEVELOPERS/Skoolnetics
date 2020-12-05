@@ -17,6 +17,15 @@ block content
                                     -let viewUrl = '/staff/upload-result/' + pSubject + '/' + pClass + '/sheet'
                                     p #[a(href=viewUrl class="btn btn-info") View Result Sheet]
                                 .row
+                                    - let c 
+                                    if courseSheet
+                                        if courseSheet.length > 0
+                                            - c = true
+                                        else
+                                            - c = false
+                                    else
+                                        - c = false
+
                                     .col-xl-12
                                         .card
                                             .card-header
@@ -30,14 +39,16 @@ block content
                                                                 tr
                                                                     th Name
                                                                     th Reg Number
-                                                                    th Upload
+                                                                    if !c
+                                                                        th Upload
                                                             tbody
                                                                 each student in students
                                                                     tr
                                                                         td #{student.lastName} #{student.firstName}
                                                                         td #{student.studentID} 
-                                                                        -let uploadUrl = '/staff/upload-result/' + pSubject + '/' + pClass + '/' + student._id
-                                                                        td #[a(href=uploadUrl) Upload]
+                                                                        if !c
+                                                                            -let uploadUrl = '/staff/upload-result/' + pSubject + '/' + pClass + '/' + student._id
+                                                                            td #[a(href=uploadUrl) Upload]
                                                     
                                                             
         include includes/footer.pug

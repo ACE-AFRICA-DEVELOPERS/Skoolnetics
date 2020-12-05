@@ -13,6 +13,19 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
+                                if error
+                                    if error.length != 0
+                                        .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                            button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                span(aria-hidden="true") ×
+                                            span #{error}
+
+                                if success
+                                    if success.length != 0
+                                        .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                            button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                span(aria-hidden="true") ×
+                                            span #{success}
                                 div
                                     p #[a(href="#" data-toggle="modal" data-target="#add-term" class="btn btn-info") New Term #[i(class="fa fa-plus ml-1")]]
                                     div(id="add-term" class="modal fade")
@@ -75,14 +88,37 @@ block content
                                                                             if sess.current
                                                                                 td Yes
                                                                             else
-                                                                                - let currentUrl = "/school/session/" + session._id + "/current/" + sess._id
-                                                                                td #[a(href=currentUrl class="ace-btn") Make Current]
+                                                                                td #[a(href="#" data-toggle="modal" data-target=`#P${sess._id}` class="ace-btn") Make Current]
+                                                                                div(class="modal fade" id=`P${sess._id}`  role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                                    div(class="modal-dialog" role="document")
+                                                                                        div(class="modal-content")
+                                                                                            div(class="modal-header")
+                                                                                                h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                                    span(aria-hidden="true") ×
+                                                                                            div(class="modal-body") Clicking Ok makes the term the current term.
+                                                                                            div(class="modal-footer")
+                                                                                                - let currentUrl = "/school/session/" + session._id + "/current/" + sess._id
+                                                                                                a(href=currentUrl class="ace-btn btn") Ok
+                                                                                                button(class="cancel-btn btn" type="button" data-dismiss="modal") Cancel
                                                                         if sess.current
                                                                             if sess.ended
                                                                                 td Yes
                                                                             else
-                                                                                - let endUrl = "/school/session/" + session._id + "/end/" + sess._id
-                                                                                td #[a(href=endUrl class="ace-btn") Set]
+                                                                                
+                                                                                td #[a(href="#" data-toggle="modal" data-target=`#Q${sess._id}` class="ace-btn") Set]
+                                                                                div(class="modal fade" id=`Q${sess._id}`  role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                                    div(class="modal-dialog" role="document")
+                                                                                        div(class="modal-content")
+                                                                                            div(class="modal-header")
+                                                                                                h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                                    span(aria-hidden="true") ×
+                                                                                            div(class="modal-body") Clicking Ok ends the term. There is no going back.
+                                                                                            div(class="modal-footer")
+                                                                                                - let endUrl = "/school/session/" + session._id + "/end/" + sess._id
+                                                                                                a(href=endUrl class="ace-btn btn") Ok
+                                                                                                button(class="cancel-btn btn" type="button" data-dismiss="modal") Cancel
                                                                         else
                                                                             td ----
                                             else

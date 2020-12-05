@@ -55,12 +55,13 @@ class App {
             if(checkSchool.length == 0){
                 
                 const schoolAdmin = await new SchoolAdmin({
+                    schoolCode: Random(5),
                     schoolName : schoolName ,  
                     schoolEmail : schoolEmail , 
                     schoolAdmin : schoolAdminName, 
                     address  : address,
                     demo : true,
-                    country: Random(8)
+                    schoolNumber: Random(8)
                 })
                 const saveAdmin = await schoolAdmin.save()
                 if ( saveAdmin ) { 
@@ -139,15 +140,16 @@ class App {
         try{
             if(req.session.adminEmail){
                 const demo = await SchoolAdmin.findOne({_id: req.params.demoSchoolID})
+                console.log(req.params.demoSchoolID)
                 const totalSchool = await SchoolAdmin.find({approved : true , demo : true})
-                const code = `D${GenerateAccount(totalSchool , "01", "schoolCode", 1, 2)}`
+                const code = `${GenerateAccount(totalSchool , "01", "demoCode", 1, 2)}`
                 let date = new Date()
                 date.setDate(date.getDate() + 7)
                 
-                const schoolPass = await bcrypt.hash(demo.country , 10)
+                const schoolPass = await bcrypt.hash(demo.schoolNumber , 10)
                 
                 SchoolAdmin.findByIdAndUpdate(req.params.demoSchoolID , {
-                    approved : true, schoolCode : code , password : schoolPass, expiryDate: date
+                    approved : true, demoCode : code , password : schoolPass, expiryDate: date
                 } ,{new : true, useAndModify : false}, (err , item) => {
                     if(err){
                         res.status(500)

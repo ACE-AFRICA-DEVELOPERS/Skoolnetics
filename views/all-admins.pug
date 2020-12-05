@@ -39,7 +39,7 @@ block content
                                                     div(class="text-center")
                                                         button(type="submit" class="btn btn-info") Create
                                     
-                                if allAdmins.length > 1
+                                if allAdmins.length > 0
                                     .card
                                         .card-header
                                             h5 Admins
@@ -50,18 +50,30 @@ block content
                                                         tr 
                                                             th Username
                                                             th Email
-                                                            th Status
                                                             th Action
                                                     tbody 
                                                         each admin in allAdmins
                                                             - let username = admin.username
                                                             - let email = admin.email
-                                                            - let deleteUrl = "#"
-                                                            tr 
+                                                            - let deleteUrl = "/202007/admin/new-admin/" + admin._id
+                                                            tr
                                                                 td #{username}
                                                                 td #{email}
-                                                                td Online
-                                                                td #[a(href=deleteUrl class="red-color") #[i.feather.icon-trash]]
+                                                                td #[a(href=deleteUrl data-toggle="modal" data-target="#addModal" class="red-color") #[i.feather.icon-trash]]
+        
+                                                                div(class="modal fade" id="addModal" role="dialog" aria-hidden="true")
+                                                                    div(class="modal-dialog" role="document")
+                                                                        div(class="modal-content")
+                                                                            div(class="modal-header")
+                                                                                h5 Delete this Admin?
+                                                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                    span(aria-hidden="true") ×
+                                                                            div(class="modal-body")
+                                                                                p Note that there is no going back. Admin won't be able to login to the platform again.
+                                                                            .modal-footer
+                                                                                a(href=deleteUrl class="btn btn-info mr-3") Ok
+                                                                                button(type="button" data-dismiss="modal" aria-label="Close" class="btn btn-light") Cancel
+                            
                                 else
                                     .card
                                         .card-header

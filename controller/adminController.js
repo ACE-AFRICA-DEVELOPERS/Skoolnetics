@@ -158,10 +158,11 @@ class App {
     approveSchool = async (req, res, next) => {
         try{
             if(req.session.adminEmail){
+                const admin = await Admin.findOne({email: req.session.adminEmail})
                 const totalSchool = await SchoolAdmin.find({approved : true, demo: false})
                 const code = GenerateAccount(totalSchool, "001", "schoolCode", 1, 3)
                 SchoolAdmin.findByIdAndUpdate(req.params.schoolID , {
-                    approved : true, schoolCode : code
+                    approved : true, schoolCode : code, approvedBy: admin.username
                 } ,{new : true, useAndModify : false}, (err , item) => {
                     if(err){
                         res.status(500)
@@ -202,7 +203,7 @@ class App {
             if(req.session.adminEmail){
                 const validAdmin = await Admin.findOne({email : req.session.adminEmail})
                 if(validAdmin.superAdmin){
-                    const allAdmins = await Admin.find({})
+                    const allAdmins = await Admin.find({superAdmin: false})
                     res.render('all-admins', {title: 'All Admins', success : req.flash('success'),
                     allAdmins: allAdmins, admin: validAdmin})
                 }else{
@@ -235,6 +236,29 @@ class App {
                     }else{
                         throw 'Unable to save.'
                     }
+                }else{
+                    res.redirect(303, '/202007/admin')
+                }
+            }else{
+                res.redirect(303, '/202007/admin')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    revokeAdmin = async (req, res, next) => {
+        try{
+            if(req.session.adminEmail){
+                const validAdmin = await Admin.findOne({email : req.session.adminEmail})
+                if(validAdmin.superAdmin){
+                    Admin.findByIdAndDelete(req.params.adminID, err => {
+                        if(err){
+                            res.send(err)
+                        }
+                        req.flash('success' , 'The admin has been revoked.')
+                        res.redirect(303, '/202007/admin/new-admin')
+                    })
                 }else{
                     res.redirect(303, '/202007/admin')
                 }

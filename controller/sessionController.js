@@ -34,7 +34,7 @@ class App {
                 res.render('school-sessions', {title : "Sessions", session_active : "active",
                 schoolAdmin : schoolAdmin, session : session, success : req.flash('success'),
                 opensession_active: "pcoded-trigger", sessT_active: 'active', sessS: sessS,
-                termS: termS})
+                termS: termS, error: req.flash('error')})
             }else{
                 res.redirect(303, '/school')
             }
@@ -49,20 +49,26 @@ class App {
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
     
                 const {name} = req.body
-                
-                const session = await new Session({
-                    name : name,
-                    school : schoolAdmin._id,
-                })
-                const saveSession = await session.save()
-                if ( saveSession ) { 
-                    res.redirect('/school/session')
-                    return 
-                }else {
-                    throw {
-                        message : "Unable to save the exam"
+                const findSession = await Session.findOne({school: schoolAdmin._id, name})
+                if(!findSession){
+                    const session = await new Session({
+                        name : name,
+                        school : schoolAdmin._id,
+                    })
+                    const saveSession = await session.save()
+                    if ( saveSession ) { 
+                        req.flash('success', 'Session has been saved.')
+                        res.redirect(303, '/school/session')
+                        return 
+                    }else {
+                        throw {
+                            message : "Unable to save the exam"
+                        }
                     }
-                    return 
+                }else{
+                    req.flash('error', 'Session already exists.')
+                    res.redirect(303, '/school/session')
+                    return
                 }
             }else{
                 res.redirect(303, '/school')
@@ -90,6 +96,7 @@ class App {
                                 console.log(err)
                             }
                             else{
+                                req.flash('success', 'Session is now current!')
                                 let redirectUrl = '/school/session'
                                 res.redirect(303, redirectUrl)
                             }
@@ -108,26 +115,35 @@ class App {
         try{
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                Term.updateMany({school : schoolAdmin._id, session: req.params.sessionID}, {
-                        current : false
-                }, {new : true, useFindAndModify : false}, (err , item) => {
-                    if(err){
-                        res.status(500)
-                        return
-                    }else {
-                        Term.findByIdAndUpdate(req.params.termID, {
-                            current : true
-                        }, {new : true, useFindAndModify : false}, (err, item) => {
-                            if(err){
-                                console.log(err)
-                            }
-                            else{
-                                let redirectUrl = '/school/session/' + req.params.sessionID
-                                res.redirect(303, redirectUrl)
-                            }
-                        })
-                    }
-                })	
+                const findSession = await Session.findOne({_id: req.params.sessionID, current: true})
+                if(findSession){
+                    Term.updateMany({school : schoolAdmin._id, session: req.params.sessionID}, {
+                            current : false
+                    }, {new : true, useFindAndModify : false}, (err , item) => {
+                        if(err){
+                            res.status(500)
+                            return
+                        }else {
+                            Term.findByIdAndUpdate(req.params.termID, {
+                                current : true
+                            }, {new : true, useFindAndModify : false}, (err, item) => {
+                                if(err){
+                                    console.log(err)
+                                }
+                                else{
+                                    req.flash('success', 'Term is now current')
+                                    let redirectUrl = '/school/session/' + req.params.sessionID
+                                    res.redirect(303, redirectUrl)
+                                }
+                            })
+                        }
+                    })	
+                }else{
+                    req.flash('error', 'You need to make session current first!')
+                    let redirectUrl = '/school/session/' + req.params.sessionID
+                    res.redirect(303, redirectUrl)
+                    return
+                }
             }else{
                 res.redirect(303, '/school')
             }
@@ -208,7 +224,7 @@ class App {
                 }
                 const term = await Term.find({session : session._id})
                 res.render('school-term', {title : "Term", session_active : "active",  opensession_active: "pcoded-trigger",
-                schoolAdmin : schoolAdmin, term : term, session : session, 
+                schoolAdmin : schoolAdmin, term : term, session : session, error : req.flash('error'),
                 success : req.flash('success'), sessT_active: 'active', termS: termS,
                 sessS: sessS})
             }else{
@@ -225,23 +241,30 @@ class App {
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
     
                 const {name, startDate, endDate} = req.body
-                
-                const term = await new Term({
-                    name : name,
-                    school : schoolAdmin._id,
-                    startDate : startDate,
-                    endDate : endDate,
-                    session : req.params.sessionID
-                })
-                const saveTerm = await term.save()
-                if ( saveTerm ) { 
+                const findTerm = await Term.findOne({session: req.params.sessionID, name})
+                if(!findTerm){
+                    const term = await new Term({
+                        name : name,
+                        school : schoolAdmin._id,
+                        startDate : startDate,
+                        endDate : endDate,
+                        session : req.params.sessionID
+                    })
+                    const saveTerm = await term.save()
+                    if ( saveTerm ) { 
+                        req.flash('success', 'Term has been saved.')
+                        let redirectUrl = "/school/session/" + req.params.sessionID
+                        res.redirect(303, redirectUrl)
+                        return 
+                    }else {
+                        throw {
+                            message : "Unable to save the Term."
+                        }
+                    }
+                }else{
+                    req.flash('error', 'Term already exists!')
                     let redirectUrl = "/school/session/" + req.params.sessionID
                     res.redirect(303, redirectUrl)
-                    return 
-                }else {
-                    throw {
-                        message : "Unable to save the Term."
-                    }
                     return 
                 }
             }else{
