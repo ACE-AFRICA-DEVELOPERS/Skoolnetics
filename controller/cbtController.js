@@ -336,7 +336,17 @@ class App{
                 const course = await Course.findOne({exam: exam._id, examiner : staff._id})
                 const availableQuestion = await Question.findOne({course : course._id, school : staff.school})
                 const {question, optionA , optionB , optionC , optionD , correctOption , 
-                    mark} = req.body 
+                    mark} = req.body
+                let answer
+                if(correctOption == 'A'){
+                    answer = optionA
+                }else if(correctOption == 'B'){
+                    answer = optionB
+                }else if(correctOption == 'C'){
+                    answer = optionC
+                }else if(correctOption == 'D'){
+                    answer = optionD
+                } 
                 
                 if(availableQuestion){
                     let imageFile
@@ -355,7 +365,7 @@ class App{
                             optionD : optionD 
                         } , 
                         image : imageFile,
-                        correctOption : correctOption , 
+                        correctOption : answer , 
                         mark : mark ,
                         questionNumber : availableQuestion.question.length + 1
                     }
@@ -392,7 +402,7 @@ class App{
                                 optionD : optionD 
                             },
                             image : imageFile,
-                            correctOption : correctOption , 
+                            correctOption : answer , 
                             mark : mark ,
                             questionNumber : 1
                         }] 
@@ -1161,6 +1171,16 @@ class App{
                 const availableQuestion = await Question.findOne({course : course._id, school : staff.school})
                 const {question, optionA , optionB , optionC , optionD , correctOption , 
                     mark} = req.body 
+                let answer
+                if(correctOption == 'A'){
+                    answer = optionA
+                }else if(correctOption == 'B'){
+                    answer = optionB
+                }else if(correctOption == 'C'){
+                    answer = optionC
+                }else if(correctOption == 'D'){
+                    answer = optionD
+                }
                 
                 if(availableQuestion){
                     let imageFile
@@ -1179,7 +1199,7 @@ class App{
                             optionD : optionD 
                         } , 
                         image : imageFile,
-                        correctOption : correctOption , 
+                        correctOption : answer , 
                         mark : mark ,
                         questionNumber : availableQuestion.question.length + 1
                     }
@@ -1216,7 +1236,7 @@ class App{
                                 optionD : optionD 
                             },
                             image : imageFile,
-                            correctOption : correctOption , 
+                            correctOption : answer , 
                             mark : mark ,
                             questionNumber : 1
                         }] 

@@ -70,7 +70,11 @@ block content
                                                                         each pay, index in payments.fees
                                                                             tr  
                                                                                 td.invoice #{index + 1}
-                                                                                td.invoice #{paymentName[pay.paymentFor]} (#{type[pay.paymentFor]})
+                                                                                if type[pay.paymentFor] == "C"
+                                                                                    td.invoice #{paymentName[pay.paymentFor]} (#{type[pay.paymentFor]})
+                                                                                else 
+                                                                                    td.invoice #{paymentName[pay.paymentFor]}
+                                                                                
                                                                                 td.invoice ##{pay.amount.toLocaleString()}
                                                     .row
                                                         .col-sm-12
@@ -91,6 +95,8 @@ block content
                                                                     img(src=stampUrl height="100px" width="100px")
                                                                 else
                                                                     img(src='/images/logo-stamp/stamp.jpg' height="100px" width="100px")
+                                                    p 
+                                                        b NB: The abbreviation (C) indicates the compulsory payment for your Ward.
                                             else
                                                 p Invoice has not been generated yet.
                                     else

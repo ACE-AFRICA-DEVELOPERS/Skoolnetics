@@ -72,9 +72,9 @@ class App {
                     const { paymentFor, importance } = req.body
                     let status
                     if(importance){
-                        status = "Compulsory"
+                        status = "C"
                     }else{
-                        status = "Optional"
+                        status = "O"
                     }
                     const paymentType = new PaymentType ({
                         paymentFor : paymentFor ,
