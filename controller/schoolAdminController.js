@@ -1492,6 +1492,46 @@ class App {
         }
     }
 
+    unpublishSetQuestions = async (req, res, next) => {
+        try{ 
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const staff = await Staff.findOne({school : schoolAdmin._id})
+                const session = await Session.findOne({school: staff.school, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const exam = await Exam.findOne({
+                    examCode : req.params.examCode, school : staff.school,
+                    session: session._id, term: term._id
+                })
+                const course = await Course.findOne({
+                    exam: exam._id, examiner : staff._id,
+                    className: req.params.className, courseName: req.params.subject
+                })
+                if(course){
+                    console.log(course)
+                    let courseID = course._id
+                    Course.findByIdAndUpdate(courseID, {
+                        publish : false,
+                    }, {new : true, useAndModify : false}, (err , item) => {
+                        if(err){
+                            res.status(500)
+                            return
+                        }else {
+                            let redirectUrl = '/school/cbt-setup/'  + req.params.examCode + '/questions'
+                            res.redirect(303, redirectUrl)
+                        }
+                    })	
+                }else{
+                    throw 'Not found.'
+                }
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
     viewQuestions = async (req, res, next) => {
         try{
             if(req.session.schoolCode){

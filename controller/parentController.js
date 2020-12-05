@@ -451,7 +451,7 @@ class App {
                 })
 
                 res.render('parent-report-card', {title : "Report Card", schoolT: school._id,
-                parent : parent, students: student, ward_active: "active", code: school,
+                parent : parent, students: student, ward_active: "active", code: school, studentDB : student,
                 sessS: session.name, termS: term.name, className, broadsheet})
 
             }else{

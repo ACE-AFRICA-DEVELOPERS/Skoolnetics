@@ -26,6 +26,7 @@ block content
                                                             th Subject
                                                             th Questions
                                                             th Release exam to students
+                                                            th Action
                                                     tbody
                                                         each course in courses
                                                             - let questionUrl = "/school/cbt-setup/" + exam.examCode + "/questions/" + course._id
@@ -53,6 +54,23 @@ block content
                                                                         td Exam released to students!
                                                                 else
                                                                     td Can't release.
+                                                                if course.publish
+                                                                    td #[a(href="#" class="btn btn-info" data-toggle="modal" data-target="#unpublish-exam") Unpublish]
+                                                                        div(id="unpublish-exam" class="modal fade")
+                                                                            div(class="modal-dialog" role="document")
+                                                                                div(class="modal-content")
+                                                                                    div(class="modal-header")
+                                                                                        h4(class="modal-title") Are you sure?
+                                                                                        button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                                                            span(aria-hidden="true") &times;
+                                                                                    div(class="modal-body")
+                                                                                        p Clicking on okay means you are restricting students in this class from writing this test.
+                                                                                    div(class="modal-footer")
+                                                                                        - let unpublishUrl = '/school/cbt-setup/' + exam.examCode + '/questions/' + course._id + '/unpublish'
+                                                                                        a(class="btn btn-info" href=unpublishUrl) Ok
+                                                                                        button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+                                                                else 
+                                                                    td Exam released to Students
                                     else
                                         .card-body
                                             h5 Questions that has been published by teachers

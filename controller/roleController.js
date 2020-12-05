@@ -13,6 +13,7 @@ const Invoice = require('../model/invoice')
 const Period = require('../model/period')
 const Subject = require('../model/subject')
 const Role = require('../model/role')
+const BroadSheet = require('../model/broadsheet')
 const ClassTimetable = require('../model/classTimetable')
 const Day = require('../model/day')
 const ExamTimetable = require('../model/examTimetable')
@@ -59,32 +60,39 @@ class App {
 
     postPaymentType = async (req , res , next) => {
         try {
-            if(req.session.schoolCode){
-                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
-                const { paymentFor, importance } = req.body
-                let status
-                if(importance){
-                    status = "Compulsory"
-                }else{
-                    status = "Optional"
-                }
-                const paymentType = new PaymentType ({
-                    paymentFor : paymentFor ,
-                    school : schoolAdmin._id,
-                    importance : status 
-                })  
-                const saveType = await paymentType.save()
-                console.log(saveType)      
-                if (saveType) {
-                    req.flash('success' , 'Payment Type saved successfully')
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
+                const school = await SchoolAdmin.findOne({_id : staff.school})
+                const session = await Session.findOne({school: school._id, current: true})
+                const invoice = await Invoice.find({school: school._id, session: session._id})
+                if(invoice.length > 0){
+                    req.flash('error' , `You can't create more Payment Types when Invoice has been generated`)
                     res.redirect(303 , '/staff/finance/payment-type')
-                    return
-                }else {
-                    throw {
-                        message : "Unable to save the Payment Typee."
+                }else{
+                    const { paymentFor, importance } = req.body
+                    let status
+                    if(importance){
+                        status = "Compulsory"
+                    }else{
+                        status = "Optional"
                     }
-                    return 
-                }  
+                    const paymentType = new PaymentType ({
+                        paymentFor : paymentFor ,
+                        school : school._id,
+                        importance : status 
+                    })  
+                    const saveType = await paymentType.save()
+                    console.log(saveType)      
+                    if (saveType) {
+                        req.flash('success' , 'Payment Type saved successfully')
+                        res.redirect(303 , '/staff/finance/payment-type')
+                        return
+                    }else {
+                        throw {
+                            message : "Unable to save the Payment Typee."
+                        }
+                    } 
+                } 
             }else{
                 res.redirect(303, '/staff')
             }
@@ -105,7 +113,6 @@ class App {
                         const term = await Term.findOne({session: session._id, current: true})
                         if(term){
                             const invoice = await Invoice.find({school: school._id, session: session._id})
-                            console.log(invoice)
                             if(invoice.length > 0){
                                 req.flash('error' , 'This Payment Type is connected to an Invoice')
                                 res.redirect(303 , '/staff/finance/payment-type')
@@ -228,64 +235,68 @@ class App {
         try {
             if( req.session.staffCode ){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const paymentt = await Payment.findOne({ 
-                    class: req.params.classID , school: school._id,
-                    session: session._id, term: term._id
-                })
-                const { paymentFor , amount } = req.body
-                console.log(paymentt)
-                if(!paymentt) {
-                    
-                    const payment = new Payment ({
-                        school : school._id ,
-                        class : req.params.classID ,
-                        session: session._id,
-                        term: term._id,
-                        fees : [
-                            {
-                                paymentFor : paymentFor ,
-                                amount : amount
-                            }
-                        ]
-
+                if(staff.role == 'r-2'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const paymentt = await Payment.findOne({ 
+                        class: req.params.classID , school: school._id,
+                        session: session._id, term: term._id
                     })
-                    const savePayment = await payment.save()
-    
-                    if( savePayment ) {
-                        req.flash('success', 'Payment has been saved.')
-                        res.redirect(303 ,  "/staff/finance/all-classes/" + req.params.classID)
-                        return
-                    }else {
-                        throw{
-                            message : "Cannot save this payment amount record"
-                        }
-                    }
-                }
-                else {
-  
-                    Payment.findByIdAndUpdate(paymentt._id, {
-                        $addToSet : {
+                    const { paymentFor , amount } = req.body
+                    console.log(paymentt)
+                    if(!paymentt) {
+                        
+                        const payment = new Payment ({
+                            school : school._id ,
+                            class : req.params.classID ,
+                            session: session._id,
+                            term: term._id,
                             fees : [
                                 {
                                     paymentFor : paymentFor ,
                                     amount : amount
                                 }
-                            ] }   
-                            
-                    }, {new : true, useFindAndModify : false}, (err , item) => {
-                        if(err){
-                            res.status(500)
-                            return
-                        }else {
-                            req.flash('success', "Added successfully.")
+                            ]
+
+                        })
+                        const savePayment = await payment.save()
+        
+                        if( savePayment ) {
+                            req.flash('success', 'Payment has been saved.')
                             res.redirect(303 ,  "/staff/finance/all-classes/" + req.params.classID)
                             return
+                        }else {
+                            throw{
+                                message : "Cannot save this payment amount record"
+                            }
                         }
-                    })	
-              
+                    }
+                    else {
+    
+                        Payment.findByIdAndUpdate(paymentt._id, {
+                            $addToSet : {
+                                fees : [
+                                    {
+                                        paymentFor : paymentFor ,
+                                        amount : amount
+                                    }
+                                ] }   
+                                
+                        }, {new : true, useFindAndModify : false}, (err , item) => {
+                            if(err){
+                                res.status(500)
+                                return
+                            }else {
+                                req.flash('success', "Added successfully.")
+                                res.redirect(303 ,  "/staff/finance/all-classes/" + req.params.classID)
+                                return
+                            }
+                        })	
+                
+                    }
+                }else {
+                    res.redirect(303, '/staff')
                 }
             }else {
                 res.redirect(303, '/staff')
@@ -1071,24 +1082,28 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                if(session){
-                    const term = await Term.findOne({session: session._id, current: true})
-                    if(term){
-                        res.render("principal-students", {title : "Students", staff : staff,
-                        error : req.flash('error'), success : req.flash('success'), student_active : "active",
-                        code : school, users_active: 'active', openuser_active: "pcoded-trigger",
-                        sessS: session.name, termS: term.name}) 
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    if(session){
+                        const term = await Term.findOne({session: session._id, current: true})
+                        if(term){
+                            res.render("principal-students", {title : "Students", staff : staff,
+                            error : req.flash('error'), success : req.flash('success'), student_active : "active",
+                            code : school, users_active: 'active', openuser_active: "pcoded-trigger",
+                            sessS: session.name, termS: term.name}) 
+                        }else{
+                            res.render('sess-term-error', {staff: staff, title: 'Students',
+                            users_active: 'active', openuser_active: "pcoded-trigger",
+                            student_active : "active"})
+                        }
                     }else{
                         res.render('sess-term-error', {staff: staff, title: 'Students',
                         users_active: 'active', openuser_active: "pcoded-trigger",
                         student_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {staff: staff, title: 'Students',
-                    users_active: 'active', openuser_active: "pcoded-trigger",
-                    student_active : "active"})
+                    res.redirect(303, '/staff')
                 }
             }else{
                 res.redirect(303, '/staff')
@@ -1102,14 +1117,18 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const classchool = await ClassSchool.find({school: school._id})
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const classchool = await ClassSchool.find({school: school._id})
 
-                res.render('all-principal-students', {title: 'All Students', staff: staff,
-                code : school, users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
-                sessS: session.name, termS: term.name, classchool: classchool})
+                    res.render('all-principal-students', {title: 'All Students', staff: staff,
+                    code : school, users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                    sessS: session.name, termS: term.name, classchool: classchool})
+                }else{
+                    res.redirect(303, '/staff')
+                }
             }else{
                 res.redirect(303, '/staff')
             }
@@ -1122,21 +1141,25 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                let validStudent = await Student.findOne({_id : req.params.studentID})
-                let checkClass = await ClassSchool.findOne({_id : validStudent.className})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                if(validStudent){
-                    res.render('single-student' , { title  : "Student", studentDB: validStudent, 
-                    staff : staff, studentClass : checkClass, 
-                    code : school, success : req.flash('success'), student_active : "active",
-                    users_active: 'active', openuser_active: "pcoded-trigger",
-                    sessS: session.name, termS: term.name})
-                }else{
-                    throw{
-                        message : "Student not found"
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    let validStudent = await Student.findOne({_id : req.params.studentID})
+                    let checkClass = await ClassSchool.findOne({_id : validStudent.className})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    if(validStudent){
+                        res.render('single-student' , { title  : "Student", studentDB: validStudent, 
+                        staff : staff, studentClass : checkClass, 
+                        code : school, success : req.flash('success'), student_active : "active",
+                        users_active: 'active', openuser_active: "pcoded-trigger",
+                        sessS: session.name, termS: term.name})
+                    }else{
+                        throw{
+                            message : "Student not found"
+                        }
                     }
+                }else{
+                    res.redirect(303, '/staff')
                 }
             }else{
                 res.redirect(303, '/staff')
@@ -1150,55 +1173,59 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                let student = await Student.findOne({_id : req.params.studentID})
-                let checkClass = await ClassSchool.findOne({_id : student.className})
-                if(student){	
-                    if(req.file){
-                        FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/" + checkClass.name + "/" + student.profilePhoto) 
-                        let originalName = req.params.studentID + "-" + req.file.originalname
-                        Student.findByIdAndUpdate(req.params.studentID, {
-                            profilePhoto : originalName,
-                            firstName : req.body.firstName,
-                            lastName : req.body.lastName,
-                            gender : req.body.gender,
-                            otherName : req.body.otherName ,
-                            status : req.body.status
-                        }, {new : true, useAndModify : false}, (err , item) => {
-                            if(err){
-                                res.status(500)
-                                return
-                            }else {
-                                req.flash('success', "Update was successful.")
-                                let redirectUrl = "/staff/new-student/" + req.params.studentID
-                                res.redirect(303, redirectUrl)
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    let student = await Student.findOne({_id : req.params.studentID})
+                    let checkClass = await ClassSchool.findOne({_id : student.className})
+                    if(student){	
+                        if(req.file){
+                            FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/" + checkClass.name + "/" + student.profilePhoto) 
+                            let originalName = req.params.studentID + "-" + req.file.originalname
+                            Student.findByIdAndUpdate(req.params.studentID, {
+                                profilePhoto : originalName,
+                                firstName : req.body.firstName,
+                                lastName : req.body.lastName,
+                                gender : req.body.gender,
+                                otherName : req.body.otherName ,
+                                status : req.body.status
+                            }, {new : true, useAndModify : false}, (err , item) => {
+                                if(err){
+                                    res.status(500)
+                                    return
+                                }else {
+                                    req.flash('success', "Update was successful.")
+                                    let redirectUrl = "/staff/new-student/" + req.params.studentID
+                                    res.redirect(303, redirectUrl)
 
-                                FileHandler.moveFile(originalName , "./public/uploads/profile" , "./public/uploads/schools/" + req.session.schoolCode + "/" + checkClass.name + "/") 
-                            }
-                        })	
-                    }else{
-                        Student.findByIdAndUpdate(req.params.studentID, {
-                            firstName : req.body.firstName,
-                            lastName : req.body.lastName,
-                            gender : req.body.gender,
-                            otherName : req.body.otherName ,
-                            status : req.body.status
-                        }, {new : true, useAndModify : false}, (err , item) => {
-                            if(err){
-                                res.status(500)
-                                return
-                            }else {
-                                req.flash('success', "Update was successful.")
-                                let redirectUrl = "/staff/new-student/" + req.params.studentID
-                                res.redirect(303, redirectUrl)
-                            }
-                        })	
-                    }				   
-                }else {
-                    throw {
-                        message : 'Student not found'
+                                    FileHandler.moveFile(originalName , "./public/uploads/profile" , "./public/uploads/schools/" + req.session.schoolCode + "/" + checkClass.name + "/") 
+                                }
+                            })	
+                        }else{
+                            Student.findByIdAndUpdate(req.params.studentID, {
+                                firstName : req.body.firstName,
+                                lastName : req.body.lastName,
+                                gender : req.body.gender,
+                                otherName : req.body.otherName ,
+                                status : req.body.status
+                            }, {new : true, useAndModify : false}, (err , item) => {
+                                if(err){
+                                    res.status(500)
+                                    return
+                                }else {
+                                    req.flash('success', "Update was successful.")
+                                    let redirectUrl = "/staff/new-student/" + req.params.studentID
+                                    res.redirect(303, redirectUrl)
+                                }
+                            })	
+                        }				   
+                    }else {
+                        throw {
+                            message : 'Student not found'
+                        }
+                        return
                     }
-                    return
+                }else{
+                    res.redirect(303, '/staff')
                 }
             }else{
                 res.redirect(303, '/staff')
@@ -1212,14 +1239,18 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const classchool = await ClassSchool.find({school: school._id})
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const classchool = await ClassSchool.find({school: school._id})
 
-                res.render('suspended-students', {title: 'Suspended Students', staff: staff,
-                code : school, users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
-                sessS: session.name, termS: term.name, classchool: classchool})
+                    res.render('suspended-students', {title: 'Suspended Students', staff: staff,
+                    code : school, users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                    sessS: session.name, termS: term.name, classchool: classchool})
+                }else{
+                    res.redirect(303, '/staff')
+                }
             }else{
                 res.redirect(303, '/staff')
             }
@@ -1232,14 +1263,18 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const classchool = await ClassSchool.find({school: school._id})
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const classchool = await ClassSchool.find({school: school._id})
 
-                res.render('revoked-students', {title: 'Revoked Students', staff : staff,
-                code : school, users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
-                sessS: session.name, termS: term.name, classchool: classchool})
+                    res.render('revoked-students', {title: 'Revoked Students', staff : staff,
+                    code : school, users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                    sessS: session.name, termS: term.name, classchool: classchool})
+                }else{
+                    res.redirect(303, '/staff')
+                }
             }else{
                 res.redirect(303, '/staff')
             }
@@ -1252,16 +1287,19 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const students = await Student.find({school: school._id , status: 'Graduated'})
-                const classchool = await ClassSchool.find({school: school._id})
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const students = await Student.find({school: school._id , status: 'Graduated'})
+                    const classchool = await ClassSchool.find({school: school._id})
 
-                res.render('principal-graduates', {title: 'Graduated Students', staff : staff,
-                code : school, users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
-                sessS: session.name, termS: term.name, students: students , classchool : classchool})
-
+                    res.render('principal-graduates', {title: 'Graduated Students', staff : staff,
+                    code : school, users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                    sessS: session.name, termS: term.name, students: students , classchool : classchool})
+                }else{
+                    res.redirect(303, '/staff')
+                }
             }else{
                 res.redirect(303, '/staff')
             }
@@ -1274,15 +1312,19 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const students = await Student.find({school: school._id , status: 'Graduated'})
-                const classchool = await ClassSchool.find({school: school._id})
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const students = await Student.find({school: school._id , status: 'Graduated'})
+                    const classchool = await ClassSchool.find({school: school._id})
 
-                res.render('principal-graduate-students', {title: 'Graduate Students', staff : staff,
-                code : school, users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
-                sessS: session.name, termS: term.name, classchool: classchool, students : students})
+                    res.render('principal-graduate-students', {title: 'Graduate Students', staff : staff,
+                    code : school, users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                    sessS: session.name, termS: term.name, classchool: classchool, students : students})
+                }else{
+                    res.redirect(303, '/staff')
+                }
             }else{
                 res.redirect(303, '/staff')
             }
@@ -1295,18 +1337,21 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const students = await Student.find({school: school._id, className: req.params.classID, status: 'Active'})
-                const classname = await ClassSchool.findOne({_id: req.params.classID})
-                const classchool = await ClassSchool.find({school: school._id})
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const students = await Student.find({school: school._id, className: req.params.classID, status: 'Active'})
+                    const classname = await ClassSchool.findOne({_id: req.params.classID})
+                    const classchool = await ClassSchool.find({school: school._id})
 
-                res.render('graduate-class', {title: 'Graduate Students', staff :staff,
-                code : school, users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
-                sessS: session.name, termS: term.name, students: students, pClass : classname,
-                classchool: classchool})
-
+                    res.render('graduate-class', {title: 'Graduate Students', staff :staff,
+                    code : school, users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                    sessS: session.name, termS: term.name, students: students, pClass : classname,
+                    classchool: classchool})
+                }else{
+                    res.redirect(303, '/staff')
+                }
             }else{
                 res.redirect(303, '/staff')
             }
@@ -1319,33 +1364,37 @@ class App {
         if(req.session.staffCode) {
             try{
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school : school._id, current: true})
-                if(session) {
-                    const term = await Term.findOne({school: school._id, session: session._id, current: true})
-                    if(term) {
-                        const periods = await Period.find({school : school._id}).sort([['startTime' , 'ascending']]) 
-                        res.render("principal-period-page" , {
-                            periods : periods ,
-                            title : "Timetable Periods" ,
-                            staff : staff ,
-                            code : school,
-                            sessS: session.name,
-                            termS: term.name ,
-                            success : req.flash('success'),
-                            period_active: 'active',
-                            timetable_active : "active" ,
-                            opentimetable_active: "pcoded-trigger",
-                        })
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school : school._id, current: true})
+                    if(session) {
+                        const term = await Term.findOne({school: school._id, session: session._id, current: true})
+                        if(term) {
+                            const periods = await Period.find({school : school._id}).sort([['startTime' , 'ascending']]) 
+                            res.render("principal-period-page" , {
+                                periods : periods ,
+                                title : "Timetable Periods" ,
+                                staff : staff ,
+                                code : school,
+                                sessS: session.name,
+                                termS: term.name ,
+                                success : req.flash('success'),
+                                period_active: 'active',
+                                timetable_active : "active" ,
+                                opentimetable_active: "pcoded-trigger",
+                            })
+                        }else{
+                            res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
+                            period_active: 'active', opentimetable_active: "pcoded-trigger",
+                            timetable_active : "active"})
+                        }
                     }else{
                         res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
                         period_active: 'active', opentimetable_active: "pcoded-trigger",
                         timetable_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
-                    period_active: 'active', opentimetable_active: "pcoded-trigger",
-                    timetable_active : "active"})
+                    res.redirect(303, '/staff')
                 }
             }catch(err){
                 res.render('error-page', {error : err})
@@ -1360,49 +1409,53 @@ class App {
         if(req.session.staffCode) {
             try{
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const {day , periodNum , startTime , endTime , weekday } = req.body
-                const periodd = await Period.findOne({ school : school._id })
-                if(!periodd) {
-                    const period = new Period({
-                        weekday : [{
-                            day : day ,
-                            periodNum : periodNum ,
-                            startTime : startTime ,
-                            endTime : endTime ,
-                        }],
-                        school : school._id
-                    })
-                    const savePeriod = await period.save()
-                    if (savePeriod) {
-                        req.flash('success', 'Period successfully created!')
-                        res.redirect(303 , '/staff/period')
-                        return
-                    }else {
-                        throw {
-                            message : 'Unable to save Period'
-                        }
-                    }
-                }
-                if(periodd){
-                    Period.findByIdAndUpdate(periodd._id, {
-                        $addToSet : {
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const {day , periodNum , startTime , endTime , weekday } = req.body
+                    const periodd = await Period.findOne({ school : school._id })
+                    if(!periodd) {
+                        const period = new Period({
                             weekday : [{
                                 day : day ,
                                 periodNum : periodNum ,
                                 startTime : startTime ,
                                 endTime : endTime ,
                             }],
-                        }
-                    }, {new : true, useAndModify : false}, (err , item) => {
-                        if(err){
-                            res.status(500)
+                            school : school._id
+                        })
+                        const savePeriod = await period.save()
+                        if (savePeriod) {
+                            req.flash('success', 'Period successfully created!')
+                            res.redirect(303 , '/staff/period')
                             return
                         }else {
-                            req.flash('success', 'Period successfully created!')
-                            res.redirect(303, '/staff/period/')
+                            throw {
+                                message : 'Unable to save Period'
+                            }
                         }
-                    })	
+                    }
+                    if(periodd){
+                        Period.findByIdAndUpdate(periodd._id, {
+                            $addToSet : {
+                                weekday : [{
+                                    day : day ,
+                                    periodNum : periodNum ,
+                                    startTime : startTime ,
+                                    endTime : endTime ,
+                                }],
+                            }
+                        }, {new : true, useAndModify : false}, (err , item) => {
+                            if(err){
+                                res.status(500)
+                                return
+                            }else {
+                                req.flash('success', 'Period successfully created!')
+                                res.redirect(303, '/staff/period/')
+                            }
+                        })	
+                    }
+                }else{
+                    res.redirect(303, '/staff')
                 }
             }catch(err) {
                 res.render('error-page', {error : err})
@@ -1416,22 +1469,26 @@ class App {
         try{
             if(req.session.staffCode){ 
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const periods = await Period.findOne({school : school._id}) 
-                const allPeriods = periods.weekday
-                let mapIt = allPeriods.find( elem => elem._id == req.params.day)
-                Period.findByIdAndUpdate(periods._id, {
-                    $pullAll : {
-                        weekday : [mapIt] }
-                }, {new : true, useAndModify : false}, (err , item) => {
-                    if(err){
-                        res.status(500) 
-                        return
-                    }else {
-                        req.flash('success', "Your deletion was successful.") 
-                        res.redirect(303, '/staff/period')
-                    }
-                })
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const periods = await Period.findOne({school : school._id}) 
+                    const allPeriods = periods.weekday
+                    let mapIt = allPeriods.find( elem => elem._id == req.params.day)
+                    Period.findByIdAndUpdate(periods._id, {
+                        $pullAll : {
+                            weekday : [mapIt] }
+                    }, {new : true, useAndModify : false}, (err , item) => {
+                        if(err){
+                            res.status(500) 
+                            return
+                        }else {
+                            req.flash('success', "Your deletion was successful.") 
+                            res.redirect(303, '/staff/period')
+                        }
+                    })
+                }else{
+                    res.redirect(303, '/staff')
+                }
             }else{
                 res.redirect(303, '/staff')
             }
@@ -1444,33 +1501,37 @@ class App {
         if(req.session.staffCode) {
             try{
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school : school._id, current: true})
-                if(session) {
-                    const term = await Term.findOne({school: school._id, session: session._id, current: true})
-                    if(term) {
-                        const days = await Day.find({school : school._id})
-                        res.render("principal-day-page" , {
-                            days : days ,
-                            title : "Set Weekdays" ,
-                            staff : staff ,
-                            code : school,
-                            sessS: session.name,
-                            termS: term.name ,
-                            success : req.flash('success'),
-                            period_active: 'active',
-                            timetable_active : "active" ,
-                            opentimetable_active: "pcoded-trigger",
-                        })    
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school : school._id, current: true})
+                    if(session) {
+                        const term = await Term.findOne({school: school._id, session: session._id, current: true})
+                        if(term) {
+                            const days = await Day.find({school : school._id})
+                            res.render("principal-day-page" , {
+                                days : days ,
+                                title : "Set Weekdays" ,
+                                staff : staff ,
+                                code : school,
+                                sessS: session.name,
+                                termS: term.name ,
+                                success : req.flash('success'),
+                                period_active: 'active',
+                                timetable_active : "active" ,
+                                opentimetable_active: "pcoded-trigger",
+                            })    
+                        }else{
+                            res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
+                            period_active: 'active', opentimetable_active: "pcoded-trigger",
+                            timetable_active : "active"})
+                        }
                     }else{
                         res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
                         period_active: 'active', opentimetable_active: "pcoded-trigger",
                         timetable_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
-                    period_active: 'active', opentimetable_active: "pcoded-trigger",
-                    timetable_active : "active"})
+                    res.redirect(303, '/staff')
                 }
             }catch(err){
                 res.render('error-page', {error : err})
@@ -1484,21 +1545,25 @@ class App {
         if(req.session.staffCode) {
             try{
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const {weekday } = req.body
-                const day = new Day({
-                    school : school._id ,
-                    weekday : weekday
-                })
-                const saveDay = await day.save()
-                if (saveDay) {
-                    req.flash('success' , 'Weekday created successfully!')
-                    res.redirect(303 , '/staff/day')
-                    return
-                }else {
-                    throw {
-                        message : 'Unable to save Period'
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const {weekday } = req.body
+                    const day = new Day({
+                        school : school._id ,
+                        weekday : weekday
+                    })
+                    const saveDay = await day.save()
+                    if (saveDay) {
+                        req.flash('success' , 'Weekday created successfully!')
+                        res.redirect(303 , '/staff/day')
+                        return
+                    }else {
+                        throw {
+                            message : 'Unable to save Period'
+                        }
                     }
+                }else{
+                    res.redirect(303, '/staff')
                 }
             }catch(err) {
                 res.render('error-page', {error : err})
@@ -1511,29 +1576,33 @@ class App {
     deleteDay = async (req , res , next ) => {
         if(req.session.staffCode) {
             const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-            const school = await SchoolAdmin.findOne({_id : staff.school})
-            try {
-                let day = await Day.findById(req.params.dayID) 
-                if ( day ) {
-                    let delDay =  await Day.findByIdAndRemove(day._id) 
-                    if ( delDay ) {
-                        req.flash('success' , 'Weekday has been cancelled successfully.')
-                        res.redirect(303 , '/staff/day')
+            if(staff.role == 'r-1'){
+                const school = await SchoolAdmin.findOne({_id : staff.school})
+                try {
+                    let day = await Day.findById(req.params.dayID) 
+                    if ( day ) {
+                        let delDay =  await Day.findByIdAndRemove(day._id) 
+                        if ( delDay ) {
+                            req.flash('success' , 'Weekday has been cancelled successfully.')
+                            res.redirect(303 , '/staff/day')
+                        }else {
+                            throw {
+                                status : 500 ,
+                                message : "Internal Server Error"
+                            }
+                        }
                     }else {
                         throw {
-                            status : 500 ,
-                            message : "Internal Server Error"
+                            status : 400 ,
+                            message : "Something went wrong with the request "
                         }
                     }
-                }else {
-                    throw {
-                        status : 400 ,
-                        message : "Something went wrong with the request "
-                    }
+                }catch(error){
+                    res.sendStatus(error.status).json({message : error.message})
+                    return 
                 }
-            }catch(error){
-                res.sendStatus(error.status).json({message : error.message})
-                return 
+            }else{
+                res.redirect(303 , '/staff')
             }
         }
         else{
@@ -1544,29 +1613,33 @@ class App {
     deleteDay = async (req , res , next ) => {
         if(req.session.staffCode) {
             const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-            const school = await SchoolAdmin.findOne({_id : staff.school})
-            try {
-                let day = await Day.findById(req.params.dayID) 
-                if ( day ) {
-                    let delDay =  await Day.findByIdAndRemove(day._id) 
-                    if ( delDay ) {
-                        req.flash('success' , 'Weekday has been cancelled successfully.')
-                        res.redirect(303 , '/staff/day')
+            if(staff.role == 'r-1'){
+                const school = await SchoolAdmin.findOne({_id : staff.school})
+                try {
+                    let day = await Day.findById(req.params.dayID) 
+                    if ( day ) {
+                        let delDay =  await Day.findByIdAndRemove(day._id) 
+                        if ( delDay ) {
+                            req.flash('success' , 'Weekday has been cancelled successfully.')
+                            res.redirect(303 , '/staff/day')
+                        }else {
+                            throw {
+                                status : 500 ,
+                                message : "Internal Server Error"
+                            }
+                        }
                     }else {
                         throw {
-                            status : 500 ,
-                            message : "Internal Server Error"
+                            status : 400 ,
+                            message : "Something went wrong with the request "
                         }
                     }
-                }else {
-                    throw {
-                        status : 400 ,
-                        message : "Something went wrong with the request "
-                    }
+                }catch(error){
+                    res.sendStatus(error.status).json({message : error.message})
+                    return 
                 }
-            }catch(error){
-                res.sendStatus(error.status).json({message : error.message})
-                return 
+            }else{
+                res.redirect(303 , '/staff')
             }
         }
         else{
@@ -1578,34 +1651,38 @@ class App {
         if(req.session.staffCode){
             try {
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})  
-                const session = await Session.findOne({school : school._id, current: true})
-                if(session) {
-                    const term = await Term.findOne({school: school._id, session: session._id, current: true})
-                    if(term) { 
-                        const classchool = await ClassSchool.find({school : school._id})
-                        res.render('principal-timetable-page', {
-                             title : 'Timetable', 
-                             staff : staff,
-                             classchool : classchool,
-                             attendance_active: "active" ,
-                             sessS: session.name,
-                             code : school,
-                             termS: term.name ,
-                             success : req.flash('success'),
-                             time_active: 'active',
-                             timetable_active : "active" ,
-                             opentimetable_active: "pcoded-trigger",
-                        })
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})  
+                    const session = await Session.findOne({school : school._id, current: true})
+                    if(session) {
+                        const term = await Term.findOne({school: school._id, session: session._id, current: true})
+                        if(term) { 
+                            const classchool = await ClassSchool.find({school : school._id})
+                            res.render('principal-timetable-page', {
+                                title : 'Timetable', 
+                                staff : staff,
+                                classchool : classchool,
+                                attendance_active: "active" ,
+                                sessS: session.name,
+                                code : school,
+                                termS: term.name ,
+                                success : req.flash('success'),
+                                time_active: 'active',
+                                timetable_active : "active" ,
+                                opentimetable_active: "pcoded-trigger",
+                            })
+                        }else{
+                            res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
+                            time_active: 'active', opentimetable_active: "pcoded-trigger",
+                            timetable_active : "active"})
+                        }
                     }else{
                         res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
                         time_active: 'active', opentimetable_active: "pcoded-trigger",
                         timetable_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
-                    time_active: 'active', opentimetable_active: "pcoded-trigger",
-                    timetable_active : "active"})
+                    res.redirect(303 , '/staff')
                 }
             }catch(error){
                 res.sendStatus(error.status).json({message : error.message})
@@ -1620,42 +1697,46 @@ class App {
         if(req.session.staffCode) {
             try{
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school : school._id, current: true})
-                if(session) {
-                    const term = await Term.findOne({school: school._id, session: session._id, current: true})
-                    if(term) {  
-                        const periods = await Period.find({school : school._id})
-                        const subjects = await Subject.findOne({school : school._id})
-                        const timetables = await ClassTimetable.findOne({school : school._id, class : req.params.classID})
-                        const day = await Day.find({school : school._id})
-                        const classSchools = await ClassSchool.findOne({school : school._id , _id : req.params.classID})
-                        res.render("principal-classtimetable-page" , {
-                            timetables : timetables ,
-                            subjects : subjects ,
-                            periods : periods ,
-                            code : school,
-                            day : day ,
-                            title : "Timetable Periods" ,
-                            staff : staff,
-                            classSchools : classSchools ,
-                            sessS: session.name,
-                             termS: term.name ,
-                             success : req.flash('success'),
-                             time_active: 'active',
-                             timetable_active : "active" ,
-                             opentimetable_active: "pcoded-trigger",
-                        })
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school : school._id, current: true})
+                    if(session) {
+                        const term = await Term.findOne({school: school._id, session: session._id, current: true})
+                        if(term) {  
+                            const periods = await Period.find({school : school._id})
+                            const subjects = await Subject.findOne({school : school._id})
+                            const timetables = await ClassTimetable.findOne({school : school._id, class : req.params.classID})
+                            const day = await Day.find({school : school._id})
+                            const classSchools = await ClassSchool.findOne({school : school._id , _id : req.params.classID})
+                            res.render("principal-classtimetable-page" , {
+                                timetables : timetables ,
+                                subjects : subjects ,
+                                periods : periods ,
+                                code : school,
+                                day : day ,
+                                title : "Timetable Periods" ,
+                                staff : staff,
+                                classSchools : classSchools ,
+                                sessS: session.name,
+                                termS: term.name ,
+                                success : req.flash('success'),
+                                time_active: 'active',
+                                timetable_active : "active" ,
+                                opentimetable_active: "pcoded-trigger",
+                            })
+                        }else{
+                            res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
+                            time_active: 'active', opentimetable_active: "pcoded-trigger",
+                            timetable_active : "active"})
+                        }
                     }else{
                         res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
                         time_active: 'active', opentimetable_active: "pcoded-trigger",
                         timetable_active : "active"})
-                    }
+                    }	
                 }else{
-                    res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
-                    time_active: 'active', opentimetable_active: "pcoded-trigger",
-                    timetable_active : "active"})
-                }		
+                    res.redirect(303 , '/staff')
+                }	
             }catch(err){
                 res.render('error-page', {error : err})
             }
@@ -1669,47 +1750,51 @@ class App {
         if(req.session.staffCode) {
             try{
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school : school._id, current: true})
-                if(session) {
-                    const term = await Term.findOne({school: school._id, session: session._id, current: true})
-                    if(term) {  
-                        const periods = await Period.findOne({school : school._id})
-                        const subjects = await Subject.findOne({school : school._id})
-                        const timetables = await ClassTimetable.findOne({school : school._id, class : req.params.classID , day : req.params.dayID})
-                        const day = await Day.findOne({school : school._id , _id : req.params.dayID})
-                        const classSchools = await ClassSchool.findOne({school : school._id , _id : req.params.classID}) 
-                        let result         
-                        if(timetables) {
-                            result = timetables.subject.sort((a,b) => (a.periodNum - b.periodNum))
-                        }  else {
-                            result = null
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school : school._id, current: true})
+                    if(session) {
+                        const term = await Term.findOne({school: school._id, session: session._id, current: true})
+                        if(term) {  
+                            const periods = await Period.findOne({school : school._id})
+                            const subjects = await Subject.findOne({school : school._id})
+                            const timetables = await ClassTimetable.findOne({school : school._id, class : req.params.classID , day : req.params.dayID})
+                            const day = await Day.findOne({school : school._id , _id : req.params.dayID})
+                            const classSchools = await ClassSchool.findOne({school : school._id , _id : req.params.classID}) 
+                            let result         
+                            if(timetables) {
+                                result = timetables.subject.sort((a,b) => (a.periodNum - b.periodNum))
+                            }  else {
+                                result = null
+                            }
+                            res.render("principal-daysubject-page" , {
+                                timetables : result ,
+                                subjects : subjects ,
+                                periods : periods ,
+                                day : day ,
+                                code : school,
+                                title : "Timetable Periods" ,
+                                staff : staff,
+                                classSchools : classSchools ,
+                                sessS: session.name,
+                                termS: term.name ,
+                                success : req.flash('success'),
+                                time_active: 'active',
+                                timetable_active : "active" ,
+                                opentimetable_active: "pcoded-trigger",
+                            })
+                        }else{
+                            res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
+                            time_active: 'active', opentimetable_active: "pcoded-trigger",
+                            timetable_active : "active"})
                         }
-                        res.render("principal-daysubject-page" , {
-                            timetables : result ,
-                            subjects : subjects ,
-                            periods : periods ,
-                            day : day ,
-                            code : school,
-                            title : "Timetable Periods" ,
-                            staff : staff,
-                            classSchools : classSchools ,
-                            sessS: session.name,
-                             termS: term.name ,
-                             success : req.flash('success'),
-                             time_active: 'active',
-                             timetable_active : "active" ,
-                             opentimetable_active: "pcoded-trigger",
-                        })
                     }else{
                         res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
                         time_active: 'active', opentimetable_active: "pcoded-trigger",
                         timetable_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
-                    time_active: 'active', opentimetable_active: "pcoded-trigger",
-                    timetable_active : "active"})
+                    res.redirect(303, '/staff')
                 }		
             }catch(err){
                 res.render('error-page', {error : err})
@@ -1724,58 +1809,62 @@ class App {
         if(req.session.staffCode) {
             try{
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const classSchool = await ClassSchool.findOne({school : school._id , _id : req.params.classID}) 
-                const session = await Session.findOne({school : school._id , current : true}) 
-                const subjects = await Subject.find({school : school._id})
-                const term = await Term.findOne({school : school._id}) 
-                const day = await Day.findOne({school : school._id , _id : req.params.dayID})
-    
-                const {nameOfDay , periodNum , subjectName } = req.body
-                const periodd = await ClassTimetable.findOne({ school : school._id , class : req.params.classID , day : req.params.dayID })
-                if(!periodd) {  
-                    const classTimetable = new ClassTimetable({
-                        subject : [{
-                            subjectName : subjectName ,
-                            periodNum : periodNum ,
-                        }],
-                        nameOfDay : day.weekday ,
-                        day :  day._id,
-                        school : school._id ,
-                        session : session._id ,
-                        term : term._id ,
-                        class : classSchool._id ,
-    
-    
-                    })
-                    const saveClassTimetable = await classTimetable.save()
-                    if (saveClassTimetable) {
-                        req.flash('success' , 'Data Entered Successfully!')
-                        res.redirect(303 , '/staff/timetable/class/' + classSchool._id + '/class-timetable/day/' +day._id + '/subject')
-                        return
-                    }else {
-                        throw {
-                            message : 'Unable to save Period'
-                        }
-                    }
-                }
-                if(periodd){
-                    ClassTimetable.findByIdAndUpdate(periodd._id, {
-                        $addToSet : {
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const classSchool = await ClassSchool.findOne({school : school._id , _id : req.params.classID}) 
+                    const session = await Session.findOne({school : school._id , current : true}) 
+                    const subjects = await Subject.find({school : school._id})
+                    const term = await Term.findOne({school : school._id}) 
+                    const day = await Day.findOne({school : school._id , _id : req.params.dayID})
+        
+                    const {nameOfDay , periodNum , subjectName } = req.body
+                    const periodd = await ClassTimetable.findOne({ school : school._id , class : req.params.classID , day : req.params.dayID })
+                    if(!periodd) {  
+                        const classTimetable = new ClassTimetable({
                             subject : [{
                                 subjectName : subjectName ,
                                 periodNum : periodNum ,
                             }],
-                        }
-                    }, {new : true, useAndModify : false}, (err , item) => {
-                        if(err){
-                            res.status(500)
-                            return
-                        }else {
+                            nameOfDay : day.weekday ,
+                            day :  day._id,
+                            school : school._id ,
+                            session : session._id ,
+                            term : term._id ,
+                            class : classSchool._id ,
+        
+        
+                        })
+                        const saveClassTimetable = await classTimetable.save()
+                        if (saveClassTimetable) {
                             req.flash('success' , 'Data Entered Successfully!')
                             res.redirect(303 , '/staff/timetable/class/' + classSchool._id + '/class-timetable/day/' +day._id + '/subject')
+                            return
+                        }else {
+                            throw {
+                                message : 'Unable to save Period'
+                            }
                         }
-                    })	
+                    }
+                    if(periodd){
+                        ClassTimetable.findByIdAndUpdate(periodd._id, {
+                            $addToSet : {
+                                subject : [{
+                                    subjectName : subjectName ,
+                                    periodNum : periodNum ,
+                                }],
+                            }
+                        }, {new : true, useAndModify : false}, (err , item) => {
+                            if(err){
+                                res.status(500)
+                                return
+                            }else {
+                                req.flash('success' , 'Data Entered Successfully!')
+                                res.redirect(303 , '/staff/timetable/class/' + classSchool._id + '/class-timetable/day/' +day._id + '/subject')
+                            }
+                        })	
+                    }
+                }else{
+                    res.redirect(303 , '/staff')
                 }
             }catch(err) {
                 res.render('error-page', {error : err})
@@ -1789,25 +1878,29 @@ class App {
         try{
             if(req.session.staffCode){ 
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const periods = await ClassTimetable.findOne({ school : school._id , class : req.params.classID , day : req.params.dayID })
-                const classSchool = await ClassSchool.findOne({school : school._id , _id : req.params.classID}) 
-                const day = await Day.findOne({school : school._id , _id : req.params.dayID})
-                
-                const allPeriods = periods.subject
-                let mapIt = allPeriods.find( elem => elem._id == req.params.subjectID)
-                ClassTimetable.findByIdAndUpdate(periods._id, {
-                    $pullAll : {
-                        subject : [mapIt] }
-                }, {new : true, useAndModify : false}, (err , item) => {
-                    if(err){
-                        res.status(500) 
-                        return
-                    }else {
-                        req.flash('success', "Your deletion was successful.") 
-                        res.redirect(303 , '/school/timetable/class/' + classSchool._id + '/class-timetable/day/' +day._id + '/subject')
-                    }
-                })
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const periods = await ClassTimetable.findOne({ school : school._id , class : req.params.classID , day : req.params.dayID })
+                    const classSchool = await ClassSchool.findOne({school : school._id , _id : req.params.classID}) 
+                    const day = await Day.findOne({school : school._id , _id : req.params.dayID})
+                    
+                    const allPeriods = periods.subject
+                    let mapIt = allPeriods.find( elem => elem._id == req.params.subjectID)
+                    ClassTimetable.findByIdAndUpdate(periods._id, {
+                        $pullAll : {
+                            subject : [mapIt] }
+                    }, {new : true, useAndModify : false}, (err , item) => {
+                        if(err){
+                            res.status(500) 
+                            return
+                        }else {
+                            req.flash('success', "Your deletion was successful.") 
+                            res.redirect(303 , '/school/timetable/class/' + classSchool._id + '/class-timetable/day/' +day._id + '/subject')
+                        }
+                    })
+                }else{
+                    res.redirect(303 , '/staff')
+                }
             }else{
                 res.redirect(303, '/staff')
             }
@@ -1820,52 +1913,56 @@ class App {
         if(req.session.staffCode) {
             try{
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school : school._id, current: true})
-                if(session) {
-                    const term = await Term.findOne({school: school._id, session: session._id, current: true})
-                    if(term) {  
-                        const periods = await Period.find({school : school._id})
-                        const subjects = await Subject.findOne({school : school._id})
-                        const timetables = await ClassTimetable.find({school : school._id , class : req.params.classID })
-                        const day = await Day.find({school : school._id})
-                        const classSchools = await ClassSchool.findOne({school : school._id , _id : req.params.classID })
-                        let resArr    
-                        if(timetables) {
-                            resArr = timetables.map(item => {
-                                console.log(item.subject)
-                                item.subject = item.subject.sort((a,b) => (a.periodNum - b.periodNum)) 
-                                return item
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school : school._id, current: true})
+                    if(session) {
+                        const term = await Term.findOne({school: school._id, session: session._id, current: true})
+                        if(term) {  
+                            const periods = await Period.find({school : school._id})
+                            const subjects = await Subject.findOne({school : school._id})
+                            const timetables = await ClassTimetable.find({school : school._id , class : req.params.classID })
+                            const day = await Day.find({school : school._id})
+                            const classSchools = await ClassSchool.findOne({school : school._id , _id : req.params.classID })
+                            let resArr    
+                            if(timetables) {
+                                resArr = timetables.map(item => {
+                                    console.log(item.subject)
+                                    item.subject = item.subject.sort((a,b) => (a.periodNum - b.periodNum)) 
+                                    return item
+                                })
+                                console.log(resArr)
+                            }  else {
+                                result = null
+                            }
+                
+                            res.render("all-time" , {
+                                timetables : resArr ,
+                                subjects : subjects ,
+                                periods : periods ,
+                                code : school,
+                                day : day ,
+                                title : `Timetable Periods for ${classSchools.name}` ,
+                                staff : staff,
+                                classSchools : classSchools ,
+                                sessS: session.name,
+                                termS: term.name ,
+                                time_active: 'active',
+                                timetable_active : "active" ,
+                                opentimetable_active: "pcoded-trigger",
                             })
-                            console.log(resArr)
-                        }  else {
-                            result = null
+                        } else{
+                            res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
+                            time_active: 'active', opentimetable_active: "pcoded-trigger",
+                            timetable_active : "active"})
                         }
-            
-                        res.render("all-time" , {
-                            timetables : resArr ,
-                            subjects : subjects ,
-                            periods : periods ,
-                            code : school,
-                            day : day ,
-                            title : `Timetable Periods for ${classSchools.name}` ,
-                            staff : staff,
-                            classSchools : classSchools ,
-                            sessS: session.name,
-                            termS: term.name ,
-                            time_active: 'active',
-                            timetable_active : "active" ,
-                            opentimetable_active: "pcoded-trigger",
-                        })
-                    } else{
+                    }else{
                         res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
                         time_active: 'active', opentimetable_active: "pcoded-trigger",
                         timetable_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
-                    time_active: 'active', opentimetable_active: "pcoded-trigger",
-                    timetable_active : "active"})
+                    res.redirect(303 , '/staff')
                 }	
             }catch(err){
                 res.render('error-page', {error : err})
@@ -1880,32 +1977,35 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school : school._id, current: true})
-                if(session) {
-                    const term = await Term.findOne({school: school._id, session: session._id, current: true})
-                    if(term) {  
-                        const classchool = await ClassSchool.find({school : school._id})
-                        res.render('principal-examtimetable-page', {title : 'Exam Timetable', staff : staff,
-                            classchool : classchool ,
-                            sessS: session.name,
-                            code : school,
-                            termS: term.name ,
-                            examtime_active: 'active',
-                            timetable_active : "active" ,
-                            opentimetable_active: "pcoded-trigger",
-                        })
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school : school._id, current: true})
+                    if(session) {
+                        const term = await Term.findOne({school: school._id, session: session._id, current: true})
+                        if(term) {  
+                            const classchool = await ClassSchool.find({school : school._id})
+                            res.render('principal-examtimetable-page', {title : 'Exam Timetable', staff : staff,
+                                classchool : classchool ,
+                                sessS: session.name,
+                                code : school,
+                                termS: term.name ,
+                                examtime_active: 'active',
+                                timetable_active : "active" ,
+                                opentimetable_active: "pcoded-trigger",
+                            })
+                        }else{
+                            res.render('sess-term-error', {staff: staff, title: 'Exam Settings',
+                            examtime_active: 'active', opentimetable_active: "pcoded-trigger",
+                            timetable_active : "active"})
+                        }
                     }else{
-                        res.render('sess-term-error', {staff: staff, title: 'Exam Settings',
+                        res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
                         examtime_active: 'active', opentimetable_active: "pcoded-trigger",
                         timetable_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
-                    examtime_active: 'active', opentimetable_active: "pcoded-trigger",
-                    timetable_active : "active"})
-                }	
-    
+                    res.redirect(303, '/staff')
+                }
             }else{
                 res.redirect(303, '/staff')
             }
@@ -1918,33 +2018,37 @@ class App {
         if(req.session.staffCode) {
             try{
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school : school._id, current: true})
-                if(session) {
-                    const term = await Term.findOne({school: school._id, session: session._id, current: true})
-                    if(term) {  
-                        const days = await ExamDay.find({school : school._id}).sort([['nameOfDay' , 'ascending']]) 
-                        res.render("principal-examday-page" , {
-                            days : days ,
-                            title : "Set Exam Days" ,
-                            staff :staff ,
-                            code : school,
-                            sessS: session.name,
-                            termS: term.name ,
-                            success : req.flash('success'),
-                            examtime_active: 'active',
-                            timetable_active : "active" ,
-                            opentimetable_active: "pcoded-trigger",
-                        })
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school : school._id, current: true})
+                    if(session) {
+                        const term = await Term.findOne({school: school._id, session: session._id, current: true})
+                        if(term) {  
+                            const days = await ExamDay.find({school : school._id}).sort([['nameOfDay' , 'ascending']]) 
+                            res.render("principal-examday-page" , {
+                                days : days ,
+                                title : "Set Exam Days" ,
+                                staff :staff ,
+                                code : school,
+                                sessS: session.name,
+                                termS: term.name ,
+                                success : req.flash('success'),
+                                examtime_active: 'active',
+                                timetable_active : "active" ,
+                                opentimetable_active: "pcoded-trigger",
+                            })
+                        }else{
+                            res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
+                            examtime_active: 'active', opentimetable_active: "pcoded-trigger",
+                            timetable_active : "active"})
+                        }
                     }else{
                         res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
                         examtime_active: 'active', opentimetable_active: "pcoded-trigger",
                         timetable_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
-                    examtime_active: 'active', opentimetable_active: "pcoded-trigger",
-                    timetable_active : "active"})
+                    res.redirect(303 , '/staff')
                 }	
             }catch(err){
                 res.render('error-page', {error : err})
@@ -1959,21 +2063,25 @@ class App {
         if(req.session.staffCode) {
             try{
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const {nameOfDay } = req.body
-                const day = new ExamDay({
-                    school : school._id ,
-                    nameOfDay : nameOfDay
-                })
-                const saveDay = await day.save()
-                if (saveDay) {
-                    req.flash('success' , 'Data Entered Successfully!')
-                    res.redirect(303 , '/staff/exam-day')
-                    return
-                }else {
-                    throw {
-                        message : 'Unable to save Exam Date'
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const {nameOfDay } = req.body
+                    const day = new ExamDay({
+                        school : school._id ,
+                        nameOfDay : nameOfDay
+                    })
+                    const saveDay = await day.save()
+                    if (saveDay) {
+                        req.flash('success' , 'Data Entered Successfully!')
+                        res.redirect(303 , '/staff/exam-day')
+                        return
+                    }else {
+                        throw {
+                            message : 'Unable to save Exam Date'
+                        }
                     }
+                }else{
+                    res.redirect(303 , '/staff')
                 }
             }catch(err) {
                 res.send(err.message)
@@ -1986,29 +2094,33 @@ class App {
     deleteExamDay = async (req , res , next ) => {
         if(req.session.staffCode) {
             const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-            const school = await SchoolAdmin.findOne({_id : staff.school})
-            try {
-                let examDay = await ExamDay.findById(req.params.examDayID) 
-                if ( examDay ) {
-                    let delDay =  await ExamDay.findByIdAndRemove(examDay._id) 
-                    if ( delDay ) {
-                        req.flash('success' , 'Exam day has been cancelled successfully.')
-                        res.redirect(303 , '/staff/exam-day')
+            if(staff.role == 'r-1'){
+                const school = await SchoolAdmin.findOne({_id : staff.school})
+                try {
+                    let examDay = await ExamDay.findById(req.params.examDayID) 
+                    if ( examDay ) {
+                        let delDay =  await ExamDay.findByIdAndRemove(examDay._id) 
+                        if ( delDay ) {
+                            req.flash('success' , 'Exam day has been cancelled successfully.')
+                            res.redirect(303 , '/staff/exam-day')
+                        }else {
+                            throw {
+                                status : 500 ,
+                                message : "Internal Server Error"
+                            } 
+                        }
                     }else {
                         throw {
-                            status : 500 ,
-                            message : "Internal Server Error"
-                        } 
+                            status : 400 ,
+                            message : "Something went wrong with the request "
+                        }
                     }
-                }else {
-                    throw {
-                        status : 400 ,
-                        message : "Something went wrong with the request "
-                    }
-                }
-            }catch(error){
-                res.sendStatus(error.status).json({message : error.message})
-                return 
+                }catch(error){
+                    res.sendStatus(error.status).json({message : error.message})
+                    return 
+            }
+            }else{
+                res.redirect(303 , '/staff')
             }
         }
         else{
@@ -2020,37 +2132,41 @@ class App {
         if(req.session.staffCode) {
             try{
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school : school._id, current: true})
-                if(session) {
-                    const term = await Term.findOne({school: school._id, session: session._id, current: true})
-                    if(term) {  
-                        const timetables = await ExamTimetable.findOne({school : school._id, class : req.params.classID})
-                        const day = await ExamDay.find({school : school._id}).sort([['nameOfDay' , 'ascending']])
-                        const classSchools = await ClassSchool.findOne({school : school._id , _id : req.params.classID})
-                        res.render("principal-classexamtimetable-page" , {
-                            timetables : timetables ,
-                            day : day ,
-                            title : "Exam Days" ,
-                            code : school,
-                            staff : staff,
-                            classSchools : classSchools ,
-                            sessS: session.name,
-                            termS: term.name ,
-                            success : req.flash('success'),
-                            examtime_active: 'active',
-                            timetable_active : "active" ,
-                            opentimetable_active: "pcoded-trigger",
-                        })
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school : school._id, current: true})
+                    if(session) {
+                        const term = await Term.findOne({school: school._id, session: session._id, current: true})
+                        if(term) {  
+                            const timetables = await ExamTimetable.findOne({school : school._id, class : req.params.classID})
+                            const day = await ExamDay.find({school : school._id}).sort([['nameOfDay' , 'ascending']])
+                            const classSchools = await ClassSchool.findOne({school : school._id , _id : req.params.classID})
+                            res.render("principal-classexamtimetable-page" , {
+                                timetables : timetables ,
+                                day : day ,
+                                title : "Exam Days" ,
+                                code : school,
+                                staff : staff,
+                                classSchools : classSchools ,
+                                sessS: session.name,
+                                termS: term.name ,
+                                success : req.flash('success'),
+                                examtime_active: 'active',
+                                timetable_active : "active" ,
+                                opentimetable_active: "pcoded-trigger",
+                            })
+                        }else{
+                            res.render('sess-term-error', {staff: staff, title: 'Exam Settings',
+                            examtime_active: 'active', opentimetable_active: "pcoded-trigger",
+                            timetable_active : "active"})
+                        }
                     }else{
-                        res.render('sess-term-error', {staff: staff, title: 'Exam Settings',
+                        res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
                         examtime_active: 'active', opentimetable_active: "pcoded-trigger",
                         timetable_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
-                    examtime_active: 'active', opentimetable_active: "pcoded-trigger",
-                    timetable_active : "active"})
+                    res.redirect(303 , '/staff')
                 }		
             }catch(err){
                 res.render('error-page', {error : err})
@@ -2065,48 +2181,52 @@ class App {
         if(req.session.staffCode) {
             try{
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school : school._id, current: true})
-                if(session) {
-                    const term = await Term.findOne({school: school._id, session: session._id, current: true})
-                    if(term) {  
-                        const subjects = await Subject.findOne({school : school._id})
-                        const session = await Session.findOne({school : school._id , current : true}) 
-                        const timetables = await ExamTimetable.findOne({school : school._id, class : req.params.classID , examDay : req.params.examDayID})
-                        const examDay = await ExamDay.findOne({school : school._id , _id : req.params.examDayID})
-                        const classSchools = await ClassSchool.findOne({school : school._id , _id : req.params.classID}) 
-                        let result         
-                        if(timetables) {
-                            result = timetables.subject.sort((a,b) => (a.periodNum - b.periodNum))
-                        }  else {
-                            result = null
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school : school._id, current: true})
+                    if(session) {
+                        const term = await Term.findOne({school: school._id, session: session._id, current: true})
+                        if(term) {  
+                            const subjects = await Subject.findOne({school : school._id})
+                            const session = await Session.findOne({school : school._id , current : true}) 
+                            const timetables = await ExamTimetable.findOne({school : school._id, class : req.params.classID , examDay : req.params.examDayID})
+                            const examDay = await ExamDay.findOne({school : school._id , _id : req.params.examDayID})
+                            const classSchools = await ClassSchool.findOne({school : school._id , _id : req.params.classID}) 
+                            let result         
+                            if(timetables) {
+                                result = timetables.subject.sort((a,b) => (a.periodNum - b.periodNum))
+                            }  else {
+                                result = null
+                            }
+                
+                            res.render("examdaysubject-page" , {
+                                timetables : result ,
+                                subjects : subjects ,
+                                examDay : examDay ,
+                                code : school,
+                                title : "Timetable Periods" ,
+                                staff : staff,
+                                classSchools : classSchools ,
+                                sessS: session.name,
+                                termS: term.name ,
+                                success : req.flash('success'),
+                                examtime_active: 'active',
+                                timetable_active : "active" ,
+                                opentimetable_active: "pcoded-trigger",
+                            })
+                        } else{
+                            res.render('sess-term-error', {ataff: staff, title: 'Exam Settings',
+                            examtime_active: 'active', opentimetable_active: "pcoded-trigger",
+                            timetable_active : "active"})
                         }
-            
-                        res.render("examdaysubject-page" , {
-                            timetables : result ,
-                            subjects : subjects ,
-                            examDay : examDay ,
-                            code : school,
-                            title : "Timetable Periods" ,
-                            staff : staff,
-                            classSchools : classSchools ,
-                            sessS: session.name,
-                            termS: term.name ,
-                            success : req.flash('success'),
-                            examtime_active: 'active',
-                            timetable_active : "active" ,
-                            opentimetable_active: "pcoded-trigger",
-                        })
-                    } else{
-                        res.render('sess-term-error', {ataff: staff, title: 'Exam Settings',
+                    }else{
+                        res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
                         examtime_active: 'active', opentimetable_active: "pcoded-trigger",
                         timetable_active : "active"})
-                    }
+                    }		
                 }else{
-                    res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
-                    examtime_active: 'active', opentimetable_active: "pcoded-trigger",
-                    timetable_active : "active"})
-                }		
+                    res.redirect(303 , '/staff')
+                }  
             }catch(err){
                 res.render('error-page', {error : err})
             }
@@ -2121,62 +2241,65 @@ class App {
         if(req.session.staffCode) {
             try{
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const classSchool = await ClassSchool.findOne({school : school._id , _id : req.params.classID}) 
-                const session = await Session.findOne({school : school._id , current : true}) 
-                const subjects = await Subject.find({school : school._id})
-                // const term = await Term.findOne({school : schoolAdmin._id , current : true}) 
-                const examDay = await ExamDay.findOne({school : school._id , _id : req.params.examDayID})
-    
-                const {nameOfDay , periodNum , subjectName , endTime , startTime} = req.body
-                const periodd = await ExamTimetable.findOne({ school : school._id , class : req.params.classID , examDay : req.params.examDayID })
-                if(!periodd) {  
-                    const examTimetable = new ExamTimetable({
-                        subject : [{
-                            subjectName : subjectName ,
-                            periodNum : periodNum ,
-                            startTime : startTime ,
-                            endTime : endTime
-                        }],
-                        nameOfDay : examDay.nameOfDay.toLocaleDateString() ,
-                        examDay :  examDay._id,
-                        school : school._id ,
-                        session : session._id ,
-                        // term : term._id ,
-                        class : classSchool._id ,
-    
-    
-                    })
-                    const saveExamTimetable = await examTimetable.save()
-                    if (saveExamTimetable) {
-                        req.flash('success' , 'Data Entered Successfully!')
-                        res.redirect(303 , '/staff/exam-timetable/class/' + classSchool._id + '/day/' +examDay._id + '/subject')
-                        return
-                    }else {
-                        throw {
-                            message : 'Unable to save Subject'
-                        }
-                    }
-                }
-                if(periodd){
-                    // if (periodd.day)
-                    ExamTimetable.findByIdAndUpdate(periodd._id, {
-                        $addToSet : {
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const classSchool = await ClassSchool.findOne({school : school._id , _id : req.params.classID}) 
+                    const session = await Session.findOne({school : school._id , current : true}) 
+                    const subjects = await Subject.find({school : school._id})
+                    // const term = await Term.findOne({school : schoolAdmin._id , current : true}) 
+                    const examDay = await ExamDay.findOne({school : school._id , _id : req.params.examDayID})
+        
+                    const {nameOfDay , periodNum , subjectName , endTime , startTime} = req.body
+                    const periodd = await ExamTimetable.findOne({ school : school._id , class : req.params.classID , examDay : req.params.examDayID })
+                    if(!periodd) {  
+                        const examTimetable = new ExamTimetable({
                             subject : [{
                                 subjectName : subjectName ,
                                 periodNum : periodNum ,
                                 startTime : startTime ,
                                 endTime : endTime
                             }],
-                        }
-                    }, {new : true, useAndModify : false}, (err , item) => {
-                        if(err){
-                            res.status(500)
+                            nameOfDay : examDay.nameOfDay.toLocaleDateString() ,
+                            examDay :  examDay._id,
+                            school : school._id ,
+                            session : session._id ,
+                            // term : term._id ,
+                            class : classSchool._id ,
+        
+        
+                        })
+                        const saveExamTimetable = await examTimetable.save()
+                        if (saveExamTimetable) {
+                            req.flash('success' , 'Data Entered Successfully!')
+                            res.redirect(303 , '/staff/exam-timetable/class/' + classSchool._id + '/day/' +examDay._id + '/subject')
                             return
                         }else {
-                            res.redirect(303 , '/staff/exam-timetable/class/' + classSchool._id + '/day/' +examDay._id + '/subject')
+                            throw {
+                                message : 'Unable to save Subject'
+                            }
                         }
-                    })	
+                    }
+                    if(periodd){
+                        ExamTimetable.findByIdAndUpdate(periodd._id, {
+                            $addToSet : {
+                                subject : [{
+                                    subjectName : subjectName ,
+                                    periodNum : periodNum ,
+                                    startTime : startTime ,
+                                    endTime : endTime
+                                }],
+                            }
+                        }, {new : true, useAndModify : false}, (err , item) => {
+                            if(err){
+                                res.status(500)
+                                return
+                            }else {
+                                res.redirect(303 , '/staff/exam-timetable/class/' + classSchool._id + '/day/' +examDay._id + '/subject')
+                            }
+                        })	
+                    }
+                }else{
+                    res.redirect(303 , '/staff')
                 }
             }catch(err) {
                 res.render('error-page', {error : err})
@@ -2190,26 +2313,29 @@ class App {
         try{
             if(req.session.staffCode){ 
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const periods = await ExamTimetable.findOne({ school : school._id , class : req.params.classID , examDay : req.params.examDayID })
-                const classSchool = await ClassSchool.findOne({school : school._id , _id : req.params.classID}) 
-                const examDay = await ExamDay.findOne({school : school._id , _id : req.params.examDayID})
-                
-                const allPeriods = periods.subject
-                let mapIt = allPeriods.find( elem => elem._id == req.params.subjectID)
-                // console.log(mapIt)
-                ExamTimetable.findByIdAndUpdate(periods._id, {
-                    $pullAll : {
-                        subject : [mapIt] }
-                }, {new : true, useAndModify : false}, (err , item) => {
-                    if(err){
-                        res.status(500) 
-                        return
-                    }else {
-                        req.flash('success', "Your deletion was successful.") 
-                        res.redirect(303 , '/staff/exam-timetable/class/' + classSchool._id + '/day/' +examDay._id + '/subject')
-                    }
-                })
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const periods = await ExamTimetable.findOne({ school : school._id , class : req.params.classID , examDay : req.params.examDayID })
+                    const classSchool = await ClassSchool.findOne({school : school._id , _id : req.params.classID}) 
+                    const examDay = await ExamDay.findOne({school : school._id , _id : req.params.examDayID})
+                    
+                    const allPeriods = periods.subject
+                    let mapIt = allPeriods.find( elem => elem._id == req.params.subjectID)
+                    ExamTimetable.findByIdAndUpdate(periods._id, {
+                        $pullAll : {
+                            subject : [mapIt] }
+                    }, {new : true, useAndModify : false}, (err , item) => {
+                        if(err){
+                            res.status(500) 
+                            return
+                        }else {
+                            req.flash('success', "Your deletion was successful.") 
+                            res.redirect(303 , '/staff/exam-timetable/class/' + classSchool._id + '/day/' +examDay._id + '/subject')
+                        }
+                    })
+                }else{
+                    res.redirect(303 , '/staff')
+                }
             }else{
                 res.redirect(303, '/staff')
             }
@@ -2222,52 +2348,56 @@ class App {
         if(req.session.staffCode) {
             try{
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school : school._id, current: true})
-                if(session) {
-                    const term = await Term.findOne({school: school._id, session: session._id, current: true})
-                    if(term) {  
-                        const timetables = await ExamTimetable.find({school : school._id , class : req.params.classID })
-                        const examDay = await ExamDay.find({school : school._id})
-                        const classSchools = await ClassSchool.findOne({school : school._id , _id : req.params.classID })
-                        let resArr    
-                        if(timetables) {
-                            resArr = timetables.map(item => {
-                                console.log(item.subject)
-                                item.subject = item.subject.sort((a,b) => (a.periodNum - b.periodNum)) 
-                                return item
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school : school._id, current: true})
+                    if(session) {
+                        const term = await Term.findOne({school: school._id, session: session._id, current: true})
+                        if(term) {  
+                            const timetables = await ExamTimetable.find({school : school._id , class : req.params.classID })
+                            const examDay = await ExamDay.find({school : school._id})
+                            const classSchools = await ClassSchool.findOne({school : school._id , _id : req.params.classID })
+                            let resArr    
+                            if(timetables) {
+                                resArr = timetables.map(item => {
+                                    console.log(item.subject)
+                                    item.subject = item.subject.sort((a,b) => (a.periodNum - b.periodNum)) 
+                                    return item
+                                })
+                                console.log(resArr)
+                            }  else {
+                                result = null
+                            }
+                
+                            res.render("allexam-time" , {
+                                timetables : resArr ,
+                                examDay : examDay ,
+                                title : `Exam Timetable for ${classSchools.name}` ,
+                                staff : staff,
+                                classSchools : classSchools ,
+                                classSchools : classSchools ,
+                                sessS: session.name,
+                                code : school,
+                                termS: term.name ,
+                                success : req.flash('success'),
+                                examtime_active: 'active',
+                                timetable_active : "active" ,
+                                opentimetable_active: "pcoded-trigger",
+                                term : term
                             })
-                            console.log(resArr)
-                        }  else {
-                            result = null
+                        } else{
+                            res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
+                            examtime_active: 'active', opentimetable_active: "pcoded-trigger",
+                            timetable_active : "active"})
                         }
-            
-                        res.render("allexam-time" , {
-                            timetables : resArr ,
-                            examDay : examDay ,
-                            title : `Exam Timetable for ${classSchools.name}` ,
-                            staff : staff,
-                            classSchools : classSchools ,
-                            classSchools : classSchools ,
-                            sessS: session.name,
-                            code : school,
-                            termS: term.name ,
-                            success : req.flash('success'),
-                            examtime_active: 'active',
-                            timetable_active : "active" ,
-                            opentimetable_active: "pcoded-trigger",
-                            term : term
-                        })
-                    } else{
-                        res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
-                        examtime_active: 'active', opentimetable_active: "pcoded-trigger",
-                        timetable_active : "active"})
-                    }
+                        }else{
+                            res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
+                            examtime_active: 'active', opentimetable_active: "pcoded-trigger",
+                            timetable_active : "active"})
+                        }	 		
                 }else{
-                    res.render('sess-term-error', {staff : staff, title: 'Exam Settings',
-                    examtime_active: 'active', opentimetable_active: "pcoded-trigger",
-                    timetable_active : "active"})
-                }	 		
+                res.redirect(303 , '/staff')
+                }
             }catch(err){
                 res.render('error-page', {error : err})
             }
@@ -2277,30 +2407,165 @@ class App {
         }
     }
 
+    getPrincipalBroadSheet = async (req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const classchool = await ClassSchool.find({school : school._id})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    if(session){
+                        const term = await Term.findOne({session: session._id, current: true})
+                        if(term){
+                            res.render('principal-broadsheet-class', {title : 'Broadsheet', code : school, staff : staff,
+                            classSchool : classchool, broadsheet_active: "active", sessS: session.name,
+                            termS: term.name})
+                        }else{
+                            res.render('sess-term-error', {schoolAdmin: school, title: 'Broadsheet',
+                            broadsheet_active: "active"})
+                        }
+                    }else{
+                        res.render('sess-term-error', {schoolAdmin: school, title: 'Broadsheet',
+                        broadsheet_active: "active"})
+                    }
+                }
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render('error-page', {error : err})
+        }
+    }
+
+    getPrincipalClassBroadSheet = async (req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school : school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    if(term.name == 'Third Term'){
+                        let redirectUrl = '/staff/principal/broadsheet/' + req.params.className + '/third-term'
+                        res.redirect(303, redirectUrl)
+                        return
+                    }
+                    const broadsheet = await BroadSheet.find({
+                        className: req.params.className, session: session._id,
+                        term: term._id, school: school._id
+                    })
+                    let title = 'Broadsheet for ' + req.params.className
+                    const students = await Student.find({school: school._id})
+
+                    let studentName = {}
+                    let studentID = {}
+                    students.map(student => {
+                        studentName[student._id] = student.firstName + " " + student.lastName
+                        studentID[student._id] = student.studentID
+                    })
+
+                    const resultArray = broadsheet.map(item => {
+                        item.result = item.result.sort((a,b) => (a.courseName > b.courseName) ? 1 : -1)
+                        return item
+                    })
+
+                    const firstResult = resultArray[0]
+
+                    res.render('principal-broadsheet', {title : title, code : school, staff : staff,
+                    pClass : req.params.className, broadsheet_active: "active", broadsheet: resultArray,
+                    firstResult: firstResult, studentName: studentName, studentID: studentID,
+                    sessS: session.name, termS: term.name})
+                }else{
+                    res.redirect(303 , 'staff')
+                }  
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render('error-page', {error : err})
+        }
+    }
+    
+    getPrincipalStudentReport = async (req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const broadsheet = await BroadSheet.findOne({_id: req.params.cardID})
+                    const student = await Student.findOne({_id: broadsheet.student})
+
+                    res.render('principal-create-student-report', {staff: staff, code : school,
+                    broadsheet_active : "active", title: 'Broadsheet', sessS: session.name, schoolDB: school,
+                    pClass: req.params.className, termS: term.name, studentDB: student, broadsheet: broadsheet
+                    })
+                }else{
+                    res.redirectg(303 , 'staff')
+                }
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    PrincipalRemarks = async(req, res, next) => {
+        try{
+            if(req.session.staffCode){
+
+                BroadSheet.findByIdAndUpdate(req.params.cardID, {
+                    principalRemark: req.body.remark
+                }, {new : true, useAndModify : false}, (err , item) => {
+                    if(err){
+                        res.status(500)
+                        return
+                    }else {
+                        req.flash('success', 'Result saved successfully')
+                        let redirectUrl = '/staff/principal/broadsheet/' + req.params.className + '/' + req.params.cardID
+                        res.redirect(303, redirectUrl)
+                    }
+                })
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
     getPrincipalTransactionLogs = async ( req , res , next ) => {
         try {
             if( req.session.staffCode ){
                 const {studentID, target} = req.body
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const classes = await ClassSchool.find({school : school._id})
-                const session = await Session.findOne({school: school._id, current: true})
-                if(session){
-                    const term = await Term.findOne({session: session._id, current: true})
-                    if(term){
-                        res.render('principal-transaction-logs' , { title : 'Upload Transactions' , staff : staff, 
-                        classes : classes , code : school, openfinance_active : 'pcoded-trigger',
-                        finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name})
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const classes = await ClassSchool.find({school : school._id})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    if(session){
+                        const term = await Term.findOne({session: session._id, current: true})
+                        if(term){
+                            res.render('principal-transaction-logs' , { title : 'Upload Transactions' , staff : staff, 
+                            classes : classes , code : school, openfinance_active : 'pcoded-trigger',
+                            finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name})
+                        }else{
+                            res.render('sess-term-error', {staff: staff, title: 'Upload Transactions',
+                            finance_active: 'active', openfinance_active: "pcoded-trigger",
+                            transaction_active : "active"})
+                        }
                     }else{
                         res.render('sess-term-error', {staff: staff, title: 'Upload Transactions',
                         finance_active: 'active', openfinance_active: "pcoded-trigger",
                         transaction_active : "active"})
                     }
                 }else{
-                    res.render('sess-term-error', {staff: staff, title: 'Upload Transactions',
-                    finance_active: 'active', openfinance_active: "pcoded-trigger",
-                    transaction_active : "active"})
+                    res.redirect(303, '/staff')
                 }
+                
             }else{
                 res.redirect(303, '/staff')
             }
@@ -2313,55 +2578,60 @@ class App {
         try {
             if( req.session.staffCode ){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const classes = await ClassSchool.find({school : school._id})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                let today = new Date()
-                today.setHours(today.getHours() - 24)
-                const transactions = await Transaction.find({
-                    session: session._id, term: term._id,
-                    paymentDate: {$gte: today}
-                }) 
-                const paymentType = await PaymentType.find({
-                    school: school._id
-                })
-
-                let compulsoryPayments = await PaymentType.find({
-                    school: school._id, importance: 'Compulsory'
-                })
-                let compulsory = [] 
-                compulsoryPayments.map(e => {
-                    compulsory.push(e.paymentFor)
-                })
-                let totalCompulsory, totalOptional, totalAll
-                if(transactions.length > 0){
-                    let cPayments = []
-                    let oPayments = []
-                    transactions.map(t => {
-                        let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
-                        let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
-                        let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
-                        let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
-                        cPayments.push(sumC)
-                        oPayments.push(sumO)
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const classes = await ClassSchool.find({school : school._id})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    let today = new Date()
+                    today.setHours(today.getHours() - 24)
+                    const transactions = await Transaction.find({
+                        session: session._id, term: term._id,
+                        paymentDate: {$gte: today}
+                    }) 
+                    const paymentType = await PaymentType.find({
+                        school: school._id
                     })
-                    totalCompulsory = cPayments.reduce((a, b) => a + b)
-                    totalOptional = oPayments.reduce((a, b) => a + b)
-                    totalAll = totalCompulsory + totalOptional
-                }
 
-                const students = await Student.find({school: school._id})
-                let studentName = {}
-                students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
-                let studentReg = {}
-                students.map(r => studentReg[r._id] = r.studentID)
+                    let compulsoryPayments = await PaymentType.find({
+                        school: school._id, importance: 'Compulsory'
+                    })
+                    let compulsory = [] 
+                    compulsoryPayments.map(e => {
+                        compulsory.push(e.paymentFor)
+                    })
+                    let totalCompulsory, totalOptional, totalAll
+                    if(transactions.length > 0){
+                        let cPayments = []
+                        let oPayments = []
+                        transactions.map(t => {
+                            let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
+                            let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
+                            let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
+                            let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
+                            cPayments.push(sumC)
+                            oPayments.push(sumO)
+                        })
+                        totalCompulsory = cPayments.reduce((a, b) => a + b)
+                        totalOptional = oPayments.reduce((a, b) => a + b)
+                        totalAll = totalCompulsory + totalOptional
+                    }
 
-                res.render('principal-today-logs' , { title : 'Transactions' , staff : staff, code : school, 
-                classes : classes , openfinance_active : 'pcoded-trigger', today: today, transactions: transactions,
-                finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
-                paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional})
+                    const students = await Student.find({school: school._id})
+                    let studentName = {}
+                    students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
+                    let studentReg = {}
+                    students.map(r => studentReg[r._id] = r.studentID)
+
+                    res.render('principal-today-logs' , { title : 'Transactions' , staff : staff, code : school, 
+                    classes : classes , openfinance_active : 'pcoded-trigger', today: today, transactions: transactions,
+                    finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
+                    paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional})
                     
+                }else{
+                    res.redirect(303 , '/staff')
+                }
+                
             }else{
                 res.redirect(303, '/staff')
             }
@@ -2374,53 +2644,57 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const transactions = await Transaction.find({
-                    session: session._id, term: term._id,
-                    paymentDate: {$gte: req.params.startDate, $lte: req.params.endDate}
-                })
-                const paymentType = await PaymentType.find({
-                    school: school._id
-                })
-
-                let compulsoryPayments = await PaymentType.find({
-                    school: school._id, importance: 'Compulsory'
-                })
-                let compulsory = [] 
-                compulsoryPayments.map(e => {
-                    compulsory.push(e.paymentFor)
-                })
-                let totalCompulsory, totalOptional, totalAll
-                if(transactions.length > 0){
-                    let cPayments = []
-                    let oPayments = []
-                    transactions.map(t => {
-                        let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
-                        let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
-                        let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
-                        let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
-                        cPayments.push(sumC)
-                        oPayments.push(sumO)
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const transactions = await Transaction.find({
+                        session: session._id, term: term._id,
+                        paymentDate: {$gte: req.params.startDate, $lte: req.params.endDate}
                     })
-                    totalCompulsory = cPayments.reduce((a, b) => a + b)
-                    totalOptional = oPayments.reduce((a, b) => a + b)
-                    totalAll = totalCompulsory + totalOptional
-                }
+                    const paymentType = await PaymentType.find({
+                        school: school._id
+                    })
 
-                const students = await Student.find({school: school._id})
-                let studentName = {}
-                students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
-                let studentReg = {}
-                students.map(r => studentReg[r._id] = r.studentID)
+                    let compulsoryPayments = await PaymentType.find({
+                        school: school._id, importance: 'Compulsory'
+                    })
+                    let compulsory = [] 
+                    compulsoryPayments.map(e => {
+                        compulsory.push(e.paymentFor)
+                    })
+                    let totalCompulsory, totalOptional, totalAll
+                    if(transactions.length > 0){
+                        let cPayments = []
+                        let oPayments = []
+                        transactions.map(t => {
+                            let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
+                            let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
+                            let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
+                            let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
+                            cPayments.push(sumC)
+                            oPayments.push(sumO)
+                        })
+                        totalCompulsory = cPayments.reduce((a, b) => a + b)
+                        totalOptional = oPayments.reduce((a, b) => a + b)
+                        totalAll = totalCompulsory + totalOptional
+                    }
 
-                res.render('principal-daily-logs' , { title : 'Transactions' , staff : staff, code : school,
-                openfinance_active : 'pcoded-trigger', transactions: transactions,
-                finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
-                paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional,
-                startDate: req.params.startDate, endDate: req.params.endDate})
+                    const students = await Student.find({school: school._id})
+                    let studentName = {}
+                    students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
+                    let studentReg = {}
+                    students.map(r => studentReg[r._id] = r.studentID)
 
+                    res.render('principal-daily-logs' , { title : 'Transactions' , staff : staff, code : school,
+                    openfinance_active : 'pcoded-trigger', transactions: transactions,
+                    finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
+                    paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional,
+                    startDate: req.params.startDate, endDate: req.params.endDate})
+
+                }else{
+                    res.redirect(303 , '/staff')
+                }   
             }else{
                 res.redirect(303, '/school')
             }
@@ -2433,55 +2707,58 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({session: session._id, current: true})
-                const className = await ClassSchool.findOne({school: school._id, name: req.params.className})
-                const classes = await ClassSchool.find({school: school._id})
-                const transactions = await Transaction.find({
-                    session: session._id, term: term._id,
-                    className: className._id
-                })
-                const paymentType = await PaymentType.find({
-                    school: school._id
-                })
-
-                let compulsoryPayments = await PaymentType.find({
-                    school: school._id, importance: 'Compulsory'
-                })
-                let compulsory = [] 
-                compulsoryPayments.map(e => {
-                    compulsory.push(e.paymentFor)
-                })
-                let totalCompulsory, totalOptional, totalAll
-                if(transactions.length > 0){
-                    let cPayments = []
-                    let oPayments = []
-                    transactions.map(t => {
-                        let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
-                        let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
-                        let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
-                        let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
-                        cPayments.push(sumC)
-                        oPayments.push(sumO)
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({session: session._id, current: true})
+                    const className = await ClassSchool.findOne({school: school._id, name: req.params.className})
+                    const classes = await ClassSchool.find({school: school._id})
+                    const transactions = await Transaction.find({
+                        session: session._id, term: term._id,
+                        className: className._id
                     })
-                    totalCompulsory = cPayments.reduce((a, b) => a + b)
-                    totalOptional = oPayments.reduce((a, b) => a + b)
-                    totalAll = totalCompulsory + totalOptional
+                    const paymentType = await PaymentType.find({
+                        school: school._id
+                    })
+
+                    let compulsoryPayments = await PaymentType.find({
+                        school: school._id, importance: 'Compulsory'
+                    })
+                    let compulsory = [] 
+                    compulsoryPayments.map(e => {
+                        compulsory.push(e.paymentFor)
+                    })
+                    let totalCompulsory, totalOptional, totalAll
+                    if(transactions.length > 0){
+                        let cPayments = []
+                        let oPayments = []
+                        transactions.map(t => {
+                            let filterCompulsory = t.payment.filter(s => compulsory.includes(s.paymentFor))
+                            let filterOptional = t.payment.filter(s => !compulsory.includes(s.paymentFor))
+                            let sumC = filterCompulsory.reduce((a, b) => a + Number(b.amountPaid), 0)
+                            let sumO = filterOptional.reduce((a, b) => a + Number(b.amountPaid), 0)
+                            cPayments.push(sumC)
+                            oPayments.push(sumO)
+                        })
+                        totalCompulsory = cPayments.reduce((a, b) => a + b)
+                        totalOptional = oPayments.reduce((a, b) => a + b)
+                        totalAll = totalCompulsory + totalOptional
+                    }
+
+                    const students = await Student.find({school: school._id})
+                    let studentName = {}
+                    students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
+                    let studentReg = {}
+                    students.map(r => studentReg[r._id] = r.studentID)
+
+                    res.render('principal-class-logs' , { title : 'Transactions' , staff : staff, code : school,
+                    openfinance_active : 'pcoded-trigger', transactions: transactions, classes: classes,
+                    finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
+                    paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional,
+                    pClass: req.params.className})
+                }else{
+                    res.redirect(303 , '/staff')
                 }
-
-                const students = await Student.find({school: school._id})
-                let studentName = {}
-                students.map(s => studentName[s._id] = s.lastName + " " + s.firstName)
-                let studentReg = {}
-                students.map(r => studentReg[r._id] = r.studentID)
-
-                res.render('principal-class-logs' , { title : 'Transactions' , staff : staff, code : school,
-                openfinance_active : 'pcoded-trigger', transactions: transactions, classes: classes,
-                finance_active : 'active', transaction_active : 'active', sessS: session.name, termS: term.name,
-                paymentType: paymentType, studentName, studentReg, totalCompulsory, totalAll, totalOptional,
-                pClass: req.params.className})
-
             }else{
                 res.redirect(303, '/staff')
             }
@@ -2494,24 +2771,27 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({current: true, session: session._id})
-                const lessonNotes = await LessonNotes.find({
-                    session : session._id, 
-                    term : term._id, 
-                    status : "Pending",
-                    school: school._id
-                })
-                const staffs = await Staff.find({school : school._id})
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({current: true, session: session._id})
+                    const lessonNotes = await LessonNotes.find({
+                        session : session._id, 
+                        term : term._id, 
+                        status : "Pending",
+                        school: school._id
+                    })
+                    const staffs = await Staff.find({school : school._id})
 
-                let staffName = {}
-                staffs.map(elem => staffName[elem._id] = elem.firstName + " " + elem.lastName)
+                    let staffName = {}
+                    staffs.map(elem => staffName[elem._id] = elem.firstName + " " + elem.lastName)
 
-                res.render('admin-notes', {title : "Lesson Notes", staff : staff, 
-                code : school, notes_active : "active", lessonNotes : lessonNotes, sessS: session.name,
-                staffName: staffName, termS: term.name})
-        
+                    res.render('admin-notes', {title : "Lesson Notes", staff : staff, 
+                    code : school, notes_active : "active", lessonNotes : lessonNotes, sessS: session.name,
+                    staffName: staffName, termS: term.name})
+                }else{
+                    res.redirect(303, '/staff')
+                }
             }else{
                 res.redirect(303, '/staff')
             }
@@ -2524,24 +2804,27 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({current: true, session: session._id})
-                const lessonNotes = await LessonNotes.find({
-                    session : session._id, 
-                    term : term._id, 
-                    status : "Approved",
-                    school: school._id
-                })
-                const staffs = await Staff.find({school : school._id})
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({current: true, session: session._id})
+                    const lessonNotes = await LessonNotes.find({
+                        session : session._id, 
+                        term : term._id, 
+                        status : "Approved",
+                        school: school._id
+                    })
+                    const staffs = await Staff.find({school : school._id})
 
-                let staffName = {}
-                staffs.map(elem => staffName[elem._id] = elem.firstName + " " + elem.lastName)
+                    let staffName = {}
+                    staffs.map(elem => staffName[elem._id] = elem.firstName + " " + elem.lastName)
 
-                res.render('approved-notes', {title : "Lesson Notes", staff : staff, code : school,
-                notes_active : "active", lessonNotes : lessonNotes, sessS: session.name,
-                staffName: staffName, termS: term.name})
-        
+                    res.render('approved-notes', {title : "Lesson Notes", staff : staff, code : school,
+                    notes_active : "active", lessonNotes : lessonNotes, sessS: session.name,
+                    staffName: staffName, termS: term.name})
+                }else{
+                    res.redirect(303 , '/staff')
+                }
             }else{
                 res.redirect(303, '/staff')
             }
@@ -2554,21 +2837,24 @@ class App {
         try{
             if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode , status : 'Active'})
-                const school = await SchoolAdmin.findOne({_id : staff.school})
-                const session = await Session.findOne({school: school._id, current: true})
-                const term = await Term.findOne({current: true, session: session._id})
-                const staffs = await Staff.find({school: school._id})
-                const singleNote = await LessonNotes.findOne({_id : req.params.noteID})
-                
-                let staffName = {}
-                staffs.map(elem => staffName[elem._id] = elem.firstName + " " + elem.lastName)
-                let staffID = {}
-                staffs.map(elem => staffID[elem._id] = elem.staffID)
+                if(staff.role == 'r-1'){
+                    const school = await SchoolAdmin.findOne({_id : staff.school})
+                    const session = await Session.findOne({school: school._id, current: true})
+                    const term = await Term.findOne({current: true, session: session._id})
+                    const staffs = await Staff.find({school: school._id})
+                    const singleNote = await LessonNotes.findOne({_id : req.params.noteID})
+                    
+                    let staffName = {}
+                    staffs.map(elem => staffName[elem._id] = elem.firstName + " " + elem.lastName)
+                    let staffID = {}
+                    staffs.map(elem => staffID[elem._id] = elem.staffID)
 
-                res.render('admin-single-note', {title : "Lesson Note", staff, code : school,
-                notes_active : "active", singleLessonNote : singleNote, sessS: session.name,
-                termS: term.name, session, term, staffName, school, staffID})
-
+                    res.render('admin-single-note', {title : "Lesson Note", staff, code : school,
+                    notes_active : "active", singleLessonNote : singleNote, sessS: session.name,
+                    termS: term.name, session, term, staffName, school, staffID})
+                }else{
+                    res.redirect(303 , '/staff')
+                }
             }else{
                 res.redirect(303, '/school')
             }
