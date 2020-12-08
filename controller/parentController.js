@@ -24,7 +24,7 @@ const PayOnline = require("../model/payOnline")
 const FileHandler = require('./file')
 
 const Paystack    =  require("paystack-node") 
-const PaystackKey = "sk_test_7caaa6a671dd00cbfcb7019ae5f51de8f78b19d7" 
+const PaystackKey = process.env.PAYSTACK_KEY 
 const environment = process.env.NODE_ENV 
 const paystack = new Paystack(PaystackKey , environment) 
 
