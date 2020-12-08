@@ -13,7 +13,8 @@ function returnTime(arg){
     let currentDate = new Date() 
     currentDate.setHours(currentDate.getHours() + Number(formatArg[0])) 
     currentDate.setMinutes(currentDate.getMinutes() + Number(formatArg[1]))
-    currentDate.setSeconds(currentDate.getSeconds() + Number(formatArg[2])) 
+    let formatSec = formatArg[2].split(" ")
+    currentDate.setSeconds(currentDate.getSeconds() + Number(formatSec[0])) 
     let time = currentDate.getTime() 
     return time
 } 
@@ -27,6 +28,7 @@ seconds = Math.floor((now%(1000*60))/(1000))
 let examCountDown = (area ,  hr , min ,sec) => {
    // if (hr == 0 && sec == 0) { 
     let date = new Date() 
+
     date.setHours(hr) 
     date.setMinutes(min) 
     date.setSeconds(sec)

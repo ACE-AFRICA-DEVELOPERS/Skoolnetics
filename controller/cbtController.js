@@ -13,6 +13,7 @@ const ClassSchool = require('../model/classchool')
 const ExamPass = require('../model/generate-pass')
 const Random = require('./random')
 const Result = require('../model/result')
+const schoolAdmin = require('../model/schoolAdmin')
 
 class App{
 
@@ -336,8 +337,12 @@ class App{
 		    if(req.session.staffCode){
                 const staff = await Staff.findOne({staffID : req.session.staffCode})
                 const school = await SchoolAdmin.findOne({_id : staff.school})
-                const exam = await Exam.findOne({examCode : req.params.examCode, school : staff.school})
-                const course = await Course.findOne({exam: exam._id, examiner : staff._id})
+                const session = await Session.findOne({school: school._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const exam = await Exam.findOne({examCode : req.params.examCode, school : staff.school, 
+                session : session._id, term : term._id})
+                const course = await Course.findOne({exam: exam._id, examiner : staff._id, 
+                    courseName: req.params.subject, className: req.params.className})
                 const availableQuestion = await Question.findOne({course : course._id, school : staff.school})
                 const {question, optionA , optionB , optionC , optionD , correctOption , 
                     mark} = req.body

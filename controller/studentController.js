@@ -382,6 +382,7 @@ class App {
                             if(question){
 
                                 let currentTime = new Date()
+                               
                                 res.render("exam-mode" , { 
                                     student : student,
                                     exam : exam , 
