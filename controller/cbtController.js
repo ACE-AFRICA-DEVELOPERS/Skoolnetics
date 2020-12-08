@@ -879,13 +879,45 @@ class App{
                 const staff = await Staff.findOne({staffID : req.session.staffCode})
                 const schoolAdmin = await SchoolAdmin.findOne({_id: staff.school})
                 const exam = await Exam.findOne({school: schoolAdmin._id, examCode: req.params.examCode})
-                const session = await Session.findOne({school: schoolAdmin.schoolCode, current: true})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
+
                 
                 Result.updateMany({className: req.params.className, 
                 exam: exam._id, school: staff.school, session: session._id,
                 term: term._id}, {
                         $set : {released : true}
+                }, {new : true, useAndModify : false}, (err , item) => {
+                    if(err){
+                        res.status(500)
+                        return
+                    }else {
+                        let redirectUrl = '/staff/cbt/cbt-results/' + req.params.examCode + '/' + req.params.subject + '/' + req.params.className
+                        res.redirect(303, redirectUrl)
+                    }
+                })	
+            }else{
+                res.redirect(303, '/staff')
+            }
+        }catch(err){
+            res.render('error-page', {error : err})
+        }
+    }
+
+    recallResult = async (req, res, next) => {
+        try{
+            if(req.session.staffCode){
+                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const schoolAdmin = await SchoolAdmin.findOne({_id: staff.school})
+                const exam = await Exam.findOne({school: schoolAdmin._id, examCode: req.params.examCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+
+                
+                Result.updateMany({className: req.params.className, 
+                exam: exam._id, school: staff.school, session: session._id,
+                term: term._id}, {
+                        $set : {released : false}
                 }, {new : true, useAndModify : false}, (err , item) => {
                     if(err){
                         res.status(500)

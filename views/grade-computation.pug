@@ -85,10 +85,44 @@ block content
                                                                                                 button(class="cancel-btn btn" type="button" data-dismiss="modal") Cancel
                                                                         td
                                                                             -let updateGrade = "/school/grade-settings/" + exam._id + "/update"
-                                                                            a(href=updateGrade) Edit
+                                                                            a(href=updateGrade class="ace-btn") Edit
+                                                                            //- div(class="modal fade" id=`U${exam._id}` role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                            //-     div(class="modal-dialog" role="document")
+                                                                            //-         div(class="modal-content")
+                                                                            //-             div(class="modal-header")
+                                                                            //-                 h6(class="modal-title") Update This Grade
+                                                                            //-                 button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                                            //-                     span(aria-hidden="true") &times;
+                                                                            //-             div(class="modal-body")
+                                                                            //-                 form
+                                                                            //-                     label(class="label") Grade:
+                                                                            //-                     select(name="grade" class="form-control mb-3" id="grade")
+                                                                            //-                         option(value=exam.grade selected ) #{exam.grade}
+                                                                            //-                         option(value="A+") A+
+                                                                            //-                         option(value="A") A
+                                                                            //-                         option(value="A-") A-
+                                                                            //-                         option(value="B+") B+
+                                                                            //-                         option(value="B") B
+                                                                            //-                         option(value="B-") B-
+                                                                            //-                         option(value="C+") C+
+                                                                            //-                         option(value="C") C
+                                                                            //-                         option(value="C-") C-
+                                                                            //-                         option(value="D+") D+
+                                                                            //-                         option(value="D") D
+                                                                            //-                         option(value="D-") D-
+                                                                            //-                         option(value="E") E
+                                                                            //-                         option(value="F") F
+                                                                            //-                     label(class="label") Lowest value for the grade:
+                                                                            //-                     input(type="number" name="lowest" class="form-control mb-3" value=exam.rangeLowest id="lowestGrade")
+                                                                            //-                     label(class="label") Highest value for the grade:
+                                                                            //-                     input(type="number" name="highest" class="form-control mb-3" value=exam.rangeHighest id="highestGrade")
+                                                                            //-                     div(class="text-center")
+                                                                            //-                         button(type="submit" class="btn btn-info" id="submitGrade") Update
+                                                                            //-                         p#displayMsg
                                             else
                                                 .card-header
                                                     h5 Grade Settings.
                                                     span.d-block.m-t-5 No setup found. Create one.                              
 
         include includes/footer.pug
+        //-script(src="/javascripts/library/grade.js" type="module")

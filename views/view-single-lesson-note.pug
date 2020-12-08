@@ -1,6 +1,7 @@
 include includes/header.pug
 block content
     link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js")
     body
         .loader-bg
             .loader-track
@@ -13,8 +14,8 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
-                                p #[a(href="#" class="btn btn-info") #[i.feather.icon-printer] Print]
-                                div(class="card")
+                                p #[a(href="#" class="btn btn-info" id="download") #[i.feather.icon-printer] Print]
+                                div(class="card" id="invoice")
                                     .card-header
                                         h5 Lesson Note
                                     div(class="card-body format")
@@ -65,7 +66,7 @@ block content
                                                     p.font-weight-bold Content : 
                                                 .col-sm-10
                                                     p.text-danger.font-weight-bold #{singleLessonNote.content.contentTopic.toUpperCase()}
-                                                    p #{singleLessonNote.content.contentDetail}
+                                                    div(id="content" data-id=singleLessonNote._id ) #{singleLessonNote._id}
                                                 .col-sm-2.text-lg-right
                                                     p.font-weight-bold Presentation : 
                                                 .col-sm-10
@@ -74,9 +75,9 @@ block content
                                                     p.font-weight-bold Evaluation : 
                                                 .col-sm-10
                                                     p #{singleLessonNote.evaluation}
-                                                .col-sm-2.text-lg-right
-                                                    p.font-weight-bold Conclusion : 
-                                                .col-sm-10
-                                                    p #{singleLessonNote.conclusion}
-                                                
-        include includes/footer.pug                      
+
+
+        script(src="/javascripts/library/pdf.js")  
+        script(src="/javascripts/library/lesson-note.js" type="module")                                        
+        include includes/footer.pug 
+                             

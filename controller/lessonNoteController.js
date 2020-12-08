@@ -229,6 +229,17 @@ class App {
             res.render("error-page", {error: err})
         }
     }
+    fetchNoteContent = async (req , res) => { 
+        try { 
+            let {id} = req.params
+            let note = await LessonNote.findById(id) 
+            res.json(note)
+        }catch(error){
+            res.json({
+                message : error.message
+            })
+        }
+    }
 
     getLessonNotes = async (req, res, next) => {
         try{

@@ -58,6 +58,8 @@ block content
                                                 .col-sm-2.text-lg-right
                                                     p.font-weight-bold Content : 
                                                 .col-sm-10
-                                                    p #{singleAssignment.content.contentDetail}
+                                                    div(id="content" data-id=singleAssignment._id ) #{singleAssignment._id}
 
+
+        script(src="/javascripts/library/assignment.js" type="module")
         include includes/footer.pug                      

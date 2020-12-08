@@ -398,10 +398,10 @@ class App {
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
-                const gradeCompute = await Grade.find({school: schoolAdmin._id})
+                const gradeCompute = await Grade.find({school: schoolAdmin._id, _id:req.params.gradeId})
                 const studentResult = await StudentResults.find({school: schoolAdmin._id, session: session._id, term: term._id})
                 console.log(gradeCompute)
-                res.render('update-grade', {schoolAdmin: schoolAdmin, gradeDB: gradeCompute, title: 'Grade Update',
+                res.render('grade-update', {schoolAdmin: schoolAdmin, gradeCompute: gradeCompute, title: 'Grade Update',
                 grade_active: 'active', opensession_active: "pcoded-trigger", studentResult : studentResult, 
                 sessS: session.name, termS: term.name, session_active: 'active'})
             }else{
@@ -409,6 +409,42 @@ class App {
             }
         }catch(err){
             res.render('error-page', {error : err})
+        }
+    }
+
+    postGradeUpdate = async(req, res, next) => {
+        try{
+            if(req.session.schoolCode){ 
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const gradeCompute = await Grade.find({_id: req.params.gradeId, school: schoolAdmin._id})
+                const studentResult = await StudentResults.find({school: schoolAdmin._id, session: session._id, term: term._id})
+                if(gradeCompute){
+                    console.log(gradeCompute)
+                    Grade.findByIdAndUpdate(req.params.gradeId, {
+                        rangeLowest: req.body.lowest,
+                        rangeHighest: req.body.highest,
+                        grade: req.body.grade
+                    }, {new : true, useFindAndModify : false}, (err, item) => {
+                        if(err){
+                            res.status(500)
+                            return
+                        }else {
+                            let redirectUrl = "/school/grade-settings"
+                            res.redirect(303, redirectUrl)
+                        }
+                    })
+                }else{
+                    throw{
+                        message : "This grade does not exist"
+                    }
+                }
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render("error-page", {error : err})
         }
     }
 
