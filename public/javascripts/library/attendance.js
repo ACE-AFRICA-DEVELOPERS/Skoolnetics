@@ -3,6 +3,12 @@ import {sendData, selector, selectAll} from './api.js'
 const markCheck = selector("#updateAll")
 const span = selector(".name-class")
 
+selector('#holiday').addEventListener('change', event => {
+    if(event.target.value == 'Yes'){
+        selector('#hideIt').classList.toggle('d-none')
+    }
+})
+
 //let studentsRegister = Array.from(selectAll(".check")) 
 markCheck.addEventListener("click" , event => {
     let targetStudents = [] 
@@ -10,6 +16,7 @@ markCheck.addEventListener("click" , event => {
     let week = selector("#weekData").value.trim()
     let displayErr = selector(".err-msg")
     let holiday = selector("#holiday").value.trim()
+    let holidayReason = selector('#holidayReason')
     Array.from(selectAll(".check")).map((e , i) => {
         if (date !== null && date !== "" && week !== null && week !== ""){ 
             if(holiday != 'Yes'){
@@ -34,7 +41,8 @@ markCheck.addEventListener("click" , event => {
                     id : e.id , 
                     date : date,
                     week : Number(week),
-                    holiday: true
+                    holiday: true,
+                    holidayReason: holidayReason.value
                 })
             }
         }else{

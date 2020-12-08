@@ -1,0 +1,37 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p #[a(href="#" class="btn btn-info") #[i.feather.icon-printer] Print]
+                                .card
+                                    .card-header
+                                        h5 #{students.lastName} #{students.firstName} #{students.otherName}
+                                        span.d-block.m-t-5 Payment for this student was successful!
+                                    .card-body
+                                        .row
+                                            .col-md-6
+                                                .report-field
+                                                    .text-center
+                                                        h1 #[i.feather.icon-check]
+                                                        p #[b Reciept Number:] #{payOnline.receiptNo}
+                                                        p Hello, #{parent.surname} #{parent.name}. Your payment of ##{payOnline.total.toLocaleString()} was successful. Below is the breakdown of what you paid for.
+                                                    ul
+                                                        each pay in payOnline.payment
+                                                            li #{pay.paymentFor} : ##{pay.amountPaid.toLocaleString()}
+                                                    
+                                        - let transUrl = '/parent/student/' + students._id + '/finance-page/histories'
+                                        p.mt-3 #[a(href=transUrl) Check transaction history]
+                                                    
+                                   
+        include includes/footer.pug

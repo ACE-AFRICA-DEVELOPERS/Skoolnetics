@@ -281,13 +281,17 @@ class App{
                     courseName: req.params.subject, className: req.params.className
                 })
                 const question = await Question.findOne({course : course._id, school : school._id})
+                let marks
+                if(question){
+                    marks = question.question.reduce((a, b) => a + Number(b.mark), 0)
+                }
             
                 res.render('questions', {course : course, exam : exam, staff : staff,
-                code : school, exam_active : "active", sessS: session.name,
+                code : school, exam_active : "active", sessS: session.name, title: 'Questions',
                 quick_active : "active", cbt_active: 'active', termS: term.name,
                 opencbt_active: "pcoded-trigger", success: req.flash('success'),
                 pSubject: req.params.subject, pClass: req.params.className,
-                questions: question})
+                questions: question, marks})
 
             }else{
                 res.redirect(303, '/staff')
@@ -1104,10 +1108,13 @@ class App{
                     className: req.params.className
                 })
                 const question = await Question.findOne({course : course._id, school : school._id})
-                
+                let marks
+                if(question){
+                    marks = question.question.reduce((a, b) => a + Number(b.mark), 0)
+                }
                 
                 res.render('school-questions', {course : course, exam : exam, staff : staff,
-                code : school, exam_active : "active",
+                code : school, exam_active : "active", marks, title: 'Questions',
                 caschool_active : "active", cbt_active: 'active', 
                 opencbt_active: "pcoded-trigger", success: req.flash('success'),
                 pSubject: req.params.subject, pClass: req.params.className,

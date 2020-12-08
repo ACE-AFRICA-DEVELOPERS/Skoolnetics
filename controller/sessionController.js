@@ -476,7 +476,7 @@ class App {
                
                 res.render('term-report-card', {title : "Report Card", manage_active : "active", 
                 schoolAdmin : schoolAdmin, session : session, term: term, termS: term.name,
-                sessS: session.name, broadsheet, students: student })
+                sessS: session.name, broadsheet, students: student, pClass: req.params.className })
             }else{
                 res.redirect(303, '/school')
             }

@@ -48,8 +48,9 @@ block content
                                         if questions
                                             if questions.question.length > 1
                                                 p #{questions.question.length} questions created.
-                                            else
+                                            else if questions.question.length == 1
                                                 p 1 question created.
+                                            p #[b Total marks: ] #{marks}
                                             each question in questions.question
                                                 p(class="question") #[b #{question.questionNumber}. #{question.mainQuestion}]
                                                 p

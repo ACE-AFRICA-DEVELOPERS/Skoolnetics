@@ -94,18 +94,18 @@ class App{
                         weekday[5] = "F"
                         weekday[6] = "S"
 
-                        res.render('staff-attendance', {staff: staff, code : school,
+                        res.render('staff-attendance', {staff: staff, code : school, title: 'Attendance',
                         attendance_active : "active", attendance : week1Attendance, studentName : studentName,
                         classSchool : classSchool, attendanceWeek : attendanceWeek, week : req.params.week,
                         weekday: weekday, sessS: session.name, termS: term.name})   
                     }else{
                         res.render('staff-attendance', {staff: staff, code : school,
-                            attendance_active : "active", classSchool : classSchool, 
-                            noAttendance : "No attendance has been recorded.", week : req.params.week,
-                            session : session, term : term, sessS: session.name, termS: term.name})
+                        attendance_active : "active", classSchool : classSchool, title: 'Attendance',
+                        noAttendance : "No attendance has been recorded.", week : req.params.week,
+                        session : session, term : term, sessS: session.name, termS: term.name})
                     }
                 }else{
-                    res.render('staff-attendance', {staff: staff, code : school,
+                    res.render('staff-attendance', {staff: staff, code : school, title: 'Attendance',
                         attendance_active : "active", noAttendance : "You can't access this page.",
                     })
                 }
@@ -128,8 +128,8 @@ class App{
                 const student = await Student.find({className : staff.classHead})
 
                 res.render('mark-attendance', {staff: staff, students : student, 
-                    code : school, attendance_active : "active", 
-                    sessS : session.name, termS : term.name, pClass: req.params.className})
+                code : school, attendance_active : "active", title: 'Mark Attendance',
+                sessS : session.name, termS : term.name, pClass: req.params.className})
                 
             }else{
                 res.redirect(303, '/staff/attendance')
@@ -169,7 +169,8 @@ class App{
                                         date : student.date,
                                         week : student.week,
                                         mark : student.mark,
-                                        holiday: student.holiday
+                                        holiday: student.holiday,
+                                        holidayReason: student.holidayReason
                                     }
                                 ]
                             })
@@ -183,7 +184,8 @@ class App{
                                             date : student.date,
                                             week : student.week,
                                             mark : student.mark,
-                                            holiday: student.holiday
+                                            holiday: student.holiday,
+                                            holidayReason: student.holidayReason
                                         }
                                     ]}
                                 }, {

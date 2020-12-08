@@ -1,0 +1,32 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    script(src="/javascripts/read-excel-file.min.js")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 Import Staff
+                                        span.d-block.m-t-5 Ensure your excel format follows this screenshot:
+                                    .card-body
+                                        .row.justify-content-center
+                                            .col-md-12
+                                                p #[img(src="/images/staff-import.png" width="100%")]
+                                            .col-md-6
+                                                label(class="btn-file2 mt-4") #[i(class="feather icon-upload pr-2")] Import
+                                                    input(type="file" name='picture' id='excelImport') 
+                                        .card-block.table-border-style
+                                            .table-responsive#app    
+
+        script(src="/javascripts/library/import-staff-excel.js" type="module")                                                      
+        include includes/footer.pug

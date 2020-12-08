@@ -42,7 +42,8 @@ block content
                                                                 if attend.attendance.length > 0
                                                                     each att in attend.attendance
                                                                         if att.holiday
-                                                                            td H
+                                                                            - let reason = att.holidayReason
+                                                                            td(title=reason data-toggle="tooltip") H
                                                                         else
                                                                             if att.mark == "Present"
                                                                                 td #[i(class="fa fa-check text-success")]

@@ -1,12 +1,14 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const TransactionSchema = new Schema ({
+const PayOnlineSchema = new Schema ({
     school : {type : Schema.Types.ObjectId, ref : 'SchoolAdmin'},
-    student: {type : Schema.Types.ObjectId, ref: 'Student'},
     session: {type : Schema.Types.ObjectId, ref: 'SchoolSession'},
     term: {type: Schema.Types.ObjectId, ref: 'Term'},
-    className : { type : Schema.Types.ObjectId, ref : 'Classchool'},
+    student: {type : Schema.Types.ObjectId, ref: 'Student'},
+    referenceNumber: String,
+    verified: {type: Boolean, default: false},
+    receiptNo: String,
     payment: [
         {
             paymentFor: String,
@@ -14,7 +16,7 @@ const TransactionSchema = new Schema ({
         }
     ],
     paymentDate: {type : Date, default: Date.now()},
-    status: {type : String, enum: ['Completed', 'Pending'], default: 'Pending'}
+    total: Number
 })
 
-module.exports = mongoose.model("Transaction" , TransactionSchema) 
+module.exports = mongoose.model("PayOnline" , PayOnlineSchema) 

@@ -297,6 +297,187 @@ class App {
         }
     }
 
+    getImportStudents = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const classchool = await ClassSchool.find({school: schoolAdmin._id})
+
+                res.render('import-students', {title: 'Import Students', schoolAdmin: schoolAdmin,
+                users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                sessS: session.name, termS: term.name, classchool: classchool})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
+    getAllClasses = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const classchool = await ClassSchool.find({school: schoolAdmin._id})
+
+                res.render('import-class-students', {title: 'Import Students', schoolAdmin: schoolAdmin,
+                users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                sessS: session.name, termS: term.name, classchool: classchool})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
+    getImportEachClass = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+                const classchool = await ClassSchool.findOne({school: schoolAdmin._id, name: req.params.className})
+
+                res.render('import-each-student', {title: 'Import Students', schoolAdmin: schoolAdmin,
+                users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                sessS: session.name, termS: term.name, classchool: classchool})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
+    importEachClass = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const classes = await ClassSchool.findOne({school: schoolAdmin._id, name: req.params.className})
+                let {name}  = req.body  
+                let count = name.length 
+                while ( count > 0){
+                    for( let student of name){
+                        let totalStudent = await Student.find({school: schoolAdmin._id})
+                        let start, code
+                        if(schoolAdmin.demo){
+                            start = "0" + schoolAdmin.demoCode
+                            code = `D${GenerateAccount(totalStudent, start, "studentID", 1, 3)}`
+                        }else{
+                            start = req.session.schoolCode + "001"
+                            code = `S${GenerateAccount(totalStudent, start, "studentID", 1, 6)}`
+                        }
+                
+                        let studentPass = await bcrypt.hash(student.LastName.toUpperCase() , 10)
+
+                        const newStudent = await new Student({
+                            firstName: student.FirstName,
+                            lastName: student.LastName,
+                            otherName: student.OtherName,
+                            className: classes._id,
+                            school: schoolAdmin._id,
+                            bloodGroup: student.BloodGroup,
+                            religion: student.Religion,
+                            parentsNumber: student.ParentsNo,
+                            address: student.Address,
+                            gender: student.Gender,
+                            password: studentPass,
+                            studentID : code,
+                            dateOfBirth: student.DateOfBirth
+                        })
+                        await newStudent.save()  
+                        console.log("The record was created")
+                        
+                        count -= 1
+                    }
+                }
+
+                res.json({message: 'Import completed! You will be redirected in 3 seconds.'})
+            }else{
+                res.json({message: 'Access denied!'})
+            }
+        }catch(err){
+            res.json({message: err})
+        }
+    }
+
+    getAllStudentImport = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+
+                res.render('import-all-students', {title: 'Import Students', schoolAdmin: schoolAdmin,
+                users_active: 'active', openuser_active: "pcoded-trigger", student_active : "active",
+                sessS: session.name, termS: term.name})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
+    allStudentImport = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                let {name}  = req.body  
+                let count = name.length 
+                while ( count > 0){
+                    for( let student of name){
+                        let totalStudent = await Student.find({school: schoolAdmin._id})
+                        let classname = await ClassSchool.findOne({school : schoolAdmin._id, name: student.Class}) 
+                        let start, code
+                        if(schoolAdmin.demo){
+                            start = "0" + schoolAdmin.demoCode
+                            code = `D${GenerateAccount(totalStudent, start, "studentID", 1, 3)}`
+                        }else{
+                            start = req.session.schoolCode + "001"
+                            code = `S${GenerateAccount(totalStudent, start, "studentID", 1, 6)}`
+                        }
+                
+                        let studentPass = await bcrypt.hash(student.LastName.toUpperCase() , 10)
+                        if(classname){
+                            const newStudent = await new Student({
+                                firstName: student.FirstName,
+                                lastName: student.LastName,
+                                otherName: student.OtherName,
+                                className: classname._id,
+                                school: schoolAdmin._id,
+                                bloodGroup: student.BloodGroup,
+                                religion: student.Religion,
+                                parentsNumber: student.ParentsNo,
+                                address: student.Address,
+                                gender: student.Gender,
+                                password: studentPass,
+                                studentID : code,
+                                dateOfBirth: student.DateOfBirth
+                            })
+                            await newStudent.save()  
+                            console.log("The record was created")
+                        }else{
+                            console.log('No Class found.')
+                        } 
+                        count -= 1
+                    }
+                }
+
+                res.json({message: 'Import completed! You will be redirected in 3 seconds.'})
+            }else{
+                res.json({message: 'Access denied!'})
+            }
+        }catch(err){
+            res.json({message: err})
+        }
+    }
+
     getSuspendedStudents = async (req, res, next) => {
         try{
             if(req.session.schoolCode){
@@ -970,6 +1151,77 @@ class App {
         }
     }
 
+    getImportStaff = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const session = await Session.findOne({school: schoolAdmin._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+
+                res.render('import-all-staff', {title: 'Import Staff', schoolAdmin: schoolAdmin,
+                users_active: 'active', openuser_active: "pcoded-trigger", staff_active : "active",
+                sessS: session.name, termS: term.name})
+            }else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error: err})
+        }
+    }
+
+    importStaff = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                let {name}  = req.body  
+                let count = name.length 
+                while ( count > 0){
+                    for( let staff of name){
+                        let totalStaff = await Staff.find({school: schoolAdmin._id})
+                        let start, code
+                        if(schoolAdmin.demo){
+                            start = schoolAdmin.demoCode
+                            code = `D${GenerateAccount(totalStaff, start, "staffID", 1, 2)}`
+                        }else{
+                            start = req.session.schoolCode + "01"
+                            code = GenerateAccount(totalStaff, start, "staffID", 1, 5)
+                        }
+                        let staffPass = await bcrypt.hash(staff.LastName.toUpperCase() , 10)
+                        let classHead
+                        if(staff.ClassHead){
+                            let check = await ClassSchool.findOne({school: schoolAdmin._id, name: staff.ClassHead})
+                            classHead = check._id
+                        }
+                        const newStaff = await new Staff({
+                            firstName: staff.FirstName,
+                            lastName: staff.LastName,
+                            otherName: staff.OtherName,
+                            email: staff.Email,
+                            mobile: staff.PhoneNo,
+                            school: schoolAdmin._id,
+                            gender: staff.Gender,
+                            password: staffPass,
+                            staffID : code,
+                            status: 'Active',
+                            role: staff.Role,
+                            classHead: classHead
+                        })
+                        await newStaff.save()  
+                        console.log("The record was created")
+                        
+                        count -= 1
+                    }
+                }
+
+                res.json({message: 'Import completed! You will be redirected in 3 seconds.'})
+            }else{
+                res.json({message: 'Access denied!'})
+            }
+        }catch(err){
+            res.json({message: err})
+        }
+    }
+
     getSingleStaff = async (req , res , next) => {
         try{
             if(req.session.schoolCode){
@@ -1535,6 +1787,10 @@ class App {
             if(req.session.schoolCode){
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
                 const questions = await Question.findOne({course : req.params.courseID, school : schoolAdmin._id})
+                let marks
+                if(questions){
+                    marks = questions.question.reduce((a, b) => a + Number(b.mark), 0)
+                }
                 const course = await Course.findOne({_id : questions.course})
                 const exam = await Exam.findOne({_id : course.exam})
                 const session = await Session.findOne({school: schoolAdmin._id, current: true})
@@ -1543,7 +1799,7 @@ class App {
                 res.render('released-questions', {schoolAdmin : schoolAdmin, 
                 questions : questions, exam : exam, course : course, setup_active : "active",
                 cbt_active: 'active', opencbt_active: "pcoded-trigger", sessS: session.name,
-                termS: term.name})
+                termS: term.name, marks})
                 
             }else {
                 res.redirect(303, '/school')

@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs')
-
+const GenerateInvoice = require('./invoiceGenerator')
 const SchoolAdmin = require('../model/schoolAdmin')
 const Staff = require("../model/staff")
 const Exam = require('../model/exam')
@@ -19,8 +19,14 @@ const PaymentProof = require('../model/payment-proof')
 const Transaction = require('../model/transaction')
 const Invoice = require('../model/invoice')
 const Broadsheet = require('../model/broadsheet')
+const PayOnline = require("../model/payOnline")
 
 const FileHandler = require('./file')
+
+const Paystack    =  require("paystack-node") 
+const PaystackKey = "sk_test_7caaa6a671dd00cbfcb7019ae5f51de8f78b19d7" 
+const environment = process.env.NODE_ENV 
+const paystack = new Paystack(PaystackKey , environment) 
 
 class App {
 
@@ -331,6 +337,183 @@ class App {
                     res.redirect(303, redirectUrl)
                 }
                  
+            }else{
+                res.redirect(303, '/parent')
+            }
+        }catch(err){
+            res.render("error-page", {error: err})
+        }
+    }
+
+    storePayment = async (req, res, next) => {
+        try { 
+            if(req.session.parentCode){
+                const { amount , student, target } = req.body
+                const parent = await Parent.findOne({parentID: req.session.parentCode})
+                const school = await SchoolAdmin.findOne({_id: parent.school})
+                const session = await Session.findOne({school: school._id, current: true})
+                const term = await Term.findOne({session: session._id, current: true})
+
+                const totalPay = await PayOnline.find({school: school._id, session: session._id, verified: true})
+                
+                let getname = school.schoolName
+                let sessionName = session.name
+                const sess = sessionName.substring(5, 9)
+
+                function getInitials(name){
+                    let names = name.split(' ')
+                    let initials = ''
+                    for(let i = 0; i < names.length; i++){
+                        if(names[i].length > 0 && names[i] !== ''){
+                            initials += names[i][0]
+                        }
+                    }
+                    return initials
+                }
+                const initialName = getInitials(getname)
+                let start = "000001"
+                const code = GenerateInvoice(totalPay, start, "receiptNo", 1, 6)
+
+                const newPay = await new PayOnline({
+                    student: student,
+                    school: school._id,
+                    session: session._id,
+                    term: term._id,
+                    payment: target,
+                    total: amount,
+                    receiptNo: sess + initialName + code
+                })
+                let savePay = await newPay.save()
+                if(savePay){
+                    res.json({
+                        payID: savePay._id,
+                        amount: savePay.total
+                    })
+                }else{
+                    throw 'Error in saving'
+                }
+                
+            }else{
+                res.json({message: 'Access denied'})
+            }    
+        }catch(error){
+            res.json({
+                message : error.message
+            })
+        }
+    }
+
+    proceedToPayment = async (req , res) => {
+        try { 
+            if(req.session.parentCode){
+                const { amount, payID } = req.params
+                const parent = await Parent.findOne({parentID: req.session.parentCode})
+                const payOnline = await PayOnline.findOne({_id: payID})
+                const promise6 = paystack.initializeTransaction({
+                    amount: Number(amount)* 100,
+                    email: parent.email
+                }) 
+                promise6.then(function (response){
+                    if (response.body.status){ 
+                        PayOnline.findByIdAndUpdate(payOnline._id, {
+                            referenceNumber : response.body.data.reference
+                        }, {new : true, useFindAndModify : false}, (err, item) => {
+                            if(err){
+                                console.log(err)
+                            }
+                            else{
+                                res.redirect(response.body.data.authorization_url)
+                            }
+                        })
+                        
+                    }else {
+                        res.json({
+                            message : "Unable to proceed with the request"
+                        })
+                    }
+                }).catch(function (error){
+                    console.error(error.message)
+                })
+            }else{
+                res.json({message: 'Access denied'})
+            }    
+        }catch(error){
+            res.json({
+                message : error.message
+            })
+        }
+    }
+
+    verifyTransaction = async (req , res) => {
+        try { 
+            if(req.session.parentCode){
+                const parent = await Parent.findOne({parentID: req.session.parentCode})
+                const { reference } = req.query
+                const payOnline = await PayOnline.findOne({referenceNumber: reference})
+                const school = await SchoolAdmin.findOne({_id: parent.school})
+                const session = await Session.findOne({school: school._id, current: true})
+                const term = await Term.findOne({current: true, session: session._id})
+                const student = await Student.findOne({_id: payOnline.student})
+                const className = await ClassSchool.findOne({_id: student.className})
+
+                const promise7 = paystack.verifyTransaction({
+                    reference
+                }) 
+                promise7.then(function (response){
+                    PayOnline.findByIdAndUpdate(payOnline._id, {
+                        verified : true
+                    }, {new : true, useFindAndModify : false}, (err, item) => {
+                        if(err){
+                            console.log(err)
+                        }
+                        else{
+                            const newTransaction = new Transaction({
+                                student: student,
+                                school: school._id,
+                                session: session._id,
+                                term: term._id,
+                                className: className._id,
+                                payment: payOnline.payment,
+                                status: 'Completed'
+                            })
+                            let saveTransaction = newTransaction.save()
+                            if(saveTransaction){
+                                res.redirect(303, '/parent/verify/verify-payment/' + payOnline._id)
+                            }else{
+                                throw 'Unable to save'
+                            }
+                        }
+                    })
+                    
+                }).catch(function (error){
+                    console.error(error.message)
+                })
+                
+            }else{
+                res.json({message: 'Access denied'})
+            }    
+        }catch(error){
+            res.json({
+                message : error.message
+            })
+        }
+    }
+
+    getReceipt = async(req, res, next) => {
+        try{
+            if(req.session.parentCode){
+                const parent = await Parent.findOne({parentID : req.session.parentCode})
+                const payOnline = await PayOnline.findOne({_id: req.params.payID})
+                const school = await SchoolAdmin.findOne({_id: parent.school})
+                const student = await Student.findOne({_id: payOnline.student})
+                const className = await ClassSchool.findOne({_id: student.className})
+                const session = await Session.findOne({current: true, school: school._id})
+                const term = await Term.findOne({current: true, session: session._id}) 
+               
+                res.render('student-receipt', {title : "Reciept", code: school,
+                parent : parent, students: student, ward_active: "active", payOnline,
+                sessS: session.name, termS: term.name, className})
+
             }else{
                 res.redirect(303, '/parent')
             }

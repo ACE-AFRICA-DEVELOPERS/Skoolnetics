@@ -19,6 +19,7 @@ block content
                                     .card-body
                                         p #[b #{questions.question.length} questions created.]
                                         div(class="question-field")
+                                            p #[b Total marks: ] #{marks}
                                             each question in questions.question         
                                                 p(class="question") #[b #[strong #{question.questionNumber}]. #{question.mainQuestion}]
                                                 p
@@ -26,7 +27,7 @@ block content
                                                     span.mr-2 (B) #{question.options.optionB}
                                                     span.mr-2 (C) #{question.options.optionC}
                                                     span.mr-2 (D) #{question.options.optionD} 
-                                            
+                                                p #[strong Mark:] #{question.mark}
                                                     
                                                 if question.image
                                                     p   

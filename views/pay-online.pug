@@ -13,6 +13,7 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
+                                p.d-none#student #{students._id}
                                 .card
                                     if payments
                                         .card-header
@@ -31,7 +32,8 @@ block content
                                                             each pay, index in payments.fees
                                                                 tr  
                                                                     td
-                                                                        input(type="checkbox" class="check" id=pay.amount)
+                                                                        - let id = paymentName[pay.paymentFor]
+                                                                        input(type="checkbox" class="check" id="check" data-amount=pay.amount data-pay=id)
                                                                     td.invoice #{paymentName[pay.paymentFor]}
                                                                     td.invoice #{pay.amount}
                                             .row
@@ -40,7 +42,7 @@ block content
                                                         a(href="#" class="btn btn-primary mr-5" id="total-paid") Proccess
                                                 .col-md-6
                                                     .text-right.mr-2.d-none#hide
-                                                        a(href='#' class='btn btn-primary' id="payment")
+                                                        button(class='btn btn-primary' id="payment")
                                                             .font-weight-semibold#totalPayment
                                     else
                                         .card-header

@@ -70,9 +70,9 @@ block content
                                                                     td #{index + 1}  
                                                                     td #{name}
                                                                     if importance == "O"
-                                                                        td #{importance}
+                                                                        td Optional
                                                                     else 
-                                                                        td #{""}
+                                                                        td Compulsory
                                                                     td 
                                                                         p #[a(href="#" data-toggle="modal" data-target=`#add-e${pay._id}`) #[i(class="red-color feather icon-trash")]]
                                                                         div(id=`add-e${pay._id}` class="modal fade")

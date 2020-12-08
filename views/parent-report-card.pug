@@ -25,13 +25,16 @@ block content
                                                         .d-flex.justify-content-between
                                                             div
                                                                 p #[b #{schoolT.schoolName}]
-                                                                - let logoUrl = '/uploads/schools/' + code + '/logo/' + schoolT.logo
-                                                                img(src=logoUrl height="150px" width="150px")
+                                                                if schoolT.logo
+                                                                    - let logoUrl = '/uploads/schools/' + schoolT.schoolCode + '/logo/' + schoolT.logo
+                                                                    img(src=logoUrl height="150px" width="150px")
+                                                                else
+                                                                    img(src='/images/logo-stamp/logo.jpeg' height="150px" width="150px")
                                                                 
                                                             div
                                                                 if students.profilePhoto
-                                                                    - let imageUrl = '/uploads/schools/' + code + '/' + pClass + '/' + studentDB.profilePhoto
-                                                                    img(src=imageUrl height="150px" width="150px")
+                                                                    - let imageUrl = '/uploads/schools/' + code.schoolCode + '/' + pClass + '/' + studentDB.profilePhoto
+                                                                    img(src=imageUrl height="150px" width="150px" class="rounded-circle")
                                                                 else
                                                                     if students.gender = 'male'
                                                                         img(src="/images/user/avatar-4.jpg" height="150px" width="150px")
@@ -90,6 +93,12 @@ block content
                                                             input(type="text" class="profile-form mb-3" readonly value=broadsheet.teacherRemark)
                                                             label Principal remarks:
                                                             input(type="text" class="profile-form mb-3" readonly value=broadsheet.principalRemark)
+                                                        p.text-right
+                                                            if schoolT.stamp
+                                                                - let stampUrl = '/uploads/schools/' + schoolT.schoolCode + '/logo/' + schoolT.stamp
+                                                                img(src=stampUrl height="150px" width="150px")
+                                                            else
+                                                                img(src='/images/logo-stamp/stamp.jpg' height="150px" width="150px")
                                     else
                                         .card-header
                                             h5 Report Card

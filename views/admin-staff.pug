@@ -21,8 +21,9 @@ block content
                                                     button.close(type="button" data-dismiss="alert" aria-label="close")
                                                         span(aria-hidden="true") ×
                                                     span #{success}
-       
-                                p #[a(href="/school/staff/new" class="btn btn-info") New Staff #[i(class="fa fa-plus ml-1")]]
+                                .d-flex.justify-content-between
+                                    p #[a(href="/school/staff/new" class="btn btn-info") New Staff #[i(class="feather icon-plus ml-1")]]
+                                    p #[a(href="/school/staff/import" class="btn btn-info") Import Staff #[i(class="feather icon-upload ml-1")]]
                                     
                                 if staffs.length > 0
                                     .card

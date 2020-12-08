@@ -40,7 +40,8 @@ block content
                                                                 tr
                                                                     each d in attendance
                                                                         if d.holiday
-                                                                            td Holiday
+                                                                            - let reason = d.holidayReason
+                                                                            td(title=reason data-toggle="tooltip") Holiday
                                                                         else
                                                                             if d.mark == "Present"
                                                                                 td Present
