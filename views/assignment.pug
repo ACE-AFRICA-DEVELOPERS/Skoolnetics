@@ -1,6 +1,7 @@
 include includes/header.pug
 block content
     link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js")
     body
         .loader-bg
             .loader-track
@@ -13,8 +14,8 @@ block content
                     .pcoded-inner-content
                         .main-body
                             .page-wrapper
-                                p #[a(href="#" class="btn btn-info") #[i.feather.icon-printer] Print]
-                                div(class="card")
+                                p #[a(href="#" class="btn btn-info" id="download") #[i.feather.icon-printer] Print]
+                                div(class="card" id="invoice")
                                     .card-header
                                         h5 Assignment
                                     div(class="card-body format")
@@ -58,6 +59,9 @@ block content
                                                 .col-sm-2.text-lg-right
                                                     p.font-weight-bold Content : 
                                                 .col-sm-10
-                                                    p #{singleAssignment.content.contentDetail}
-                                            
+                                                    div(id="content" data-id=singleAssignment._id ) #{singleAssignment._id}
+
+
+        script(src="/javascripts/library/pdf.js") 
+        script(src="/javascripts/library/assignment.js" type="module")                                   
         include includes/footer.pug                      

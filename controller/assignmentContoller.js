@@ -210,6 +210,18 @@ class App {
         }
     }
 
+    fetchNoteContent = async (req , res) => { 
+        try { 
+            let {id} = req.params
+            let note = await Assignment.findById(id) 
+            res.json(note)
+        }catch(error){
+            res.json({
+                message : error.message
+            })
+        }
+    }
+
     getAssignments = async (req, res, next) => {
         try{
             if(req.session.regNumber){
