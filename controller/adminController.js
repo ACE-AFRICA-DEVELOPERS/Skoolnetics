@@ -7,7 +7,7 @@ const Admin = require('../model/admin')
 const SchoolAdmin = require('../model/schoolAdmin')
 const Subject = require('../model/subject')
 
-class App {
+class App { 
 
     getAdminPage = async (req, res, next) => {
         const admin = await Admin.find({})

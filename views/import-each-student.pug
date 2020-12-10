@@ -27,7 +27,10 @@ block content
                                                 label(class="btn-file2 mt-4") #[i(class="feather icon-upload pr-2")] Import
                                                     input(type="file" name='picture' id='excelImport') 
                                         .card-block.table-border-style
-                                            .table-responsive#app    
+                                            .table-responsive#app 
 
+                                        a(href="/school/students/import/class" class="btn btn-info mt-5")
+                                            i(class="fa fa-arrow-left ml-1 text-white")
+                                                span.ml-2 Back
         script(src="/javascripts/library/import-each-excel.js" type="module")                                                      
         include includes/footer.pug

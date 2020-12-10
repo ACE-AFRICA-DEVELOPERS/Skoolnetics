@@ -26,7 +26,7 @@ const Role = require('../model/role')
 const PaymentType = require('../model/paymentType')
 const subject = require('../model/subject')
 
-class App {
+class App { 
 
     getSchoolLogin = (req, res, next) => {
         res.render('school-login', {title : "School Login"})
@@ -46,7 +46,7 @@ class App {
                     res.render('school-login' , { error : 'Invalid Credentials'})
                 }
             }else {
-                res.render('school-login' , { error : 'Invalid Credentials'})
+                res.render('school-login' , { error : 'Invalid school'})
             }  
         }catch(errors) {
             res.render('error-page', {error : errors})
@@ -889,12 +889,12 @@ class App {
             res.render('error-page', {error : err})
         }
     }
-
+    
     updateSingleStudent = async(req, res, next) => {
         try{
             if(req.session.schoolCode){
-                let student = await Student.findOne({_id : req.params.studentID})
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                let student = await Student.findOne({_id : req.params.studentID})
                 let checkClass = await ClassSchool.findOne({_id : student.className})
                 if(student){	
                     if(req.file){
@@ -905,7 +905,7 @@ class App {
                             firstName : req.body.firstName,
                             lastName : req.body.lastName,
                             gender : req.body.gender,
-                            dateOfBirth : req.body.dateOfBirth,
+                            dateOfBirth : new Date(req.body.dateOfBirth),
                             otherName : req.body.otherName ,
                             status : req.body.status
                         }, {new : true, useAndModify : false}, (err , item) => {
@@ -917,7 +917,15 @@ class App {
                                 let redirectUrl = "/school/new-student/" + req.params.studentID
                                 res.redirect(303, redirectUrl)
 
-                                FileHandler.moveFile(originalName , "./public/uploads/profile" , "./public/uploads/schools/" + req.session.schoolCode + "/" + checkClass.name + "/") 
+                                const source = "../public/uploads/profile/" + originalName
+                                const destination = "../public/uploads/schools/" + req.session.schoolCode + '/' + checkClass.name + "/" + originalName
+                                fs.rename((path.join(dirName , source)) , (path.join(dirName , destination)), err => {
+                                    if(err){
+                                        console.error(err)
+                                    }else{
+                                        console.log("File Moved")
+                                    }
+                                })
                             }
                         })	
                     }else{
@@ -925,11 +933,13 @@ class App {
                             firstName : req.body.firstName,
                             lastName : req.body.lastName,
                             gender : req.body.gender,
+                            dateOfBirth : new Date(req.body.dateOfBirth) ,
                             otherName : req.body.otherName ,
-                            dateOfBirth : req.body.dateOfBirth,
                             status : req.body.status
-                        }, {new : true, useAndModify : false}, (err , item) => {
+                        }, {new : true, useFindAndModify : false}, (err , item) => {
                             if(err){
+                                console.log(err)
+                                res.send('Test')
                                 res.status(500)
                                 return
                             }else {
@@ -1267,7 +1277,9 @@ class App {
                             firstName : req.body.firstName,
                             lastName : req.body.lastName,
                             otherName : req.body.otherName,
-                            email : req.body.email
+                            email : req.body.email ,
+                            status : req.body.status ,
+                            terminationDate : req.body.terminationDate
                         }, {new : true, useAndModify : false}, (err , item) => {
                             if(err){
                                 res.status(500)
@@ -1293,8 +1305,9 @@ class App {
                             firstName : req.body.firstName,
                             lastName : req.body.lastName,
                             otherName : req.body.otherName,
-                            gender : req.body.gender,
-                            email : req.body.email
+                            email : req.body.email ,
+                            status : req.body.status ,
+                            terminationDate : req.body.terminationDate
                         }, {new : true, useAndModify : false}, (err , item) => {
                             if(err){
                                 res.status(500)
@@ -1581,12 +1594,19 @@ class App {
                 const schoolAdmin = await SchoolAdmin.findOne({schoolCode: req.session.schoolCode})
                 const findStaff = await Staff.find({school: schoolAdmin._id, role: 'Teacher'})
                 const validStaff = await Staff.findOne({_id : req.params.staffID})
+                let assignLength = []
                 let findTeachClass, findTeachSubject
                 findStaff.map(e => {
+                    
                     findTeachClass = e.teaching.find(i => i.className == req.body.className)
                     findTeachSubject = e.teaching.find(i => i.subject == req.body.subject)
+                    if(findTeachClass && findTeachSubject){
+                        assignLength.push(findTeachClass)
+                    }
                 })
-                if(findTeachClass && findTeachSubject){
+                console.log(assignLength)
+                
+                if(assignLength.length > 0){
                     req.flash('error', "A teacher has that class and subject already.")
                     let redirectUrl = '/school/staff/' + validStaff._id + '/assign'
                     res.redirect(303, redirectUrl)
