@@ -66,15 +66,15 @@ block content
                                                     p.font-weight-bold Content : 
                                                 .col-sm-10
                                                     p.text-danger.font-weight-bold #{singleLessonNote.content.contentTopic.toUpperCase()}
-                                                    div(id="content" data-id=singleLessonNote._id ) #{singleLessonNote._id}
+                                                    div(id="content" data-id=singleLessonNote._id ) 
                                                 .col-sm-2.text-lg-right
                                                     p.font-weight-bold Presentation : 
                                                 .col-sm-10
-                                                    p #{singleLessonNote.presentation}
+                                                    div(id="presentation" data-id=singleLessonNote._id ) 
                                                 .col-sm-2.text-lg-right
                                                     p.font-weight-bold Evaluation : 
                                                 .col-sm-10
-                                                    p #{singleLessonNote.evaluation}
+                                                    div(id="evaluation" data-id=singleLessonNote._id )
 
 
         script(src="/javascripts/library/pdf.js")  

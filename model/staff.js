@@ -21,7 +21,9 @@ const StaffSchema = new Schema ({
         }
     ],
     profilePhoto : {type : String} ,
-    status : {type : String , enum : ['Resigned' , 'Sacked' , 'Active' ,'Retired'] , default : 'Active'}
+    status : {type : String , enum : ['Resigned' , 'Sacked' , 'Active' ,'Retired'] , default : 'Active'} ,
+    terminationDate : {type : String} ,
+    DateCreated : {type : Date , default : Date.now()}
 })
 
 module.exports = mongoose.model("Staff" , StaffSchema)

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose') 
 const Schema   = mongoose.Schema 
-
+ 
 const StudentSchema = new Schema ({
     school : {type : Schema.Types.ObjectId, ref : 'SchoolAdmin'},
     studentID : {type : String},

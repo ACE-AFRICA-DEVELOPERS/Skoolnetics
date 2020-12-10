@@ -75,13 +75,35 @@ block content
                                                                     .col-3
                                                                         label(for="status" class="label") Status:
                                                                     .col-9
-                                                                        input(type="text" value= staffDB.status class="profile-form mb-4" name="status" readonly)
-                                                                    div(class="col-md-12 mt-3 text-center")
-                                                                        input(type="submit" class="btn btn-info"  value="Update")
+                                                                        if staffDB.terminationDate
+                                                                            input(type="text" class="profile-form mb-4" value=staffDB.status readonly)
+                                                                        else
+                                                                            select(name="status" id="status" value=staffDB.status class="form-control mb-4")
+                                                                                option(value="") ----#{staffDB.status}----
+                                                                                option(value="Active") Active
+                                                                                option(value="Resigned") Resigned
+                                                                                option(value="Sacked") Sacked
+                                                                                option(value="Retired") Retired
+                                                                            //- input(type="text" value= staffDB.status class="profile-form mb-4" name="status" readonly)
+                                                                    .col-3
+                                                                        if staffDB.terminationDate
+                                                                            label(for="termination date" class="label") Termination Date:
+                                                                        else
+                                                                            label(for="termination date" id="termlabel" class="d-none label") Termination Date:
+                                                                    .col-9
+                                                                        if staffDB.terminationDate
+                                                                            input(type="text" id="termDate" value=staffDB.terminationDate class="profile-form mb-4" name="terminationDate" readonly)
+                                                                        else
+                                                                            input(type="text" id="termDate" value=staffDB.terminationDate class="d-none profile-form mb-4" name="terminationDate")
+                                                                    if !staffDB.terminationDate
+                                                                        div(class="col-md-12 mt-3 text-center")
+                                                                            input(type="submit" class="btn btn-info"  value="Update")
                                                 hr
-                                                if staffDB.role == 'Teacher'
-                                                    -let assignUrl = '/school/staff/' + staffDB._id + '/assign'
-                                                    p #[a(href=assignUrl) Assign Classes and Subjects to this teacher?]
+                                                if staffDB.status == 'Active'
+                                                    if staffDB.role == 'Teacher'
+                                                        -let assignUrl = '/school/staff/' + staffDB._id + '/assign'
+                                                        p #[a(href=assignUrl) Assign Classes and Subjects to this teacher?]
         
         script(src="/javascripts/library/handleImage.js")
+        script(src="/javascripts/library/singlestaffdate.js")
         include includes/footer.pug
