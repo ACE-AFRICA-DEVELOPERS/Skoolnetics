@@ -1,0 +1,175 @@
+block content
+    header.navbar.pcoded-header.navbar-expand-lg.navbar-light
+        .m-header
+            a#mobile-collapse1.mobile-menu(href='javascript:')
+                span
+            a.b-brand(href='')
+                span #[img(src='/images/skoolnetics/logo-dash.png' width="150px")]
+        a#mobile-header.mobile-menu(href='javascript:')
+            i.feather.icon-more-horizontal
+        .collapse.navbar-collapse
+            ul.navbar-nav.mr-auto
+                li
+                    a.full-screen(href='javascript:' onclick='javascript:toggleFullScreen()')
+                        i.feather.icon-maximize
+                li.nav-item
+                    .main-search
+                        .input-group
+                            input#m-search.form-control(type='text' placeholder='Search . . .')
+                            a.input-group-append.search-close(href='javascript:')
+                                i.feather.icon-x.input-group-text
+                            span.input-group-append.search-btn.btn.btn-primary
+                                i.feather.icon-search.input-group-text
+            ul.navbar-nav.ml-auto
+                if admin
+                    li
+                        .dropdown
+                            a.dropdown-toggle(href='javascript:' data-toggle='dropdown')
+                                i.icon.feather.icon-bell
+                            .dropdown-menu.dropdown-menu-right.notification
+                                .noti-head
+                                    h6.d-inline-block.m-b-0 Notifications
+                                    .float-right
+                                        a.m-r-10(href='javascript:') mark as read
+                                        a(href='javascript:') clear all
+                                
+                    li
+                        .dropdown.drp-user
+                            a.dropdown-toggle(href='javascript:' data-toggle='dropdown')
+                                i.icon.feather.icon-settings
+                            .dropdown-menu.dropdown-menu-right.profile-notification
+                                .pro-head
+                                    img.img-radius(src='/images/user/avatar-4.jpg' alt='User')
+                                    span #{admin.username}
+                                    a.dud-logout(href='/202007/admin/logout' title='Logout')
+                                        i.feather.icon-log-out
+                                ul.pro-body
+                                    li
+                                        a.dropdown-item(href='/202007/admin/new-admin')
+                                            i.feather.icon-settings
+                                            |  New Admin
+                                    li
+                                        a.dropdown-item(href='#')
+                                            i.feather.icon-user
+                                            |  Profile
+                                    li
+                                        a.dropdown-item(href='/202007/admin/logout')
+                                            i.feather.icon-lock
+                                            |  Log Out
+
+                if schoolAdmin
+                    li
+                        a(href="#" class="displayChatbox") #[i(class="icon feather icon-mail")]
+                                
+                    li
+                        .dropdown.drp-user
+                            a.dropdown-toggle(href='javascript:' data-toggle='dropdown')
+                                i.icon.feather.icon-settings
+                            .dropdown-menu.dropdown-menu-right.profile-notification
+                                .pro-head
+                                    img.img-radius(src='/images/user/avatar-4.jpg' alt='User')
+                                    span #{schoolAdmin.schoolAdmin}
+                                    a.dud-logout(href='/school/logout' title='Logout')
+                                        i.feather.icon-log-out
+                                ul.pro-body
+                                    li
+                                        a.dropdown-item(href='/school/settings')
+                                            i.feather.icon-settings
+                                            |  Settings
+                                    li
+                                        a.dropdown-item(href='/school/profile')
+                                            i.feather.icon-user
+                                            |  Profile
+                                    li
+                                        a.dropdown-item(href='/school/logout')
+                                            i.feather.icon-lock
+                                            |  Log Out
+
+                if staff
+                    li
+                        a(href="#" class="displayChatbox") #[i(class="icon feather icon-mail")]         
+                    li
+                        .dropdown.drp-user
+                            a.dropdown-toggle(href='javascript:' data-toggle='dropdown')
+                                i.icon.feather.icon-settings
+                            .dropdown-menu.dropdown-menu-right.profile-notification
+                                .pro-head
+                                    if staff.profilePhoto
+                                        - let imgUrl = '/uploads/schools/' + code.schoolCode + '/staffs/' + staff.profilePhoto 
+                                        img.img-radius(src=imgUrl alt='User')
+                                    else
+                                        if staff.gender == 'male'
+                                            img.img-radius(src='/images/user/avatar-4.jpg' alt='User')
+                                        else
+                                            img.img-radius(src='/images/user/avatar-3.jpg' alt='User')
+                                    span #{staff.firstName} #{staff.lastName}
+                                    a.dud-logout(href='/staff/logout' title='Logout')
+                                        i.feather.icon-log-out
+                                ul.pro-body
+                                    li
+                                        a.dropdown-item(href='/staff/settings')
+                                            i.feather.icon-settings
+                                            |  Settings
+                                    li
+                                        a.dropdown-item(href='/staff/logout')
+                                            i.feather.icon-lock
+                                            |  Log Out
+                if student
+                    li
+                        a(href="#" class="displayChatbox") #[i(class="icon feather icon-mail")]     
+                    li
+                        .dropdown.drp-user
+                            a.dropdown-toggle(href='javascript:' data-toggle='dropdown')
+                                i.icon.feather.icon-settings
+                            .dropdown-menu.dropdown-menu-right.profile-notification
+                                .pro-head
+                                    if student.profilePhoto
+                                        - let imgUrl = '/uploads/schools/' + code.schoolCode + '/' + className.name + '/' + student.profilePhoto 
+                                        img.img-radius(src=imgUrl alt='User')
+                                    else
+                                        if student.gender == 'male'
+                                            img.img-radius(src='/images/user/avatar-4.jpg' alt='User')
+                                        else
+                                            img.img-radius(src='/images/user/avatar-3.jpg' alt='User')
+                                    span #{student.firstName} #{student.lastName}
+                                    a.dud-logout(href='/student/logout' title='Logout')
+                                        i.feather.icon-log-out
+                                ul.pro-body
+                                    li
+                                        a.dropdown-item(href='/student/settings')
+                                            i.feather.icon-settings
+                                            |  Settings
+                                    li
+                                        a.dropdown-item(href='/student/logout')
+                                            i.feather.icon-lock
+                                            |  Log Out
+                if parent
+                    li
+                        a(href="#" class="displayChatbox") #[i(class="icon feather icon-mail")]
+                    li
+                        .dropdown.drp-user
+                            a.dropdown-toggle(href='javascript:' data-toggle='dropdown')
+                                i.icon.feather.icon-settings
+                            .dropdown-menu.dropdown-menu-right.profile-notification
+                                .pro-head
+                                    if parent.profilePhoto
+                                        - let imgUrl = '/uploads/schools/' + code + '/' + className.name + '/' + parent.profilePhoto 
+                                        img.img-radius(src=imgUrl alt='User')
+                                    else
+                                        if parent.gender == 'male'
+                                            img.img-radius(src='/images/user/avatar-4.jpg' alt='User')
+                                        else
+                                            img.img-radius(src='/images/user/avatar-3.jpg' alt='User')
+                                    span #{parent.name} #{parent.surname}
+                                    a.dud-logout(href='/parent/logout' title='Logout')
+                                        i.feather.icon-log-out
+                                ul.pro-body
+                                    li
+                                        a.dropdown-item(href='/parent/settings')
+                                            i.feather.icon-settings
+                                            |  Settings
+                                    li
+                                        a.dropdown-item(href='/parent/logout')
+                                            i.feather.icon-lock
+                                            |  Log Out
+

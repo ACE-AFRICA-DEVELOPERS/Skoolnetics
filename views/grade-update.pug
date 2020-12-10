@@ -1,0 +1,49 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .row
+                                    .col-xl-12
+                                        .card 
+                                            .card-header
+                                                h5 Grade Settings.
+                                            .card-body 
+                                                each exam in gradeCompute
+                                                    form(method="POST")
+                                                        label(class="label") Grade:
+                                                        select(name="grade" class="form-control mb-3" id="grade")
+                                                            option(value=exam.grade selected ) #{exam.grade}
+                                                            option(value="A+") A+
+                                                            option(value="A") A
+                                                            option(value="A-") A-
+                                                            option(value="B+") B+
+                                                            option(value="B") B
+                                                            option(value="B-") B-
+                                                            option(value="C+") C+
+                                                            option(value="C") C
+                                                            option(value="C-") C-
+                                                            option(value="D+") D+
+                                                            option(value="D") D
+                                                            option(value="D-") D-
+                                                            option(value="E") E
+                                                            option(value="F") F
+                                                        label(class="label") Lowest value for the grade:
+                                                        input(type="number" name="lowest" class="form-control mb-3" value=exam.rangeLowest id="lowestGrade")
+                                                        label(class="label") Highest value for the grade:
+                                                        input(type="number" name="highest" class="form-control mb-3" value=exam.rangeHighest id="highestGrade")
+                                                        div(class="text-center")
+                                                            button(type="submit" class="btn btn-info" id="submitGrade") Update                            
+
+        include includes/footer.pug
+        //-script(src="/javascripts/library/grade.js" type="module")

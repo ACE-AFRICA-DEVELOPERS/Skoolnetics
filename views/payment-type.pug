@@ -1,0 +1,95 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .row.justify-content-center
+                                    .col-md-8
+                                        if error
+                                            if error.length != 0
+                                                .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{error}
+
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
+                                p #[a(href="#" data-toggle="modal" data-target="#addModal" class="btn btn-info") New Payment Type #[i(class="fa fa-plus ml-1")]]
+                                div(class="modal fade" id="addModal" role="dialog" aria-hidden="true")
+                                    div(class="modal-dialog" role="document")
+                                        div(class="modal-content")
+                                            div(class="modal-header")
+                                                h5 Add a Payment Type
+                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                    span(aria-hidden="true") ×
+                                            div(class="modal-body")
+                                                form(method="post")
+                                                    label Payment Type : 
+                                                    input(type="text" class="form-control mb-3" placeholder="School Fees" name="paymentFor" required)
+                                                    input(type="checkbox" name="importance" class="mr-1") 
+                                                    label Compulsory?
+                                                    div(class="text-center")
+                                                        input(type="submit", value="Add" class="btn btn-info")
+                                .card
+                                    if paymentTypes.length > 0
+                                        .card-header
+                                            h5 Payment Types
+                                            span.d-block.m-t-5 Click on New Payment Type button to create more.
+                                        .card-body
+
+                                            .card-block.table-border-style
+                                                .table-responsive
+                                                    table.table.table-striped
+                                                        thead.thead-light
+                                                            tr
+                                                                th S/N
+                                                                th Payment Type
+                                                                th Importance
+                                                                th Action
+                                                        tbody
+                                                            each pay, index in paymentTypes
+                                                                - let viewUrl = "#"
+                                                                - let name = pay.paymentFor
+                                                                - let importance = pay.importance
+                                                                tr
+                                                                    td #{index + 1}  
+                                                                    td #{name}
+                                                                    if importance == "O"
+                                                                        td Optional
+                                                                    else 
+                                                                        td Compulsory
+                                                                    td 
+                                                                        p #[a(href="#" data-toggle="modal" data-target=`#add-e${pay._id}`) #[i(class="red-color feather icon-trash")]]
+                                                                        div(id=`add-e${pay._id}` class="modal fade")
+                                                                            div(class="modal-dialog" role="document")
+                                                                                div(class="modal-content")
+                                                                                    div(class="modal-header")
+                                                                                        h4(class="modal-title") Are you sure?
+                                                                                        button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                                                            span(aria-hidden="true") &times;
+                                                                                    div(class="modal-body") This Payment Type will be deleted.
+                                                                                    div(class="modal-footer")
+                                                                                       -let delPayment = "/school/fees/payment-type/" + pay._id + "/delete"
+                                                                                        a(class="btn btn-info" href=delPayment) Ok
+                                                                                        button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+                                    else
+                                        .card-header
+                                            h5 Payment Types
+                                            span.d-block.m-t-5 No Payment type has been created.
+
+        include includes/footer.pug

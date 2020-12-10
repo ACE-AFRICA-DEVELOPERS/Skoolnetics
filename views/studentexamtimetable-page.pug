@@ -1,0 +1,34 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper 
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header.mb-3
+                                        h5 View the Exam timetable for your class.
+                                    .row.p-3
+                                        if className
+                                            - let classUrl = "/student/exam-timetable/class/" + className._id +"/show-timetable"
+                                            .col-md-4.mb-3
+                                                a(href=classUrl)
+                                                    div(class="box-field")
+                                                        span #{className.name}
+
+
+
+
+
+
+
+
+            include includes/footer.pug

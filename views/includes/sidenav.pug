@@ -1,0 +1,365 @@
+block content
+    nav.pcoded-navbar
+        .navbar-wrapper
+            .navbar-brand.header-logo
+                a.b-brand(href='')
+                    span.b-title #[img(src='/images/skoolnetics/logo-dash.png' width="160px")]
+                a#mobile-collapse.mobile-menu(href='javascript:')
+                    span
+            .navbar-content.scroll-div
+                ul.nav.pcoded-inner-navbar
+                    if admin
+                        li.nav-item.pcoded-menu-caption
+                            label Basic
+                        li(class=`nav-item ${dash_active}`)
+                            a.nav-link(href='/202007/admin/dashboard')
+                                span.pcoded-micon
+                                    i.feather.icon-home
+                                span.pcoded-mtext Dashboard
+                        li.nav-item.pcoded-menu-caption
+                            label Schools
+                        li(class=`nav-item ${new_active}`)
+                            a.nav-link(href='/202007/admin/new-schools')
+                                span.pcoded-micon
+                                    i.feather.icon-tablet
+                                span.pcoded-mtext New Schools
+                        li(class=`nav-item ${approved_active}`)
+                            a.nav-link(href='/202007/admin/approved-schools')
+                                span.pcoded-micon
+                                    i.feather.icon-tablet
+                                span.pcoded-mtext Approved Schools
+                        li(class=`nav-item ${newdemo_actice}`)
+                            a.nav-link(href='/202007/admin/new-demo-schools')
+                                span.pcoded-micon
+                                    i.feather.icon-tablet
+                                span.pcoded-mtext Demo Requests
+                        li(class=`nav-item ${approveddemo_actice}`)
+                            a.nav-link(href='/202007/admin/approved-demo-schools')
+                                span.pcoded-micon
+                                    i.feather.icon-tablet
+                                span.pcoded-mtext Approved Demo Schools
+
+                    if schoolAdmin
+                        li.nav-item.pcoded-menu-caption
+                            label Basic
+                        li(class=`nav-item ${dash_active}`)
+                            a.nav-link(href='/school/dashboard')
+                                span.pcoded-micon
+                                    i.feather.icon-home
+                                span.pcoded-mtext Dashboard
+                        li.nav-item.pcoded-menu-caption
+                            label Setup and Config
+                        li(class=`nav-item pcoded-hasmenu ${session_active} ${opensession_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-settings
+                                span.pcoded-mtext Basic Setup
+                            ul.pcoded-submenu
+                                li(class=sessT_active)
+                                    a(href='/school/session') Session and Term
+                                li(class=logo_active)
+                                    a(href="/school/logo") Logo and Stamp
+                                li(class=roles_active)
+                                    a(href="/school/roles") Roles
+                                li(class=grade_active)
+                                    a(href='/school/grade-settings') Grading System
+                                li(class=ca_active)
+                                    a(href='/school/exam-settings') CA and Exam Total
+                                li(class=subject_active)
+                                    a(href='/school/subjects') Subjects
+                                li(class=class_active)
+                                    a(href='/school/class') Classes
+                                
+                        li(class=`nav-item pcoded-hasmenu ${users_active} ${openuser_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-users
+                                span.pcoded-mtext Users
+                            ul.pcoded-submenu
+                                li(class=staff_active)
+                                    a(href='/school/staff') Staffs
+                                li(class=student_active)
+                                    a(href='/school/students') Students
+                                li(class=parent_active)
+                                    a(href='/school/parent') Parents
+                        
+                        li(class=`nav-item pcoded-hasmenu ${timetable_active} ${opentimetable_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-clipboard
+                                span.pcoded-mtext Timetable
+                            ul.pcoded-submenu
+                                li(class=period_active)
+                                    a(href='/school/period') Settings
+                                li(class=time_active)
+                                    a(href='/school/timetable') Set for Class
+                                li(class=examtime_active)
+                                    a(href='/school/exam-timetable') Set for Exam
+
+                        li.nav-item.pcoded-menu-caption
+                            label Test and Exam
+                        li(class=`nav-item pcoded-hasmenu ${cbt_active} ${opencbt_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-tv
+                                span.pcoded-mtext CBT
+                            ul.pcoded-submenu
+                                li(class=setup_active)
+                                    a(href='/school/cbt-setup') Setup
+                                li(class=result_active)
+                                    a(href='/school/cbt-results') Results
+                        li.nav-item.pcoded-menu-caption
+                            label Broadsheet
+                        li(class=`nav-item ${broadsheet_active}`)
+                            a.nav-link(href='/school/broadsheet')
+                                span.pcoded-micon
+                                    i.feather.icon-folder
+                                span.pcoded-mtext Results
+                        li.nav-item.pcoded-menu-caption
+                            label For Classes
+                        li(class=`nav-item ${attendance_active}`)
+                            a.nav-link(href='/school/attendance')
+                                span.pcoded-micon
+                                    i.feather.icon-user-check
+                                span.pcoded-mtext Attendance
+                        li(class=`nav-item ${notes_active}`)
+                            a.nav-link(href='/school/lesson-notes')
+                                span.pcoded-micon
+                                    i.feather.icon-calendar
+                                span.pcoded-mtext Lesson Notes
+                        //- li.nav-item.pcoded-menu-caption
+                        //-     label Finance
+                        //- li(class=`nav-item pcoded-hasmenu ${finance_active} ${openfinance_active}`)
+                        //-     a.nav-link(href='javascript:')
+                        //-         span.pcoded-micon
+                        //-             i.feather.icon-layers
+                        //-         span.pcoded-mtext Finance
+                        //-     ul.pcoded-submenu
+                        //-         li(class=payment_active)
+                        //-             a(href='/school/fees/payment-type') Payment Type
+                        //-         li(class=amount_active)
+                        //-             a(href='/school/fees/all-classes') Class Bills
+                        //-         li(class=uploadT_active)
+                        //-             a(href="/school/fees/transactions/upload") Upload Transactions
+                        //-         li(class=transaction_active)
+                        //-             a(href="/school/fees/transactions/logs") Transactions Logs
+                        li.nav-item.pcoded-menu-caption
+                            label Sessions and Terms
+                        li(class=`nav-item ${manage_active}`)
+                            a.nav-link(href='/school/manage-sessions')
+                                span.pcoded-micon
+                                    i.feather.icon-bookmark
+                                span.pcoded-mtext Manage Sessions
+                                    
+                    if staff
+                        li.nav-item.pcoded-menu-caption
+                            label Basic
+                        li(class=`nav-item ${dash_active}`)
+                            a.nav-link(href='/staff/dashboard')
+                                span.pcoded-micon
+                                    i.feather.icon-home
+                                span.pcoded-mtext Dashboard
+                        if staff.role == 'Teacher'
+                            li.nav-item.pcoded-menu-caption
+                                label Examination
+                            li(class=`nav-item ${upload_active}`)
+                                a.nav-link(href='/staff/upload-result')
+                                    span.pcoded-micon
+                                        i.feather.icon-upload-cloud
+                                    span.pcoded-mtext Upload Results
+                            li(class=`nav-item pcoded-hasmenu ${cbt_active} ${opencbt_active}`)
+                                a.nav-link(href='javascript:')
+                                    span.pcoded-micon
+                                        i.feather.icon-tv
+                                    span.pcoded-mtext CBT
+                                ul.pcoded-submenu
+                                    li(class=quick_active)
+                                        a(href='/staff/cbt/quick-one') Quiz
+                                    li(class=caschool_active)
+                                        a(href='/staff/cbt/school') Exam
+                                    li(class=ca_active)
+                                        a(href='/staff/cbt/cbt-results') Results
+                            li.nav-item.pcoded-menu-caption
+                                label For Classes
+                            li(class=`nav-item pcoded-hasmenu ${timetable_active} ${opentimetable_active}`)
+                                a.nav-link(href='javascript:')
+                                    span.pcoded-micon
+                                        i.feather.icon-clipboard
+                                    span.pcoded-mtext Timetable
+                                ul.pcoded-submenu
+                                    li(class=time_active)
+                                        a(href='/staff/timetable') Class Timetable
+                                    li(class=examtime_active)
+                                        a(href='/staff/exam-timetable') Exam Timetable
+                            li.nav-item.pcoded-menu-caption
+                                label Personal
+                            li(class=`nav-item ${attendance_active}`)
+                                a.nav-link(href='/staff/attendance')
+                                    span.pcoded-micon
+                                        i.feather.icon-edit-1
+                                    span.pcoded-mtext Attendance
+                            li(class=`nav-item ${broadsheet_active}`)
+                                a.nav-link(href='/staff/broadsheet')
+                                    span.pcoded-micon
+                                        i.feather.icon-file
+                                    span.pcoded-mtext Broadsheet
+                            li(class=`nav-item pcoded-hasmenu ${lessonNote_active} ${note_active}`)
+                                a.nav-link(href='javascript:')
+                                    span.pcoded-micon
+                                        i.feather.icon-book
+                                    span.pcoded-mtext Lesson Note
+                                ul.pcoded-submenu
+                                    li(class=make_active)
+                                        a(href='/staff/lesson-notes') Make Lesson Notes
+                                    li(class=all_active)
+                                        a(href=`/staff/lesson-note/all`) View All Lesson Notes
+                            li(class=`nav-item pcoded-hasmenu ${assignment_active} ${assign_active}`)
+                                a.nav-link(href='javascript:')
+                                    span.pcoded-micon
+                                        i.feather.icon-airplay
+                                    span.pcoded-mtext Assignment
+                                ul.pcoded-submenu
+                                    li(class=make_active)
+                                        a(href='/staff/assignment') Make Assignments
+                                    li(class=all_active)
+                                        a(href=`/staff/assignment/all`) View All Assignments
+
+                        if staff.role == 'r-1'
+                            li(class=`nav-item pcoded-hasmenu ${users_active} ${openuser_active}`)
+                                a.nav-link(href='javascript:')
+                                    span.pcoded-micon
+                                        i.feather.icon-users
+                                    span.pcoded-mtext Users
+                                ul.pcoded-submenu
+                                    li(class=staff_active)
+                                        a(href='/staff/school-staffs') Staffs
+                                    li(class=student_active)
+                                        a(href='/staff/students') Students
+                            li.nav-item.pcoded-menu-caption
+                                label For Classes
+                            li(class=`nav-item pcoded-hasmenu ${timetable_active} ${opentimetable_active}`)
+                                a.nav-link(href='javascript:')
+                                    span.pcoded-micon
+                                        i.feather.icon-clipboard
+                                    span.pcoded-mtext Timetable
+                                ul.pcoded-submenu
+                                    li(class=time_active)
+                                        a(href='/staff/timetable') Class Timetable
+                                    li(class=examtime_active)
+                                        a(href='/staff/exam-timetable') Exam Timetable
+                            li.nav-item.pcoded-menu-caption
+                                label Broadsheet
+                            li(class=`nav-item ${broadsheet_active}`)
+                                a.nav-link(href='/staff/principal/broadsheet')
+                                    span.pcoded-micon
+                                        i.feather.icon-folder
+                                    span.pcoded-mtext Results
+                            li(class=`nav-item ${notes_active}`)
+                                a.nav-link(href='/staff/principal/lesson-notes')
+                                    span.pcoded-micon
+                                        i.feather.icon-calendar
+                                    span.pcoded-mtext Lesson Notes
+                            li(class=`nav-item pcoded-hasmenu ${finance_active} ${openfinance_active}`)
+                                a.nav-link(href='javascript:')
+                                    span.pcoded-micon
+                                        i.feather.icon-layers
+                                    span.pcoded-mtext Finance
+                                ul.pcoded-submenu
+                                    li(class=transaction_active)
+                                        a(href="/staff/principal/transactions/logs") Transactions Logs
+
+                        if staff.role == 'r-2'
+                            li(class=`nav-item pcoded-hasmenu ${finance_active} ${openfinance_active}`)
+                                a.nav-link(href='javascript:')
+                                    span.pcoded-micon
+                                        i.feather.icon-layers
+                                    span.pcoded-mtext Finance
+                                ul.pcoded-submenu
+                                    li(class=payment_active)
+                                        a(href='/staff/finance/payment-type') Payment Type
+                                    li(class=amount_active)
+                                        a(href='/staff/finance/all-classes') Class Bills
+                                    li(class=uploadT_active)
+                                        a(href="/staff/finance/transactions/upload") Upload Transactions
+                                    li(class=transaction_active)
+                                        a(href="/staff/finance/transactions/logs") Transactions Logs
+                        //- li.nav-item.pcoded-menu-caption
+                        //-     label Sessions and Terms
+                        //- li(class=`nav-item ${manage_active}`)
+                        //-     a.nav-link(href='/staff/manage-sessions')
+                        //-         span.pcoded-micon
+                        //-             i.feather.icon-bookmark
+                        //-         span.pcoded-mtext Manage Sessions
+                                
+
+                    if student  
+                        li.nav-item.pcoded-menu-caption
+                            label Basic
+                        li(class=`nav-item ${dash_active}`)
+                            a.nav-link(href='/student/dashboard')
+                                span.pcoded-micon
+                                    i.feather.icon-home
+                                span.pcoded-mtext Dashboard    
+                        li.nav-item.pcoded-menu-caption
+                            label Personal
+                        li(class=`nav-item ${exam_active}`)
+                            a.nav-link(href='/student/cbt')
+                                span.pcoded-micon
+                                    i.feather.icon-tv
+                                span.pcoded-mtext CBT
+                        li(class=`nav-item pcoded-hasmenu ${result_active} ${openresult_active}`)
+                            a.nav-link(href='javascript:')
+                                span.pcoded-micon
+                                    i.feather.icon-tv
+                                span.pcoded-mtext Results
+                            ul.pcoded-submenu
+                                li(class=cbtR_active)
+                                    a(href='/student/cbt-result') CBT
+                                li(class=card_active)
+                                    a(href='/student/report-card') Report Card
+                        li(class=`nav-item ${time_active}`)
+                            a.nav-link(href='/student/timetable')
+                                span.pcoded-micon
+                                    i.feather.icon-clipboard
+                                span.pcoded-mtext Timetable
+                        li(class=`nav-item ${examtime_active}`)
+                            a.nav-link(href='/student/exam-timetable')
+                                span.pcoded-micon
+                                    i.feather.icon-file-text
+                                span.pcoded-mtext Exam Timetable
+                        li(class=`nav-item ${note_active}`)
+                            a.nav-link(href='/student/lesson-notes')
+                                span.pcoded-micon
+                                    i.feather.icon-file-text
+                                span.pcoded-mtext Lesson Note
+                        li(class=`nav-item ${assignment_active}`)
+                            a.nav-link(href='/student/assignment')
+                                span.pcoded-micon
+                                    i.feather.icon-airplay
+                                span.pcoded-mtext Assignment
+                        //- li.nav-item.pcoded-menu-caption
+                        //-     label Sessions and Terms
+                        //- li(class=`nav-item ${manage_active}`)
+                        //-     a.nav-link(href='/student/manage-sessions')
+                        //-         span.pcoded-micon
+                        //-             i.feather.icon-bookmark
+                        //-         span.pcoded-mtext Manage Sessions
+                    
+                    if parent
+                        li.nav-item.pcoded-menu-caption
+                            label Basic
+                        li(class=`nav-item ${dash_active}`)
+                            a.nav-link(href='/parent/dashboard')
+                                span.pcoded-micon
+                                    i.feather.icon-home
+                                span.pcoded-mtext Dashboard
+                        li(class=`nav-item ${ward_active}`)
+                            a.nav-link(href='/parent/student')
+                                span.pcoded-micon
+                                    i.feather.icon-folder
+                                span.pcoded-mtext Ward(s)
+                        
+                             
+                        
+                        
+                                

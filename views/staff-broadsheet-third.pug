@@ -1,0 +1,70 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p #[a(href="#" class="btn btn-info" id="transferReport") Process] #[span#displayMsg ]
+                                p.d-none#className #{pClass}
+                                .card
+                                    if broadsheet.length > 0
+                                        .card-header
+                                            h5 #{title}
+                                            .card-block.table-border-style
+                                                .table-responsive
+                                                    table.table.table-striped
+                                                        thead.thead-light
+                                                            tr 
+                                                                th Name
+                                                                th Reg Number
+                                                                each cls in firstResult.result
+                                                                    th(colspan="4" class="text-center") #{cls.courseName} #[span#length.d-none #{firstResult.result.length}]
+                                                                th(colspan="2" class="text-center") Gross
+                                                                th Percentage
+                                                                th Position
+                                                                th Report Card
+                                                            tr
+                                                                th -----
+                                                                th -----
+                                                                each cls in firstResult.result
+                                                                    th 1st Term
+                                                                    th 2nd Term
+                                                                    th 3rd Term
+                                                                    th Average
+                                                                th Obtainable
+                                                                th Obtained
+                                                                th ------
+                                                                th ------
+                                                                th ------
+                                                        tbody
+                                                            each result in broadsheet
+                                                                tr(class="analytics-row")
+                                                                    td.studentID(id=`${result.student}`) #{studentName[result.student]}
+                                                                    td #{studentID[result.student]}
+                                                                    each res in result.result
+                                                                        td #{res.firstTerm} 
+                                                                        td #{res.secondTerm}
+                                                                        td #{res.total}
+                                                                        td.broad-total.data #{res.overall}
+                                                                    td(class="obtainable") #{result.result.length * 100}
+                                                                    td(class="total") 
+                                                                    td(class="average")
+                                                                    td(class="position") #{result.position}
+                                                                    - let cardUrl = '/staff/broadsheet/' + pClass + '/' + result._id
+                                                                    td #[a(href=cardUrl) View]
+                                    else
+                                        .card-header
+                                            h5 #{title}
+                                            span.d-block.m-t-5 No result has been uploaded for this class.
+        
+        script(src="/javascripts/library/third-report-card.js" type="module")
+        include includes/footer.pug

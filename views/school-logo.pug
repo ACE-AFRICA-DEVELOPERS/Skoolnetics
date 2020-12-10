@@ -1,0 +1,75 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .row
+                                    .col-md-6
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
+                                .card
+                                    .card-header
+                                        h5 Logo and Stamp
+                                    .card-body
+                                        .row
+                                            .col-md-8
+                                                .form-field.mb-3
+                                                    .row
+                                                        .col-md-6.mb-3
+                                                            p #[b School Logo]
+                                                            if schoolAdmin.logo
+                                                                - let logoUrl = '/uploads/schools/' + schoolAdmin.schoolCode + '/logo/' + schoolAdmin.logo
+                                                                img(src=logoUrl height="200px" width="200px")
+                                                            else
+                                                                p Default Logo
+                                                                img(src='/images/logo-stamp/logo.jpeg' height="200px" width="200px")
+                                                        .col-md-6.mb-3
+                                                            p #[b School Stamp]
+                                                            if schoolAdmin.stamp
+                                                                - let stampUrl = '/uploads/schools/' + schoolAdmin.schoolCode + '/logo/' + schoolAdmin.stamp
+                                                                img(src=stampUrl height="200px" width="200px")
+                                                            else
+                                                                p Default Stamp
+                                                                img(src='/images/logo-stamp/stamp.jpg' height="200px" width="200px")
+                                                        .col-md-12.text-center
+                                                            a(href="#" class="btn btn-info" id="toggle") Edit/Upload Images       
+
+                                                .form-field.hide-form#hide-form
+                                                    form(method="POST" enctype="multipart/form-data")
+                                                        .row
+                                                            .col-md-6.mb-3
+                                                                label(class="btn-file2 mt-4") #[i(class="feather icon-upload pr-2")] Upload a Logo
+                                                                    input(type="file" name='logo' id='logo')
+                                                                div(class="preview")
+                                                                    div(class="boxImage" id="displayLogo")
+                                                                        p(class="hide hideLogo mt-5") Logo Preview 
+                                                                    div(class="removePicture removeLogo")
+                                                                        a(href="#" id="removeLogo") #[i(class="fa fa-times")]
+                                                            .col-md-6.mb-3
+                                                                label(class="btn-file2 mt-4") #[i(class="feather icon-upload pr-2")] Upload a Stamp
+                                                                    input(type="file" name='stamp' id='stamp')
+                                                                div(class="preview")
+                                                                    div(class="boxImage" id="displayStamp")
+                                                                        p(class="hide hideStamp mt-5") Stamp Preview 
+                                                                    div(class="removePicture removeStamp")
+                                                                        a(href="#" id="removeStamp") #[i(class="fa fa-times")]
+                                                            .col-md-12.text-center
+                                                                hr
+                                                                input(type="submit" value="Upload" class="btn btn-info")
+                                                
+        script(src="/javascripts/library/file-upload.js")
+        include includes/footer.pug

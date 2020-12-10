@@ -1,0 +1,81 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .row
+                                    .col-md-6
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
+       
+                                p #[a(href="#" data-toggle="modal" data-target="#add-admin" class="btn btn-info") New Admin #[i(class="fa fa-plus ml-1")]]
+                                div(id="add-admin" class="modal fade")
+                                    div(class="modal-dialog" role="document")
+                                        div(class="modal-content")
+                                            div(class="modal-header")
+                                                h4(class="modal-title") Add an Admin
+                                                button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                    span(aria-hidden="true") &times;
+                                            div(class="modal-body")
+                                                form(method="POST")
+                                                    label Username: 
+                                                    input(type="text" class="form-control mb-3" name="username" required)
+                                                    label Email: 
+                                                    input(type="email" class="form-control mb-3" name="email" required)
+                                                    div(class="text-center")
+                                                        button(type="submit" class="btn btn-info") Create
+                                    
+                                if allAdmins.length > 0
+                                    .card
+                                        .card-header
+                                            h5 Admins
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light 
+                                                        tr 
+                                                            th Username
+                                                            th Email
+                                                            th Action
+                                                    tbody 
+                                                        each admin in allAdmins
+                                                            - let username = admin.username
+                                                            - let email = admin.email
+                                                            - let deleteUrl = "/202007/admin/new-admin/" + admin._id
+                                                            tr
+                                                                td #{username}
+                                                                td #{email}
+                                                                td #[a(href=deleteUrl data-toggle="modal" data-target="#addModal" class="red-color") #[i.feather.icon-trash]]
+        
+                                                                div(class="modal fade" id="addModal" role="dialog" aria-hidden="true")
+                                                                    div(class="modal-dialog" role="document")
+                                                                        div(class="modal-content")
+                                                                            div(class="modal-header")
+                                                                                h5 Delete this Admin?
+                                                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                    span(aria-hidden="true") ×
+                                                                            div(class="modal-body")
+                                                                                p Note that there is no going back. Admin won't be able to login to the platform again.
+                                                                            .modal-footer
+                                                                                a(href=deleteUrl class="btn btn-info mr-3") Ok
+                                                                                button(type="button" data-dismiss="modal" aria-label="Close" class="btn btn-light") Cancel
+                            
+                                else
+                                    .card
+                                        .card-header
+                                            span.d-block.m-t-5 You are the only admin available.
+        include includes/footer.pug

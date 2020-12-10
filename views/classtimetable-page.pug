@@ -1,0 +1,34 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content 
+                        .main-body
+                            .page-wrapper
+                                p #[a(href="/school/timetable/class/" +classSchools._id+'/class-timetable/' class="btn btn-info") #[i.feather.icon-clipboard] Show Timetable ]
+                                .card
+                                    .card-header.mb-3
+                                        h5 Class Timetable for #{classSchools.name}
+                                        span.d-block.m-t-5 Select the Week day you want to compute for.
+                                    .card-body
+                                        .row
+                                            if day.length > 0
+                                                each d in day
+                                                    - let dayUrl = "/school/timetable/class/" + classSchools._id + "/class-timetable/day/" + d._id + '/subject'
+                                                    .col-md-4.mb-3
+                                                        a(href=dayUrl)
+                                                            div(class="box-field")
+                                                                i.feather.icon-calendar.text-c-green.mr-2
+                                                                span #{d.weekday}
+                                            else
+                                                p You need to set days first.
+
+            include includes/footer.pug

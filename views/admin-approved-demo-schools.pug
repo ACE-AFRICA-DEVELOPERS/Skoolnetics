@@ -1,0 +1,61 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    if approvedDemoSchools.length > 0
+                                        .card-header
+                                            h5 Approved Demo Schools
+                                            span.d-block.m-t-5 Click on view to see the school details.
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light
+                                                        tr
+                                                            th School ID
+                                                            th School Name
+                                                            th Email
+                                                            th Expiry Date
+                                                            th Action
+                                                            th Delete
+                                                    tbody
+                                                        each school in approvedDemoSchools
+                                                            - let d = new Date().toDateString()
+                                                            - let name = school.schoolName
+                                                            - let email = school.schoolEmail
+                                                            - let code = school.schoolCode
+                                                            - let viewUrl = "/202007/admin/demoschool/" + school._id 
+                                                            - let delUrl = "/202007/admin/demoschool/" + school._id + '/delete'
+                                                            tr
+                                                                td.red #{code}
+                                                                td.red #{name}
+                                                                td.red #{email}
+                                                                if school.expiryDate != null
+                                                                    td#exp.red #{school.expiryDate.toDateString()}
+                                                                else
+                                                                    td Not yet updated
+                                                                td #[a(href=viewUrl class="main-link") View]
+                                                                if school.expiryDate != null
+                                                                    if d == school.expiryDate.toDateString()
+                                                                        td
+                                                                            a(href=delUrl class="red-color")
+                                                                                i(class="feather icon-trash")
+                                                                    else
+                                                                        td -
+                                    else
+                                        .card-header
+                                            h5 Approved Demo Schools
+                                            span.d-block.m-t-5 No Demo school has been approved.
+
+        include includes/footer.pug

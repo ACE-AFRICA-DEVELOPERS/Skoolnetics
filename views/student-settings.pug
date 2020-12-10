@@ -1,0 +1,54 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .row
+                                    .col-sm-12
+                                        .card
+                                            .card-header
+                                                h5 Settings
+                                        .row
+                                            .col-md-3.col-sm-12
+                                                ul(class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical")
+                                                    li #[a(class="nav-link text-left active" id="v-pills-password-tab" data-toggle="pill" href="#v-pills-password" role="tab" aria-controls="v-pills-password" aria-selected="true") Change Password]
+                                                    li #[a(class="nav-link text-left" id="v-pills-notif-tab" data-toggle="pill" href="#v-pills-notif" role="tab" aria-controls="v-pills-notif" aria-selected="false") Notifications]
+                                                    li #[a(class="nav-link text-left" id="v-pills-theme-tab" data-toggle="pill" href="#v-pills-theme" role="tab" aria-controls="v-pills-theme" aria-selected="false") Theme]
+
+                                            .col-md-9.col-sm-12
+                                                div(class="tab-content" id="v-pills-tabContent")
+                                                    div(class="tab-pane fade show active" id="v-pills-password" role="tabpanel" aria-labelledby="v-pills-password-tab")
+                                                        .card-header
+                                                            h6 Change Password
+                                                        .card-body
+                                                            .row
+                                                                .col-md-6
+                                                                    form.report-field
+                                                                        label Old Password
+                                                                        input(type="password" id="oldPassword" class="form-control mb-3")
+                                                                        label New Password
+                                                                        input(type="password" id="newPassword" class="form-control mb-3")
+                                                                        label Confirm New Password
+                                                                        input(type="password" id="cNewPassword" class="form-control mb-3")
+                                                                        input(type="submit" class="btn btn-info" id="submitPassword" value="Change")
+                                                                        p.font-italic.mt-3#displayMsg
+
+                                                    div(class="tab-pane fade" id="v-pills-notif" role="tabpanel" aria-labelledby="v-pills-notif-tab")
+                                                        .card-header
+                                                            h6 Notification Settings
+                                                    div(class="tab-pane fade" id="v-pills-theme" role="tabpanel" aria-labelledby="v-pills-theme-tab")
+                                                        .card-header
+                                                            h6 Theme Settings
+        
+        script(src="/javascripts/library/student-settings.js" type="module")
+        include includes/footer.pug

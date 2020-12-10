@@ -1,0 +1,56 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                if exam.length > 0
+                                    .card
+                                        .card-header
+                                            h5 #{title}
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light 
+                                                        tr 
+                                                            th Code
+                                                            th Name
+                                                            th Start Date
+                                                            th End Date
+                                                            th Questions
+                                                            th Results
+                                                    tbody 
+                                                        each e in exam
+                                                            - let code = e.examCode
+                                                            - let name = e.name
+                                                            - let startDateYear = e.startDate.getFullYear()
+                                                            - let startDateMonth = e.startDate.getMonth() + 1
+                                                            - let startDateDay = e.startDate.getDate()
+                                                            - let endDateYear = e.endDate.getFullYear()
+                                                            - let endDateMonth = e.endDate.getMonth() + 1
+                                                            - let endDateDay = e.endDate.getDate()
+                                                            - let questionsUrl = "/school/manage-sessions/" + session._id + "/" + term.name + "/cbt/" + e._id + "/questions" 
+                                                            - let resultUrl = "/school/manage-sessions/" + session._id + "/" + term.name + "/cbt/" + e._id + "/results" 
+                                                            tr
+                                                                td #{code}
+                                                                td #{name}
+                                                                td #{startDateDay}/#{startDateMonth}/#{startDateYear}
+                                                                td #{endDateDay}/#{endDateMonth}/#{endDateYear}
+                                                                td #[a(href=questionsUrl ) View]
+                                                                td #[a(href=resultUrl) View]
+                                else
+                                    .card
+                                        .card-header
+                                            h5 #{title}
+                                            span.d-block.m-t-5 No exam was created for this class in this term.
+
+        include includes/footer.pug

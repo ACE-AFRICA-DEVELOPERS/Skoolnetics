@@ -1,0 +1,30 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5#title Graduated Students
+                                    .card-body
+                                        .row
+                                            if students.length != 0
+                                                each student in students
+                                                    .col-md-3
+                                                        a(href="/staff/new-student/" + student._id class="text-dark box-field")
+                                                            span #{student.firstName} #{student.lastName}
+                                            else
+                                                p.mb-0.mt-0 You have no graduated students.
+
+        script(src="/javascripts/library/principal-graduate.js" type="module")                        
+        include includes/footer.pug

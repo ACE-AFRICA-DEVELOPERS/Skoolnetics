@@ -1,0 +1,68 @@
+include includes/header.pug 
+block content
+    link(href="/fileinput/css/fileinput.css" media="all" rel="stylesheet" type="text/css")
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 Add a Question
+                                    .card-body
+                                        .row
+                                            .col-md-11
+                                                .report-field
+                                                    form(method="POST" enctype="multipart/form-data")
+                                                        .row
+                                                            .col-md-7
+                                                                .mb-3
+                                                                    label Question:
+                                                                    textarea(class="form-control question-form mb-4" name="question")
+                                                                .mb-3
+                                                                    label Image (Optional)
+                                                                    div(class="form-group")
+                                                                        div(class="file-loading")
+                                                                            input(id="file-1" type="file" name="picture" class="file" data-show-upload="false" data-overwrite-initial="false" data-theme="fas")
+                                                            .col-md-5
+                                                                .mb-3
+                                                                    label Option A:
+                                                                    input(type="text" class="form-control mb-4" id="optionA" name="optionA" required)
+                                                                .mb-3
+                                                                    label Option B:
+                                                                    input(type="text" class="form-control mb-4" id="optionB" name="optionB" required)
+                                                                .mb-3
+                                                                    label Option C:
+                                                                    input(type="text" class="form-control mb-4" id="optionC" name="optionC" required)
+                                                                .mb-3
+                                                                    label Option D:
+                                                                    input(type="text" class="form-control mb-4" id="optionD" name="optionD")
+                                                                .mb-3
+                                                                    label Correct Option:
+                                                                    select(type="text" class="form-control mb-4 custom-select" id="correctOption" name="correctOption" required)
+                                                                        option(value="" disabled= "disabled" selected) ---------
+                                                                        option(value="A") Option A
+                                                                        option(value="B") Option B
+                                                                        option(value="C") Option C
+                                                                        option(value="D") Option D
+                                                                .mb-3
+                                                                    label Mark:
+                                                                    input(type="number" class="form-control mb-4" name="mark" required)
+                                                            .col-md-12.text-center
+                                                                hr
+                                                                input(type="submit" value="Create" class="btn btn-info" id="submit")
+                                                                p(class="err-msg mt-2" id="on-submit")
+
+        script(src="/javascripts/jquery.min.js")                               
+        script(src="/fileinput/js/fileinput.js" type="text/javascript")
+        script(src="/fileinput/themes/fas/theme.js" type="text/javascript") 
+        script(src="/javascripts/library/handle_upload.js")                            
+        include includes/footer.pug

@@ -1,0 +1,54 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p.d-none#student #{students._id}
+                                .card
+                                    if payments
+                                        .card-header
+                                            h5 Pay for #{students.lastName} #{students.firstName} #{students.otherName}
+                                            span.d-block.m-t-5 Select what you want to pay and click on #[code Process] to proceed.
+                                        .card-body
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light
+                                                        tr
+                                                            th Select
+                                                            th Description
+                                                            th Amount
+                                                    tbody
+                                                        if payments
+                                                            each pay, index in payments.fees
+                                                                tr  
+                                                                    td
+                                                                        - let id = paymentName[pay.paymentFor]
+                                                                        input(type="checkbox" class="check" id="check" data-amount=pay.amount data-pay=id)
+                                                                    td.invoice #{paymentName[pay.paymentFor]}
+                                                                    td.invoice #{pay.amount}
+                                            .row
+                                                .col-md-6
+                                                    .text-left.ml-2
+                                                        a(href="#" class="btn btn-primary mr-5" id="total-paid") Proccess
+                                                .col-md-6
+                                                    .text-right.mr-2.d-none#hide
+                                                        button(class='btn btn-primary' id="payment")
+                                                            .font-weight-semibold#totalPayment
+                                    else
+                                        .card-header
+                                            span.d-block.m-t-5 There's no bill for #{students.lastName} #{students.firstName} yet.
+
+        script(src="/javascripts/library/deduction.js" type="module")
+        script(src='/javascripts/pdf.js')
+
+        include includes/footer.pug

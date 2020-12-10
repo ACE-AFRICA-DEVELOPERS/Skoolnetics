@@ -1,0 +1,86 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .row
+                                    .col-md-6
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
+                                div(class="justify-content-between")
+                                    p #[a(href="#" data-toggle="modal" data-target="#add-period" class="btn btn-info") New Class Period #[i(class="fa fa-plus ml-1")]]
+                                div(id="add-period" class="modal fade")
+                                    div(class="modal-dialog" role="document")
+                                        div(class="modal-content")
+                                            div(class="modal-header")
+                                                h4(class="modal-title") Add a Period
+                                                button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                    span(aria-hidden="true") &times;
+                                            div(class="modal-body")
+                                                form(method="POST")
+                                                    label Period: 
+                                                    select(class="form-control mb-3 custom-select" name="periodNum" id="periodNum" required)
+                                                        option(value="select") -------------- 
+                                                        each period in periods.weekday
+                                                            option(value=period.periodNum) #{period.periodNum}
+                                                    label Subject 
+                                                    select(class="form-control mb-3 custom-select" name="subjectName" id="subjectName" required)
+                                                        option(value="select") -------------- 
+                                                        each subject in classSchools.subjects
+                                                            option(value=subject) #{subject}
+                                                        option(value="Break") Break
+                                                    //- label(class="label") Weekday 
+                                                    //- select(class="form-control" name="nameOfDay" id="nameOfDay" required)
+                                                    //-     option(value="select") -------------- 
+                                                    //-     if day
+                                                    //-         option(value=day.weekday) #{day.weekday}
+                                                    div(class="text-center")
+                                                        button(type="submit" class="btn btn-info") Create
+
+                                if timetables
+                                    - let pArray = []
+                                    .card
+                                        .card-header
+                                            h5 Class Timetable for #{day.weekday} , #{classSchools.name}
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light 
+                                                        tr 
+                                                            th Day
+                                                            each period in periods.weekday
+                                                                - pArray.push(period.periodNum)
+                                                                th #{period.startTime} - #{period.endTime}
+                                                    tbody 
+                                                        tr
+                                                            th #{day.weekday}
+                                                            each sub , i in pArray 
+                                                                - let d = timetables.find(e => e.periodNum == sub) 
+                                                                if d
+                                                                    td #{d.subjectName} #[a(class="ml-1 red-color" href="/school/timetable/class/"+classSchools._id+'/class-timetable/day/'+day._id+'/subject/'+ d._id) #[i(class="feather icon-trash")] ]
+                                                                else
+                                                                    td -  
+                                else
+                                    .card
+                                        .card-header
+                                            h5 Class Timetable for #{day.weekday} , #{classSchools.name}
+                                            span.d-block.m-t-5 Nothing created yet.
+                            a(href="/school/timetable/class/"+classSchools._id+'/class-timetable/set' class="btn btn-info mt-5")
+                                i(class="fa fa-arrow-left ml-1")
+                                    span.ml-2 Back
+                                
+            include includes/footer.pug

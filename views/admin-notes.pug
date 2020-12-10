@@ -1,0 +1,69 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                if staff
+                                    p #[a(href=`/staff/principal/lesson-notes/all` class="btn btn-info") Check Approved Notes]
+                                .card
+                                    if lessonNotes.length > 0
+                                        .card-header
+                                            if staff
+                                                h5 Unapproved Lesson Notes
+                                            else
+                                                h5 Approved Lesson Notes
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light
+                                                        tr
+                                                            th Staff
+                                                            th Subject
+                                                            th Class
+                                                            th Week
+                                                            th View
+                                                            if staff
+                                                                th Approve
+                                                    tbody
+                                                        each lessonNote in lessonNotes
+                                                            -let singleLessonNote = '/staff/principal/lesson-notes/' + lessonNote._id
+                                                            - let adminSingle = '/school/lesson-notes/' + pClass + '/' + lessonNote._id
+                                                            -let approveUrl = '/staff/principal/lesson-notes/' + lessonNote._id + '/approve'
+                                                            tr
+                                                                td #{staffName[lessonNote.staff]}
+                                                                td #{lessonNote.subject}
+                                                                td #{lessonNote.className}
+                                                                td #{lessonNote.week}
+                                                                if staff
+                                                                    td #[a(href=singleLessonNote class="main-link") view]
+                                                                    td #[a(href="#" class="ace-btn" data-toggle="modal" data-target=`#a${lessonNote._id}`) #[i(class="feather icon-check")]]
+                                                                    div(class="modal fade" id=`a${lessonNote._id}` role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                        div(class="modal-dialog" role="document")
+                                                                            div(class="modal-content")
+                                                                                div(class="modal-header")
+                                                                                    h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                    button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                        span(aria-hidden="true") ×
+                                                                                div(class="modal-body") Are you sure you want to approve this note?
+                                                                                div(class="modal-footer")
+                                                                                    a(class="btn btn-info mr-3" href=approveUrl) Ok
+                                                                                    button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+                                                                else
+                                                                    td #[a(href=adminSingle class="main-link") view]
+                                    else
+                                        .card-header
+                                            h5 Unapproved Lesson Notes
+                                            span.d-block.m-t-5 No Lesson note has been created for this class.
+                                    
+
+        include includes/footer.pug

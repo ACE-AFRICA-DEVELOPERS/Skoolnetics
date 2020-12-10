@@ -1,0 +1,111 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+
+                                .row.justify-content-center
+                                    .col-md-8
+                                        if error
+                                            if error.length != 0
+                                                .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{error}
+
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
+                                div
+                                    p #[a(href="#" data-toggle="modal" data-target="#add-session" class="btn btn-info") New #[i(class="fa fa-plus ml-1")]]
+                                    div(id="add-session" class="modal fade")
+                                        div(class="modal-dialog" role="document")
+                                            div(class="modal-content")
+                                                div(class="modal-header")
+                                                    h6(class="modal-title") New Record
+                                                    button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                        span(aria-hidden="true") &times;
+                                                div(class="modal-body")
+                                                    form(method="POST")
+                                                        label(class="label") Exam Type:
+                                                        select(name="name" class="form-control mb-3")
+                                                            option(value="" selected disabled="disabled") --------
+                                                            option(value="Att") Attendance
+                                                            option(value="CA-1") C.A 1
+                                                            option(value="CA-2") C.A 2
+                                                            option(value="CA-3") C.A 3
+                                                            option(value="CA-4") C.A 4
+                                                            option(value="Exam") Exam
+                                                        label(class="label") Total:
+                                                        input(type="number" placeholder="(E.G: 30)" name="total" class="form-control mb-3")
+                                                        div(class="text-center")
+                                                            button(type="submit" class="btn btn-info") Create
+                                .row
+                                    .col-xl-12
+                                        .card
+                                            if examCompute.length > 0
+                                                .card-header
+                                                    h5 Exam Settings
+                                                .card-block.table-border-style
+                                                    .table-responsive
+                                                        table.table.table-striped
+                                                            thead
+                                                                tr
+                                                                    th S/N
+                                                                    th Exam Type
+                                                                    th Total Score
+                                                                    if !(studentResult.length > 0)
+                                                                        th Action
+                                                            tbody 
+                                                                each exam, index in examCompute
+                                                                    tr
+                                                                        td #{index + 1}
+                                                                        td #{exam.name}
+                                                                        td #{exam.total}
+                                                                        if !(studentResult.length > 0)
+                                                                            td 
+                                                                                a(href="#" data-toggle="modal" data-target=`#E${exam._id}` class="ace-btn") Remove
+                                                                                div(class="modal fade" id=`E${exam._id}` role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                                    div(class="modal-dialog" role="document")
+                                                                                        div(class="modal-content")
+                                                                                            div(class="modal-header")
+                                                                                                h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                                    span(aria-hidden="true") ×
+                                                                                            div(class="modal-body") Clicking Ok deletes this Exam.
+                                                                                            div(class="modal-footer")
+                                                                                                
+                                                                                                -let delExam = "/school/exam-settings/" + exam._id + "/delete"
+                                                                                                a(href=delExam class="ace-btn btn") Ok
+                                                                                                button(class="cancel-btn btn" type="button" data-dismiss="modal") Cancel
+                                            else
+                                                .card-header
+                                                    h5 Exam Settings
+                                                    span.d-block.m-t-5 No setup found. Create one or #[a(href="#" data-toggle="modal" data-target=`#useModal`) use previous' term settings.]
+                                                    div(id=`useModal` class="modal fade")
+                                                        div(class="modal-dialog" role="document")
+                                                            div(class="modal-content")
+                                                                div(class="modal-header")
+                                                                    h4(class="modal-title") Are you sure?
+                                                                    button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                                        span(aria-hidden="true") &times;
+                                                                div(class="modal-body") Are you sure you want to use settings from previous term?
+                                                                div(class="modal-footer")
+                                                                    a(class="btn btn-info" href="/school/exam-settings/use-prev") Yes
+                                                                    button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+
+                                            
+        include includes/footer.pug

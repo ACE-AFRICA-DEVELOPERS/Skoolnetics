@@ -1,0 +1,129 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                if error
+                                    if error.length != 0
+                                        .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                            button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                span(aria-hidden="true") ×
+                                            span #{error}
+
+                                if success
+                                    if success.length != 0
+                                        .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                            button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                span(aria-hidden="true") ×
+                                            span #{success}
+                                div
+                                    p #[a(href="#" data-toggle="modal" data-target="#add-term" class="btn btn-info") New Term #[i(class="fa fa-plus ml-1")]]
+                                    div(id="add-term" class="modal fade")
+                                        div(class="modal-dialog" role="document")
+                                            div(class="modal-content")
+                                                div(class="modal-header")
+                                                    h4(class="modal-title") Add a Term
+                                                    button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                        span(aria-hidden="true") &times;
+                                                div(class="modal-body")
+                                                    form(method="POST")
+                                                        label Term: 
+                                                        select(name="name" class="form-control mb-2 custom-select")
+                                                            option(disabled="disabled" selected value="") -----
+                                                            option(value="First Term") First Term
+                                                            option(value="Second Term") Second Term
+                                                            option(value="Third Term") Third Term
+                                                        label Start: 
+                                                        input(type="date" class="form-control mb-2" name="startDate" placeholder="Start Date")
+                                                        label End:
+                                                        input(type="date" class="form-control mb-2" name="endDate" placeholder="End Date")
+                                                        div(class="text-center")
+                                                            button(type="submit" class="btn btn-info") Create
+                                    .col-xl-12
+                                        .card
+                                            if term.length > 0
+                                                .card-header
+                                                    h5 Term
+                                                    span.d-block.m-t-5
+                                                    | On the 
+                                                    code current
+                                                    |  tab, click on 'make current' to choose your current term.
+                                                .card-block.table-border-style
+                                                    .table-responsive
+                                                        table.table.table-striped
+                                                            thead
+                                                                tr
+                                                                    th Term
+                                                                    th Start Date
+                                                                    th End Date
+                                                                    th Current?
+                                                                    th Ended?
+                                                            tbody 
+                                                                each sess in term
+                                                                    - let name = sess.name
+                                                                    - let startDateYear = sess.startDate.getFullYear()
+                                                                    - let startDateMonth = sess.startDate.getMonth() + 1
+                                                                    - let startDateDay = sess.startDate.getDate()
+                                                                    - let endDateDay = sess.endDate.getDate()
+                                                                    - let endDateMonth = sess.endDate.getMonth() + 1
+                                                                    - let endDateYear = sess.endDate.getFullYear()
+                                                                    - let deleteUrl = "#"
+                                                                    tr  
+                                                                        td #{name}
+                                                                        td #{startDateDay}/#{startDateMonth}/#{startDateYear}
+                                                                        td #{endDateDay}/#{endDateMonth}/#{endDateYear}
+                                                                        if sess.ended
+                                                                            td Ended
+                                                                        else
+                                                                            if sess.current
+                                                                                td Yes
+                                                                            else
+                                                                                td #[a(href="#" data-toggle="modal" data-target=`#P${sess._id}` class="ace-btn") Make Current]
+                                                                                div(class="modal fade" id=`P${sess._id}`  role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                                    div(class="modal-dialog" role="document")
+                                                                                        div(class="modal-content")
+                                                                                            div(class="modal-header")
+                                                                                                h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                                    span(aria-hidden="true") ×
+                                                                                            div(class="modal-body") Clicking Ok makes the term the current term.
+                                                                                            div(class="modal-footer")
+                                                                                                - let currentUrl = "/school/session/" + session._id + "/current/" + sess._id
+                                                                                                a(href=currentUrl class="ace-btn btn") Ok
+                                                                                                button(class="cancel-btn btn" type="button" data-dismiss="modal") Cancel
+                                                                        if sess.current
+                                                                            if sess.ended
+                                                                                td Yes
+                                                                            else
+                                                                                
+                                                                                td #[a(href="#" data-toggle="modal" data-target=`#Q${sess._id}` class="ace-btn") Set]
+                                                                                div(class="modal fade" id=`Q${sess._id}`  role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                                    div(class="modal-dialog" role="document")
+                                                                                        div(class="modal-content")
+                                                                                            div(class="modal-header")
+                                                                                                h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                                    span(aria-hidden="true") ×
+                                                                                            div(class="modal-body") Clicking Ok ends the term. There is no going back.
+                                                                                            div(class="modal-footer")
+                                                                                                - let endUrl = "/school/session/" + session._id + "/end/" + sess._id
+                                                                                                a(href=endUrl class="ace-btn btn") Ok
+                                                                                                button(class="cancel-btn btn" type="button" data-dismiss="modal") Cancel
+                                                                        else
+                                                                            td ----
+                                            else
+                                                .card-header
+                                                    h5 Term
+                                                    span.d-block.m-t-5 No term has been created. 
+
+        include includes/footer.pug

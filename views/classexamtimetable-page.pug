@@ -1,0 +1,34 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content 
+                        .main-body
+                            .page-wrapper
+                                p #[a(href="/school/exam-timetable/class/" +classSchools._id class="btn btn-info") #[i.feather.icon-clipboard] Show Timetable ]
+                                .card
+                                    .card-header.mb-2
+                                        h5 Class Timetable for #{classSchools.name}
+                                        p.mb-0 Select the Exam day you want to compute for.
+                                    .card-body
+                                        .row
+                                            if day.length > 0
+                                                each d in day
+                                                    - let dayUrl = "/school/exam-timetable/class/" + classSchools._id + "/day/" + d._id + '/subject'
+                                                    .col-md-2.mb-3
+                                                        a(href=dayUrl)
+                                                            div(class="box-field")
+                                                                span #{d.nameOfDay.toLocaleDateString()}
+                                            else
+                                                p.ml-3 You need to set the dates first.
+
+
+            include includes/footer.pug

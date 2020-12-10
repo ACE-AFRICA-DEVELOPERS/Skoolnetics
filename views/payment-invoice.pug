@@ -1,0 +1,58 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .row.justify-content-center
+                                        .col-md-8
+                                            if error
+                                                if error.length != 0
+                                                    .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                        button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                            span(aria-hidden="true") ×
+                                                        span #{error}
+
+                                            if success
+                                                if success.length != 0
+                                                    .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                        button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                            span(aria-hidden="true") ×
+                                                        span #{success}
+                                    div(class="mt-2")
+                                        .card
+                                            .card-header
+                                                h5 Select a Class to generate a Bill.
+                                                span.d-block.m-t-5 Kindly select a class below to automatically generate a Bill.
+                                            .card-block.table-border-style
+                                                .table-responsive
+                                                    table.table.table-striped
+                                                        thead.thead-light
+                                                            tr
+                                                                th S/N
+                                                                th Class
+                                                                th View
+                                                            tbody 
+                                                                if classes.length > 0
+
+                                                                    each clas, index in classes
+                                                                        - let viewUrl = "/school/fees/payment-invoice/" + clas._id
+                                                                        - let name = `${clas.class}`
+                                                                    
+                                                                        tr
+                                                                            td #{index + 1}
+                                                                            td #{clas.name}
+                                                                            td #[a(href=viewUrl class="main-link btn btn-primary") View]
+
+
+            include includes/footer.pug

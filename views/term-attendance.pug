@@ -1,0 +1,59 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                - for (let i = 1; i <= 13; i++){
+                                    - let weekUrl = "/school/manage-sessions/" + session._id + "/" + term.name + "/attendance/" + pClass + "/" + i
+                                    - let color
+                                    - if (week == i){
+                                        - color = 'btn-dark'
+                                    - }
+                                    a(href=weekUrl class=`btn btn-light ${color}`) Week#{i}
+                                - }
+                                .card.mt-3
+                                    if attendance.length > 0
+                                        .card-header
+                                            h5 Attendance Report for #{pClass}
+                                            span.d-block.m-t-5 Week #{week}
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light
+                                                        tr
+                                                            th Full Name
+                                                                each date in attendanceWeek
+                                                                    - let attDate = weekday[date.date.getDay()]
+                                                                    th #{attDate}
+                                                    tbody
+                                                        each attend in attendance
+                                                            tr
+                                                                td #{studentName[attend.student]}
+                                                                if attend.attendance.length > 0
+                                                                    each att in attend.attendance
+                                                                        if att.holiday
+                                                                            td H
+                                                                        else
+                                                                            if att.mark == "Present"
+                                                                                td #[i(class="fa fa-check text-success")]
+                                                                            else
+                                                                                td #[i(class="fa fa-times text-danger")]
+                                                                else
+                                                                    td(colspan="5") No attendance was recorded for this week.
+                                  
+                                    else
+                                        .card-header
+                                            h5 Attendance Report for #{pClass} (#{sessS} | #{termS})
+                                            span.d-block.m-t-5 No attendance was been recorded for this class.
+
+        include includes/footer.pug

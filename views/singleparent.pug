@@ -1,0 +1,69 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p #[a(href='/school/parent' class="btn btn-info") View all Parents]
+                                .card
+                                    .card-header
+                                        h5 Profile
+                                    .card-body
+                                        .row.justify-content-center
+                                            .col-md-10
+                                                .row
+                                                    .col-md-4.mb-3
+                                                        if parentDB.profilePhoto
+                                                            - let imageUrl = "/uploads/schools/" + schoolAdmin.schoolCode + "/parents/" + parentDB.profilePhoto
+                                                            img(src=imageUrl alt="" width="100%" height="300px")
+                                                        else
+                                                            if parentDB.title == 'Mr'
+                                                                img(src="/images/user/avatar-4.jpg" alt="" width="100%" height="300px")
+                                                            else
+                                                                img(src="/images/user/avatar-3.jpg" alt="" width="100%" height="300px")  
+                                                        label(class="btn-file2 mt-4") #[i(class="fa fa-upload pr-2")] Change Image
+                                                            input(type="file" name='picture' id='picture')
+                                                    div(class="col-md-8")
+                                                        div(class="card-box")
+                                                            .row
+                                                                .col-3
+                                                                    label(for="ID" class="label") Parent ID:
+                                                                .col-9
+                                                                    input(type="text" value= parentDB.parentID class="profile-form mb-4" readonly)
+                                                                .col-3
+                                                                    label(for="name" class="label") Name:
+                                                                .col-9
+                                                                    input(type="text" value= parentDB.name class="profile-form mb-4" name="name")
+                                                                .col-3
+                                                                    label(for="email" class="label") Email:
+                                                                .col-9
+                                                                    input(type="email" value= parentDB.email class="profile-form mb-4" name="otherName")
+                                                                .col-3
+                                                                    label(for="number" class="label") Number:
+                                                                .col-9
+                                                                    input(type="tel" value= parentDB.number class="profile-form mb-4" name="number")
+                                                                .col-3
+                                                                    label(for="gender" class="label") Relationship:
+                                                                .col-9
+                                                                    input(type="text" value= parentDB.relationship class="profile-form mb-4" name="relationship" readonly)
+                                                                .col-3
+                                                                    label(for="gender" class="label") Children:
+                                                                .col-9
+                                                                    each ward in parentDB.ward
+                                                                        span.mr-1 #{studentName[ward]} |
+                                                                
+                                                    div(class="col-md-12 mt-3 text-center")
+                                                        input(type="submit" class="btn btn-info"  value="Update")
+
+        
+
+        include includes/footer.pug

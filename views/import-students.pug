@@ -1,0 +1,32 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 Import Students
+                                        span.d-block.m-t-5 Select one:
+                                    .card-body
+                                        .row
+                                            .col-md-3.mb-3
+                                                a(href='/school/students/import/class' class="text-dark")
+                                                    .box-field
+                                                        p #[b Import by Class]
+                                            .col-md-3.mb-3
+                                                a(href='/school/students/import/all' class="text-dark")
+                                                    .box-field
+                                                        p #[b Import all students]
+
+                                
+        include includes/footer.pug

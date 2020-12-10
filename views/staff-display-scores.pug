@@ -1,0 +1,57 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                if results.length > 0
+                                    if firstResult.released
+                                        - let unreleaseUrl = "/staff/cbt/cbt-results/" + exam.examCode + "/" + pSubject + "/" + pClass + "/unrelease"
+                                        p #[a(href=unreleaseUrl class="btn btn-info") Recall]
+                                    else
+                                        - let releaseUrl = "/staff/cbt/cbt-results/" + exam.examCode + "/" + pSubject + "/" + pClass + "/release"
+                                        p #[a(href=releaseUrl class="btn btn-info") Release to Students]
+                                    .card
+                                        .card-header
+                                            h5 CBT Result sheet for #{pSubject}, #{pClass}
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead
+                                                        tr
+                                                            th Name
+                                                            th Student ID
+                                                            th Total
+                                                            th Score
+                                                            th Percentage
+                                                            th Grade
+                                                    tbody
+                                                        each result, index in results
+                                                            tr(class="analytics-row")
+                                                                td #{studentName[result.student]}
+                                                                td #{studentID[result.student]}
+                                                                each res in result.result
+                                                                    if res.courseName == pSubject
+                                                                        td #{res.total}
+                                                                        td(id="score") #{res.score} 
+                                                                        td.average #{res.percentage}
+                                                                        td.grade
+                                                                              
+
+                                else
+                                    .card
+                                        .card-header
+                                            h5 CBT Result sheet for #{pSubject}, #{pClass}
+                                            span.d-block.m-t-5 No student has written this text/Exam.
+                                    
+        script(src="/javascripts/library/grade-cbt.js" type="module")
+        include includes/footer.pug

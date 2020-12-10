@@ -1,0 +1,74 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .row
+                                    .col-md-6
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
+                                p #[a(href="#" data-toggle="modal" data-target="#add-period" class="btn btn-info") New Date #[i(class="fa fa-plus ml-1")]]
+                                div(id="add-period" class="modal fade")
+                                    div(class="modal-dialog" role="document")
+                                        div(class="modal-content")
+                                            div(class="modal-header")
+                                                h4(class="modal-title") Add Exam Day
+                                                button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                    span(aria-hidden="true") &times;
+                                            div(class="modal-body")
+                                                form(method="POST")
+                                                    label Date: 
+                                                    input(type="date" class="form-control mb-2" name="nameOfDay")
+                                                    div(class="text-center")
+                                                        button(type="submit" class="btn btn-info") Create
+                                if days.length > 0
+                                    .card
+                                        .card-header
+                                            h5 Set Exam Days
+                                            .card-block.table-border-style
+                                                .table-responsive
+                                                    table.table.table-striped
+                                                        thead.thead-light 
+                                                            tr 
+                                                                th.text-center S/N
+                                                                th.text-center Exam Date
+                                                                th.text-center Delete
+
+                                                        tbody 
+                                                            - let i = 0
+                                                            each day, index in days
+                                                                - let delUrl = "/school/exam-day/" + day._id + '/delete'
+                                                                - let weekday = day.weekday
+                                                                tr
+                                                                    td.text-center #{++i}  
+                                                                    td.text-center #{day.nameOfDay.toLocaleDateString()}
+                                                                    td.text-center
+                                                                        a(href=delUrl class="red-color")
+                                                                            i(class="feather icon-trash")
+                                else 
+                                    .card
+                                        .card-header
+                                            h5 Exam Dates
+                                            span.d-block.m-t-5 No date has been created.
+                                    
+                                a(href="/school/exam-timetable" class="btn btn-info mt-5")
+                                    i(class="fa fa-arrow-left ml-1")
+                                        span.ml-2 Back
+
+
+
+            include includes/footer.pug

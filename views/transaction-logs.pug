@@ -1,0 +1,36 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 Transaction Logs
+                                    .card-body
+                                        .row
+                                            .col-md-4
+                                                a(href="/staff/finance/transactions/logs/today")
+                                                    .box-field.text-center
+                                                        p Search by Dates
+                                            .col-md-4
+                                                - let className = classes[0].name
+                                                - let classUrl = "/staff/finance/transactions/logs/class/" + className
+                                                a(href=classUrl)
+                                                    .box-field.text-center
+                                                        p Search by Class
+                                            .col-md-4
+                                                a(href="#")
+                                                    .box-field.text-center
+                                                        p Search by Payment Types
+
+        include includes/footer.pug

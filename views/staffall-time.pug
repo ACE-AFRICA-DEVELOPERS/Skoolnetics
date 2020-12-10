@@ -1,0 +1,48 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content 
+                        .main-body
+                            .page-wrapper
+                                if timetables.length > 0
+                                    - let pArray = []
+                                    .card
+                                        .card-header
+                                            h5 #{classSchools.name} class Timetable
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light 
+                                                        tr 
+                                                            th Day
+                                                            each period in periods
+                                                                each p in period.weekday
+                                                                    - pArray.push(p.periodNum)
+                                                                    th #{p.startTime} - #{p.endTime}
+
+                                                    tbody 
+                                                        each time , index in timetables
+                                                            tr
+                                                                th #{time.nameOfDay}
+                                                                each t in pArray
+                                                                    - let d = time.subject.find(e => e.periodNum == t) 
+                                                                    if d
+                                                                        td #{d.subjectName}
+                                                                    else
+                                                                        td -
+                                else
+                                    .card
+                                        .card-header
+                                            h5 #{classSchools.name} class Timetable
+                                            span.d-block.m-t-5 Timetable has not been created for this class.
+                                
+            include includes/footer.pug

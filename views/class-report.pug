@@ -1,0 +1,58 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                if results.length > 0
+                                    if firstResult.released
+                                        - let unReleaseUrl = '/school/cbt-results/' + exam.examCode + '/' + className + '/unrelease'
+                                        p #[a(href=unReleaseUrl class="btn btn-info") Recall]
+                                    else
+                                        - let releaseUrl = '/school/cbt-results/' + exam.examCode + '/' + className + '/release'
+                                        p #[a(href=releaseUrl class="btn btn-info") Release results to Students]
+                                    .card
+                                        .card-header
+                                            h5 Result Analysis for #{className}
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light
+                                                        tr 
+                                                            th Reg Number
+                                                            th Name
+                                                            each cls in firstResult.result
+                                                                th(colspan="3" class="text-center") #{cls.courseName}
+                                                        tr
+                                                            th --------
+                                                            th --------
+                                                            each cls in firstResult.result
+                                                                th Total
+                                                                th Score
+                                                                th Percentage
+                                                    tbody 
+                                                        each result, index in results 
+                                                            tr
+                                                                td #{studentID[result.student]}
+                                                                td #{studentName[result.student]}
+                                                                    each res in result.result
+                                                                        td #{res.total}
+                                                                        td #{res.score}
+                                                                        td #{res.percentage}
+                                else
+                                    .card
+                                        .card-header
+                                            h5 Result Analysis for #{className}
+                                            span.d-block.m-t-5 Results for this class isn't available yet.
+
+
+        include includes/footer.pug

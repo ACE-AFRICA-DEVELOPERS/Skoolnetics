@@ -1,0 +1,97 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .col-md-8
+                                    if error
+                                        if error.length != 0
+                                            .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                    span(aria-hidden="true") ×
+                                                span #{error}
+                                    if success
+                                        if success.length != 0
+                                            .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                    span(aria-hidden="true") ×
+                                                span #{success}
+                                .row
+                                    .col-md-6
+                                .row.justify-content-between.p-3
+                                    p #[a(href="#" data-toggle="modal" data-target="#add-period" class="btn btn-info") New Period #[i(class="fa fa-plus ml-1")]]
+                                    p #[a(href="/school/day" class="btn btn-info") Set Weekdays #[i(class="fa fa-arrow-right ml-1")]]
+                                div(id="add-period" class="modal fade")
+                                    div(class="modal-dialog" role="document")
+                                        div(class="modal-content")
+                                            div(class="modal-header")
+                                                h4(class="modal-title") Add a Period
+                                                button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                    span(aria-hidden="true") &times;
+                                            div(class="modal-body")
+                                                form(method="POST")
+                                                    label Period (1, 2 , etc): 
+                                                    input(type="Number" class="form-control mb-2" name="periodNum")
+                                                    label Start Time: (E.G: 7:00)
+                                                    input(type="text" class="form-control mb-2" name="startTime")
+                                                    label End Time: (E.G: 10:00)
+                                                    input(type="text" class="form-control mb-2" name="endTime")
+                                                    
+                                                    div(class="text-center")
+                                                        button(type="submit" class="btn btn-info") Create
+
+                                if periods.length > 0
+                                    .card
+                                        .card-header
+                                            h5 School Periods
+                                        .card-block.table-border-style
+                                            .table-responsive
+                                                table.table.table-striped
+                                                    thead.thead-light 
+                                                        tr 
+                                                            th Period Number
+                                                            th Time Duration
+                                                            th Delete
+
+                                                    tbody 
+                                                        each period, index in periods
+                                                            each week in period.weekday
+                                                                - let deleteUrl = "/school/period/" + week._id
+                                                                - let periodnum = week.periodNum
+                                                                - let timedur = week.startTime +" - "+week.endTime
+                                                                tr
+                                                                    td #{periodnum}
+                                                                    td #{timedur}
+                                                                    td #[a(href="#" data-toggle="modal" class="red-color" data-target="#payment") #[i(class="red-color feather icon-trash")]]
+
+                                                                div(class="modal fade" id="payment" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                    div(class="modal-dialog" role="document")
+                                                                        div(class="modal-content")
+                                                                            div(class="modal-header")
+                                                                                h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                    span(aria-hidden="true") ×
+                                                                            div(class="modal-body") Deleting this will delete this class permanently.
+                                                                            div(class="modal-footer")
+                                                                                a(class="btn btn-info" href=deleteUrl) Ok
+                                                                                button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+                                else
+                                    .card
+                                        .card-header
+                                            h5 School Periods
+                                            span.d-block.m-t-5 No Periods has been created yet.
+                                
+
+
+
+        include includes/footer.pug

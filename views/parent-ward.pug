@@ -1,0 +1,29 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header    
+                                        h5 Child(ren)
+                                    .card-body
+                                        .row
+                                            each ward in parent.ward
+                                                .col-md-4
+                                                    -let profileUrl = "/parent/student/" + ward._id
+                                                    a(href=profileUrl)
+                                                        .box-field
+                                                            p #{oneStudent[ward]}
+                                
+
+        include includes/footer.pug

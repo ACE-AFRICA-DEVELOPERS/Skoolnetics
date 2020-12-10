@@ -1,0 +1,76 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .row
+                                    .col-md-6
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
+                                .card
+                                    .card-header
+                                        h5 Roles
+                                        span.d-block.m-t-5 Activate one or all of the following roles. Staffs assigned these roles can perform the actions stated here.
+                                    .card-body
+                                        .row
+                                            .col-md-6.form-field.mb-3
+                                                label Role Name:
+                                                span.ml-1 #[b Teacher]
+                                                p Actions:
+                                                p #[i.feather.icon-check] #[span Upload results of students based on classes assigned.]
+                                                p #[i.feather.icon-check] #[span Create and manage CBT questions.]
+                                                p #[i.feather.icon-check] #[span Mark attendance and submit broadsheets if selected as a classhead.]
+                                                p #[i.feather.icon-check] #[span Create and manage lesson note.]
+                                                p #[i.feather.icon-check] #[span Create and manage assignments.]
+                                                p #[button(class="btn btn-light" disabled=true) #[i.feather.icon-check-circle] Activated]
+                                            .col-md-6.form-field.mb-3
+                                                if role1
+                                                    label Role Name:
+                                                    span.ml-1 #[b #{role1.name}]
+                                                else
+                                                    input(type="text" class="form-control mb-3" name="role" id="r-1-form" placeholder="Role Name")
+                                                p Actions:
+                                                p #[i.feather.icon-check] #[span Create and Manage timetables. ]
+                                                p #[i.feather.icon-check] #[span Give principal remarks in report cards.]
+                                                p #[i.feather.icon-check] #[span Mark staffs' attendance.]
+                                                p #[i.feather.icon-check] #[span Approve lesson notes.]
+                                                p #[i.feather.icon-check] #[span Graduate/Suspend/Revoke a Student.]
+                                                if role1
+                                                    p #[button(class="btn btn-light" disabled=true) #[i.feather.icon-check-circle] Activated]
+                                                else
+                                                    p #[button(class="btn btn-light" id="r-1") Activate]  
+                                                p#r-1-display
+                                            .col-md-6.form-field.mb-3
+                                                if role2
+                                                    label Role Name:
+                                                    span.ml-1 #[b #{role2.name}]
+                                                else
+                                                    input(type="text" class="form-control mb-3" id="r-2-form" name="role" placeholder="Role Name")
+                                                p Actions:
+                                                p #[i.feather.icon-check] #[span Create and manage payment fees.]
+                                                p #[i.feather.icon-check] #[span Approve proof of payment and generate receipts.]
+                                                p #[i.feather.icon-check] #[span Manage every financial transactions on the app.]
+                                                if role2
+                                                    p #[button(class="btn btn-light" disabled=true) #[i.feather.icon-check-circle] Activated]
+                                                else
+                                                    p #[button(class="btn btn-light" id="r-2") Activate]   
+                                                p#r-2-display
+                                        hr
+                                        p #[a(href="#" class="btn btn-info") Request for a specific role and actions]
+
+        script(src="/javascripts/library/roles.js" type="module")
+        include includes/footer.pug

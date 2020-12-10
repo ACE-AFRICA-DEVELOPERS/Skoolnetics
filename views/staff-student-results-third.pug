@@ -1,0 +1,82 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p.d-none#className #{pClass}
+                                p.d-none#courseName #{pSubject}
+                               
+                                if studentResults.length > 0
+                                    if courseSheet
+                                        if courseSheet.length > 0
+                                            p Sheet has been submitted.
+                                        else
+                                            .d-flex.justify-content-between
+                                                p #[button(type="button" class="btn btn-info" id="submitResult") Submit Result Sheet] #[span#displayMsg ]
+                                                - let uploadUrl = '/staff/upload-result/' + pSubject + '/' + pClass 
+                                                p #[a(href=uploadUrl class="btn btn-info") Upload a result]
+                                                span#courseName.d-none #{pSubject}
+                                                span#className.d-none #{pClass}
+                                    else 
+                                        .d-flex.justify-content-between
+                                            p #[button(type="button" class="btn btn-info" id="submitResult") Submit Result Sheet] #[span#displayMsg ]
+                                            - let uploadUrl = '/staff/upload-result/' + pSubject + '/' + pClass 
+                                            p #[a(href=uploadUrl class="btn btn-info") Upload a result]
+                                            span#courseName.d-none #{pSubject}
+                                            span#className.d-none #{pClass}
+                                else
+                                    - let uploadUrl = '/staff/upload-result/' + pSubject + '/' + pClass 
+                                    p #[a(href=uploadUrl class="btn btn-info") Upload a result]
+                                .col-xl-12
+                                    .card
+                                        if studentResults.length > 0
+                                            - let compute = []
+                                            - let others = ['First Term', 'Second Term']
+                                            .card-header
+                                                h5 Spread Sheet for #{title}
+                                        
+                                            .card-block.table-border-style
+                                                .table-responsive
+                                                    table.table.table-striped
+                                                        thead
+                                                            tr
+                                                                th Name
+                                                                th Reg Number
+                                                                each e in examCompute
+                                                                    - compute.push(e.name)
+                                                                    th #{e.name} (#{e.total})
+                                                                th Total
+                                                                th First Term
+                                                                th Second Term
+                                                                th Average
+                                                                th Grade
+                                                        tbody
+                                                            each student in studentResults
+                                                                - let sResult = student.results
+                                                                tr(class="analytics-row")
+                                                                    td(class="sName" id=student.student) #{studentName[student.student]}
+                                                                    td#id #{regNo[student.student]}
+                                                                    each r in compute
+                                                                        - let p = sResult.find(s => s.examType === r) 
+                                                                        - let result = p ? p.score : "-"
+                                                                        td(id=r class=`${r} data`) #{result}
+                                                                    td(class="total") 
+                                                                    each o in others
+                                                                        - let p = sResult.find(s => s.examType === o) 
+                                                                        - let res = p ? p.score : '-'
+                                                                        td(class=o) #{res}
+                                                                    td(class="average")
+                                                                    td(class="grade")
+        
+        script(src="/javascripts/library/third-term.js" type="module")
+        include includes/footer.pug

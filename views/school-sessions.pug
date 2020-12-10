@@ -1,0 +1,126 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                if error
+                                    if error.length != 0
+                                        .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                            button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                span(aria-hidden="true") ×
+                                            span #{error}
+
+                                if success
+                                    if success.length != 0
+                                        .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                            button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                span(aria-hidden="true") ×
+                                            span #{success}
+                                div
+                                    p #[a(href="#" data-toggle="modal" data-target="#add-session" class="btn btn-info") New Session #[i(class="fa fa-plus ml-1")]]
+                                    div(id="add-session" class="modal fade")
+                                        div(class="modal-dialog" role="document")
+                                            div(class="modal-content")
+                                                div(class="modal-header")
+                                                    h4(class="modal-title") Add a Session
+                                                    button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                        span(aria-hidden="true") &times;
+                                                div(class="modal-body")
+                                                    form(method="POST")
+                                                        label Session: 
+                                                        select(name="name" class="form-control mb-3 custom-select")
+                                                            option(disabled="disabled" selected value="") -----
+                                                            option(value="2019/2020 Session") 2019/2020
+                                                            option(value="2020/2021 Session") 2020/2021 
+                                                            option(value="2021/2022 Session") 2021/2022
+                                                            option(value="2022/2023 Session") 2022/2023
+                                                            option(value="2023/2024 Session") 2023/2024
+                                                            option(value="2024/2025 Session") 2024/2025
+                                                        div(class="text-center")
+                                                            button(type="submit" class="btn btn-info") Create
+                                .row
+                                    .col-xl-12
+                                        .card
+                                            if session.length > 0
+                                                .card-header
+                                                    h5 Sessions
+                                                    span.d-block.m-t-5
+                                                    | On the 
+                                                    code current
+                                                    |  tab, click on 'make current' to choose your current session.
+                                                .card-block.table-border-style
+                                                    .table-responsive
+                                                        table.table.table-striped
+                                                            thead
+                                                                tr
+                                                                    th S/N
+                                                                    th Session
+                                                                    th Current?
+                                                                    th Ended?
+                                                                    th Add/View Term
+                                                            tbody 
+                                                                each sess, index in session
+                                                                    - let name = sess.name
+                                                                    - let viewUrl = "/school/session/" + sess._id
+                                                                    tr
+                                                                        td(scope='row') #{index + 1}  
+                                                                        td #{name}
+                                                                        if sess.ended
+                                                                            td Ended
+                                                                        else
+                                                                            if sess.current
+                                                                                td Yes
+                                                                            else
+                                                                                td #[a(href="#" data-toggle="modal" data-target=`#P${sess._id}` class="ace-btn") Make Current]
+                                                                                div(class="modal fade" id=`P${sess._id}`  role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                                    div(class="modal-dialog" role="document")
+                                                                                        div(class="modal-content")
+                                                                                            div(class="modal-header")
+                                                                                                h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                                    span(aria-hidden="true") ×
+                                                                                            div(class="modal-body") Clicking Ok makes the session the current session
+                                                                                            div(class="modal-footer")
+                                                                                                - let currentUrl = "/school/session/current/" + sess._id
+                                                                                                a(href=currentUrl class="ace-btn btn") Ok
+                                                                                                button(class="cancel-btn btn" type="button" data-dismiss="modal") Cancel
+                                                                                
+                                                                                
+                                                                        if sess.current
+                                                                            if sess.ended
+                                                                                td Yes
+                                                                            else
+                                                                                td #[a(href="#" data-toggle="modal" data-target=`#Q${sess._id}`  class="ace-btn") Set]
+                                                                                div(class="modal fade" id=`Q${sess._id}`  role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                                    div(class="modal-dialog" role="document")
+                                                                                        div(class="modal-content")
+                                                                                            div(class="modal-header")
+                                                                                                h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                                    span(aria-hidden="true") ×
+                                                                                            div(class="modal-body") Clicking Set will end this session
+                                                                                                div(class="modal-footer")
+                                                                                                    - let endUrl = "/school/session/end/" + sess._id
+                                                                                                    a(href=endUrl class="ace-btn btn") End Session
+                                                                                                    button(class="cancel-btn btn" type="button" data-dismiss="modal") Cancel
+                                                                                 
+                                                                                
+                                                                        else
+                                                                            td ---
+                                                                        td #[a(href=viewUrl) View]
+                                            else
+                                                .card-header
+                                                    h5 Sessions
+                                                    span.d-block.m-t-5 No session has been created. 
+
+        include includes/footer.pug

@@ -1,0 +1,113 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p #[a(href="#" class="btn btn-info") #[i.feather.icon-printer] Print]
+                                .card
+                                    .card-header
+                                        h5 Report Card
+                                    .card-body
+                                        .row
+                                            .col-md-8
+                                                .report-field
+                                                    .d-flex.justify-content-between
+                                                        div
+                                                            p #[b #{schoolDB.schoolName}]
+                                                            if schoolDB.logo
+                                                                - let logoUrl = '/uploads/schools/' + code + '/logo/' + schoolDB.logo
+                                                                img(src=logoUrl height="150px" width="150px")
+                                                            else
+                                                                img(src='/images/logo-stamp/logo.jpeg' height="150px" width="150px")
+                                                            
+                                                        div
+                                                            if studentDB.profilePhoto
+                                                                - let imageUrl = '/uploads/schools/' + code.schoolCode + '/' + pClass + '/' + studentDB.profilePhoto
+                                                                img(src=imageUrl height="150px" width="150px" class="rounded-circle")
+                                                            else
+                                                                if studentDB.gender = 'male'
+                                                                    img(src="/images/user/avatar-4.jpg" height="150px" width="150px")
+                                                                else
+                                                                    img(src="/images/user/avatar-3.jpg" height="150px" width="150px")
+                                                            .mt-3
+                                                                p
+                                                                    b Name:
+                                                                    span.ml-1 #{studentDB.lastName} #{studentDB.firstName} #{studentDB.otherName}
+                                                                p 
+                                                                    b Student ID:
+                                                                    span.ml-1 #{studentDB.studentID}
+                                                                p 
+                                                                    b Class:
+                                                                    span.ml-1 #{pClass}
+                                                    .table-responsive
+                                                        table.table.table-hover
+                                                            tbody
+                                                                tr.unread
+                                                                        td
+                                                                            h5.text-c-green
+                                                                            i.feather.icon-message-square
+                                                                        td
+                                                                            h6.mb-1 #[b Subject]
+                                                                            p.m-0 #[b CA | Exam]
+                                                                            
+                                                                        td
+                                                                            h6.text-muted
+                                                                                i.fas.fa-circle.text-c-green.f-10.m-r-15
+                                                                                | #[b Total]
+                                                                each res in broadsheet.result
+                                                                    tr.unread
+                                                                        td
+                                                                            h5.text-c-green
+                                                                            i.feather.icon-message-square
+                                                                        td
+                                                                            h6.mb-1 #{res.courseName}
+                                                                            p.m-0 #{res.ca} | #{res.exam}
+                                                                            
+                                                                        td
+                                                                            h6.text-muted
+                                                                                i.fas.fa-circle.text-c-green.f-10.m-r-15
+                                                                                | #{res.total}
+                                                    hr
+                                                    .mt-2
+                                                        .d-flex.justify-content-between                    
+                                                            div
+                                                                p #[b Total: ] #[span #{broadsheet.gTotal}]
+                                                                p #[b Percentage: ] #[span #{broadsheet.gAverage}]
+                                                            div
+                                                                p #[b Attendance: ] #[span --]
+                                                                p #[b Position: ] #[span #{broadsheet.position}]
+                                                    hr
+                                                    .mt-2
+                                                        label #[b Class teacher remarks:]
+                                                        input(type="text" class="profile-form text-muted mb-3" readonly value=broadsheet.teacherRemark)
+                                                        label #[b Principal remarks:]
+                                                        input(type="text" class="profile-form text-muted mb-3" readonly value=broadsheet.principalRemark)
+                                                    p.text-right
+                                                        if schoolDB.stamp
+                                                            - let stampUrl = '/uploads/schools/' + code.schoolCode + '/logo/' + schoolDB.stamp
+                                                            img(src=logoUrl height="150px" width="150px")
+                                                        else
+                                                            img(src='/images/logo-stamp/stamp.jpg' height="150px" width="150px")
+                                        .mt-3
+                                            a(href="#" class="btn btn-info" id="toggle") Write Remarks
+                                            .hide-form.mt-3#hide-form
+                                                .row
+                                                    .col-md-6
+                                                        .form-field
+                                                            form(method="POST")
+                                                                label Remarks:
+                                                                input(type="text" class="form-control mb-3" name="remark")
+                                                                input(type="submit" value="Add" class="btn btn-info")
+        
+        script(src="/javascripts/library/remarks.js" type="module")
+        include includes/footer.pug

@@ -1,0 +1,35 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    if exams
+                                        .card-header
+                                            h5 CBT Results
+                                            span.d-block.m-t-5 Select an exam:
+                                        .card-body
+                                            .row
+                                                each exam in exams
+                                                    .col-md-4.mb-3
+                                                       - let examUrl = "/school/cbt-results/" + exam.examCode
+                                                        a(href=examUrl class="text-dark")
+                                                            .field-box
+                                                                p #[b #{exam.name}]
+                                                                p #{exam.examCode}
+                                    else
+                                        .card-header
+                                            h5 CBT Results
+                                            span.d-block.m-t-5 No exam has been set yet.:
+
+        include includes/footer.pug

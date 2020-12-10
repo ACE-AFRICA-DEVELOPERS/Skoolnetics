@@ -1,0 +1,74 @@
+block content
+    div(id="styleSelector" class="menu-styler")
+        div(class="style-toggler")
+            a(href="#" id="menuClick")
+            div(class="style-block")
+                if admin
+                    h5(class="mb-2") Skoolnetics
+                else if schoolAdmin
+                    h5(class="mb-2") #{schoolAdmin.schoolName}
+                    hr(class="my-0")
+                    h6.mt-4 Details
+                    .text-center
+                        if schoolAdmin.logo
+                            - let imageUrl = '/uploads/schools/' + schoolAdmin.schoolCode + '/logo/' + schoolAdmin.logo
+                            img(src=imageUrl width="150px" height="150px")
+                        else
+                            img(src="/images/logo-stamp/logo.jpeg" height="150px" width="150px")
+                        p #{schoolAdmin.address} #{schoolAdmin.state} #{schoolAdmin.country}
+                    h6.mt-4 Session & Term
+                    p #[b Current Session:] #{sessS}
+                    p #[b Current Term:] #{termS}
+                    h6.mt-4 User:
+                    p #[span #{schoolAdmin.schoolAdmin}] - #[i.fas.fa-circle.text-c-green.f-10.mr-1] #[span Online]
+                else if staff
+                    h5(class="mb-2") #{code.schoolName}
+                    hr(class="my-0")
+                    h6.mt-4 Details
+                    .text-center
+                        if code.logo
+                            - let imageUrl = '/uploads/schools/' + code.schoolCode + '/logo/' + code.logo
+                            img(src=imageUrl width="150px" height="150px")
+                        else
+                            img(src="/images/logo-stamp/logo.jpeg" height="150px" width="150px")
+                        p #{code.address} #{code.state} #{code.country}
+                    h6.mt-4 Session & Term
+                    p #[b Current Session:] #{sessS}
+                    p #[b Current Term:] #{termS}
+                    h6.mt-4 User:
+                    p #[span #{staff.firstName} #{staff.lastName}] - #[i.fas.fa-circle.text-c-green.f-10.mr-1] #[span Online]
+                else if student
+                    h5(class="mb-2") #{code.schoolName}
+                    hr(class="my-0")
+                    h6.mt-4 Details
+                    .text-center
+                        if code.logo
+                            - let imageUrl = '/uploads/schools/' + code.schoolCode + '/logo/' + code.logo
+                            img(src=imageUrl width="150px" height="150px")
+                        else
+                            img(src="/images/logo-stamp/logo.jpeg" height="150px" width="150px")
+                        p #{code.address} #{code.state} #{code.country}
+                    h6.mt-4 Session & Term
+                    p #[b Current Session:] #{sessS}
+                    p #[b Current Term:] #{termS}
+                    h6.mt-4 User:
+                    p #[span #{student.firstName} #{student.lastName}] - #[i.fas.fa-circle.text-c-green.f-10.mr-1] #[span Online]
+                else if parent
+                    h5(class="mb-2") #{code.schoolName}
+                    hr(class="my-0")
+                    h6.mt-4 Details
+                    .text-center
+                        if code.logo
+                            - let imageUrl = '/uploads/schools/' + code.schoolCode + '/logo/' + code.logo
+                            img(src=imageUrl width="150px" height="150px")
+                        else
+                            img(src="/images/logo-stamp/logo.jpeg" height="150px" width="150px")
+                        p #{code.address} #{code.state} #{code.country}
+                    h6.mt-4 Session & Term
+                    p #[b Current Session:] #{sessS}
+                    p #[b Current Term:] #{termS}
+                    h6.mt-4 User:
+                    p #[span #{parent.surname} #{parent.name}] - #[i.fas.fa-circle.text-c-green.f-10.mr-1] #[span Online]
+                
+
+                

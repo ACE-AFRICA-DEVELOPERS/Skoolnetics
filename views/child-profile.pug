@@ -1,0 +1,93 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 #{studentDB.lastName} #{studentDB.firstName} #{studentDB.otherName}
+                                        span.d-block.m-t-5 #{studentDB.studentID}
+                                    .card-body
+                                        .row
+                                            .col-md-8
+                                                if studentDB.profilePhoto
+                                                    - let imageUrl = "/uploads/schools/" + schoolAdmins.schoolCode + "/" + studentClass.name + "/" + studentDB.profilePhoto
+                                                    img(src=imageUrl width="200px" height="200px")
+                                                else
+                                                    if studentDB.gender == "male"
+                                                        img(src="/images/user/avatar-4.jpg" width="200px" height="200px")
+                                                    else
+                                                       img(src="/images/user/avatar-3.jpg" width="200px" height="200px") 
+                                                .table-responsive
+                                                    table.table.table-hover
+                                                        tbody
+                                                            tr.unread
+                                                                td
+                                                                    h5.text-c-green
+                                                                        i.feather.icon-message-square
+                                                                td
+                                                                    h6.mb-1 #{studentClass.name}
+                                                                    p.m-0 Class
+                                                                td
+                                                                    h6.text-muted
+                                                                        i.fas.fa-circle.text-c-green.f-10.m-r-15
+                                                                        | #[i.feather.icon-check]
+                                                            tr.unread
+                                                                td
+                                                                    h5.text-c-green
+                                                                        i.feather.icon-user
+                                                                td
+                                                                    h6.mb-1 #{studentDB.gender}
+                                                                    p.m-0 Gender
+                                                                td
+                                                                    h6.text-muted
+                                                                        i.fas.fa-circle.text-c-green.f-10.m-r-15
+                                                                        | #[i.feather.icon-check]
+                                                            tr.unread
+                                                                td
+                                                                    h5.text-c-green
+                                                                        i.feather.icon-message-square
+                                                                td
+                                                                    - let age = studentDB.dateOfBirth.getDate() + "/" + (studentDB.dateOfBirth.getMonth() + 1) + "/" + studentDB.dateOfBirth.getFullYear()
+                                                                    h6.mb-1 #{age}
+                                                                    p.m-0 Date of Birth
+                                                                td
+                                                                    h6.text-muted
+                                                                        i.fas.fa-circle.text-c-green.f-10.m-r-15
+                                                                        | #[i.feather.icon-check]
+                                                                
+                                            .col-md-4.mt-3
+                                                .row
+                                                    - let attendanceUrl = "/parent/student/" + studentDB._id + "/attendance"
+                                                    - let assignmentUrl = "/parent/student/" + studentDB._id + "/assignment"
+                                                    - let reportUrl = "/parent/student/" + studentDB._id + "/report-card"
+                                                    - let feesUrl = "/parent/student/" + studentDB._id + "/finance-page"
+                                                    .col-md-12.mb-3
+                                                        a(href=attendanceUrl)
+                                                            .box-field.text-center
+                                                                p Attendance
+                                                    .col-md-12.mb-3
+                                                        a(href=assignmentUrl)
+                                                            .box-field.text-center
+                                                                p Assignment
+                                                    .col-md-12.mb-3
+                                                        a(href=reportUrl)
+                                                            .box-field.text-center
+                                                                p Report Card
+                                                    .col-md-12.mb-3
+                                                        a(href=feesUrl)
+                                                            .box-field.text-center
+                                                                p Finance
+                                    
+
+        include includes/footer.pug

@@ -1,0 +1,52 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p #[a(href="/school/new-student" class="btn btn-info") New Student #[i.feather.icon-plus]]
+                                .card
+                                    .card-header
+                                        h5 Students
+                                        
+                                    .card-body
+                                        .row
+                                            .col-md-3.mb-3
+                                                a(href='/school/students/all' class="text-dark")
+                                                    .box-field
+                                                        p #[b All Students]
+                                            .col-md-3.mb-3
+                                                a(href='/school/students/import' class="text-dark")
+                                                    .box-field
+                                                        p #[b Import Students]
+                                            .col-md-3.mb-3
+                                                a(href='/school/students/suspended' class="text-dark")
+                                                    .box-field
+                                                        p #[b Suspended Students]
+                                            .col-md-3.mb-3
+                                                a(href='/school/students/revoked' class="text-dark")
+                                                    .box-field
+                                                        p #[b Revoked Students]
+                                            .col-md-3.mb-3
+                                                a(href='/school/students/all-graduates' class="text-dark")
+                                                    .box-field
+                                                        p #[b Graduated Students]
+                                            .col-md-3.mb-3
+                                                a(href='/school/students/promote' class="text-dark")
+                                                    .box-field
+                                                        p #[b Promote Students]
+                                            .col-md-3.mb-3
+                                                a(href='/student' target="_blank" class="text-dark")
+                                                    .box-field
+                                                        p #[b Student Dashboard]
+
+        include includes/footer.pug

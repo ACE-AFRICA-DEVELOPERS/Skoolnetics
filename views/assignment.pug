@@ -1,0 +1,67 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                p #[a(href="#" class="btn btn-info" id="download") #[i.feather.icon-printer] Print]
+                                div(class="card" id="invoice")
+                                    .card-header
+                                        h5 Assignment
+                                    div(class="card-body format")
+                                        .row
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Staff's Name: 
+                                            .col-sm-10
+                                                p #{staffs.firstName.toUpperCase()} #{staffs.lastName.toUpperCase()}
+                                            
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Class : 
+                                            .col-sm-10
+                                                p #{singleAssignment.className}
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Session : 
+                                            .col-sm-10
+                                                p #{session.name}
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Term : 
+                                            .col-sm-10
+                                                p #{term.name}
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Release Date : 
+                                            .col-sm-10
+                                                -let release = singleAssignment.releaseDate.getDay() + '/' + (singleAssignment.releaseDate.getMonth() + 1) + '/' + singleAssignment.releaseDate.getFullYear()
+                                                p #{release}
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Submission Date : 
+                                            .col-sm-10
+                                                -let submission = singleAssignment.submissionDate.getDay() + '/' + (singleAssignment.submissionDate.getMonth() + 1) + '/' + singleAssignment.submissionDate.getFullYear()
+                                                p #{submission}
+                                            .col-sm-2.text-lg-right
+                                                p.font-weight-bold Subject : 
+                                            .col-sm-10
+                                                p #{singleAssignment.subject}
+                                            if singleAssignment.image
+                                                .col-sm-10
+                                                    -let imageUrl = "/uploads/schools/" + school + "/assignment/" + staffs.staffID + "/" + singleAssignment.image
+                                                    embed(src=imageUrl alt="" width="100%" height="600px")
+                                            else
+                                                .col-sm-2.text-lg-right
+                                                    p.font-weight-bold Content : 
+                                                .col-sm-10
+                                                    div(id="content" data-id=singleAssignment._id ) #{singleAssignment._id}
+
+
+        script(src="/javascripts/library/pdf.js") 
+        script(src="/javascripts/library/assignment.js" type="module")                                   
+        include includes/footer.pug                      

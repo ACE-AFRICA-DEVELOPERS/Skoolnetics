@@ -1,0 +1,49 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .row
+                                    .col-md-6
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
+                                .card
+                                    .card-header
+                                        h5 #{title}
+                                    .card-body
+                                        .row
+                                            each classchool in classchools.subjects
+                                                - let deleteUrl = "/school/class/" + mainClass + "/subjects/" + classchool + "/delete"
+                                                div(class="col-lg-3 col-md-6 mb-2")
+                                                    .box
+                                                        p(class="float-left") #{classchool}
+                                                        a(class="float-right red-color" href=deleteUrl) #[i(class="feather icon-trash")]
+                                                        div(class="clearfix")
+                                        hr
+                                        div(class="text-center mt-4")
+                                            a(class="btn btn-info" href="#" id="add") Add more subjects
+                                            div(class="row justify-content-center")
+                                                div(class="col-md-6")
+                                                    div(class="form-field hide-form")
+                                                        form(method="POST")
+                                                            select(class="multiple-selecting form-control" name="subject")
+                                                                each subject in  subjects.subjects
+                                                                    option(value=subject) #{subject}
+                                                            input(type="submit" class="btn btn-primary mt-3" value="Add")
+                                                            a(href="#" class="btn btn-light ml-3 mt-3" id="cancel") Cancel
+        script(src="/javascripts/library/subjects.js")
+        include includes/footer.pug

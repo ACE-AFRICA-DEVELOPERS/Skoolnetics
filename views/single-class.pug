@@ -1,0 +1,128 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .col-md-6
+                                    if success
+                                        if success.length != 0
+                                            .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                    span(aria-hidden="true") ×
+                                                span #{success}
+                                    if error
+                                        if error.length != 0
+                                            .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                    span(aria-hidden="true") ×
+                                                span #{error}
+
+                                .d-flex.justify-content-between
+                                    if invoices
+                                        if invoices.length == 0
+                                            p #[a(href="#" data-toggle="modal" data-target="#addModal" class="btn btn-info") Add Payment Details #[i(class="fa fa-plus ml-1")]]
+                                    else
+                                        p #[a(href="#" data-toggle="modal" data-target="#addModal" class="btn btn-info") Add Payment Details #[i(class="fa fa-plus ml-1")]]
+                                    - let billUrl = '/staff/finance/all-classes/' + singleClass._id + '/generate-invoice'
+                                    p #[a(href=billUrl class="btn btn-info") Generate Invoice]
+                                div(class="modal fade" id="addModal" role="dialog" aria-hidden="true")
+                                    div(class="modal-dialog" role="document")
+                                        div(class="modal-content")
+                                            div(class="modal-header")
+                                                h5 Add a Payment Type
+                                                button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                    span(aria-hidden="true") ×
+                                            div(class="modal-body")
+                                                form(method="post")
+                                                    label Payment Type : 
+                                                    select(class="form-control mb-3 custom-select" name="paymentFor" required)
+                                                        option(value="" selected disabled="disabled") -------------
+                                                        if paymentTypes.length > 0
+                                                            each pay in paymentTypes
+                                                                option(value=pay._id) #{pay.paymentFor}
+                                                    label Amount : 
+                                                    input(type="number" class="form-control mb-3" name="amount" required)
+                                    
+                                                    div(class="text-center")
+                                                        input(type="submit", value="Add" class="btn btn-info")
+                                .card
+                                    if payments
+                                        if payments.fees.length > 0
+                                            .card-header
+                                                h5 #{singleClass.name} Payment Details
+                                                //- span.d-block.m-t-5 Click on New Payment Type button to set up a payment type for Students.
+            
+                                            .card-block.table-border-style
+                                                .table-responsive
+                                                    table.table.table-striped
+                                                        thead.thead-light
+                                                            tr
+                                                                th S/N
+                                                                th Payment Type
+                                                                th Amount
+                                                                if !invoices
+                                                                    th Delete
+                                                        tbody
+                                                            each pay, index in payments.fees
+                                                                - let deleteUrl = "/staff/finance/all-classes/" + classDB._id + '/' + pay._id + '/delete'
+                                                            
+                                                                tr
+                                                                    td #{index + 1}
+                                                                    td #{paymentName[pay.paymentFor]}
+                                                                    td ##{pay.amount.toLocaleString()}
+                                                                    if !invoices
+                                                                        td #[a(href=deleteUrl class='red-color') #[i.feather.icon-trash]]
+                                        else
+                                            .card-header
+                                                h5 #{singleClass.name} Payment Details
+                                                span.d-block.m-t-5 No payment detail has been added.
+                                            .card-body
+                                                p Use available payment details for this class?
+                                                if availablePayments
+                                                    each payment in availablePayments
+                                                        p #[a(href="#" data-toggle="modal" data-target=`#add-e${payment._id}`) Copy #{className[payment.class]} payment details.]
+                                                        div(id=`add-e${payment._id}` class="modal fade")
+                                                            div(class="modal-dialog" role="document")
+                                                                div(class="modal-content")
+                                                                    div(class="modal-header")
+                                                                        h4(class="modal-title") Are you sure?
+                                                                        button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                                            span(aria-hidden="true") &times;
+                                                                    div(class="modal-body") This will add all payment details created in #{className[payment.class]} to #{singleClass.name}.
+                                                                    div(class="modal-footer")
+                                                                        - let addUrl = "/staff/finance/all-classes/" + singleClass._id + "/replicate/" + payment.class
+                                                                        a(class="btn btn-info" href=addUrl) Ok
+                                                                        button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+                                    else
+                                        .card-header
+                                            h5 #{singleClass.name} Payment Details
+                                            span.d-block.m-t-5 No payment detail has been added.
+                                        .card-body
+                                            p Use available payment details for this class?
+                                            if availablePayments
+                                                each payment in availablePayments
+                                                    p #[a(href="#" data-toggle="modal" data-target=`#add-e${payment._id}`) Copy #{className[payment.class]} payment details.]
+                                                    div(id=`add-e${payment._id}` class="modal fade")
+                                                        div(class="modal-dialog" role="document")
+                                                            div(class="modal-content")
+                                                                div(class="modal-header")
+                                                                    h4(class="modal-title") Are you sure?
+                                                                    button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                                        span(aria-hidden="true") &times;
+                                                                div(class="modal-body") This will add all payment details created in #{className[payment.class]} to #{singleClass.name}.
+                                                                div(class="modal-footer")
+                                                                    - let addUrl = "/staff/finance/all-classes/" + singleClass._id + "/replicate/" + payment.class
+                                                                    a(class="btn btn-info" href=addUrl) Ok
+                                                                    button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+
+        include includes/footer.pug

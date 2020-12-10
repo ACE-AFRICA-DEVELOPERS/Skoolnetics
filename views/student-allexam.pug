@@ -1,0 +1,38 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content 
+                        .main-body
+                            .page-wrapper
+                            if timetables.length > 0
+                                .card
+                                    .card-header.mb-3
+                                        h5 #{term.name} Examination Timetable for #{className.name}
+                                    .card-block.table-border-style
+                                        .table-responsive
+                                            table.table.table-striped
+                                                tbody 
+                                                    each time , index in timetables
+                                                        
+                                                        tr
+                                                            td #{time.nameOfDay.toLocaleDateString()}
+                                                            each t in time.subject
+                                                                td 
+                                                                    span #{t.subjectName}
+                                                                    p #{t.startTime} - #{t.endTime}
+                            else
+                                .card
+                                    .card-header
+                                        h5 #{term.name} Examination Timetable for #{className.name}
+                                        span.d-block.m-t-5 It hasn't been set yet.
+                                
+            include includes/footer.pug

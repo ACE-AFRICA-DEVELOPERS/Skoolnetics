@@ -1,0 +1,76 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .d-flex.justify-content-between
+                                    p #[a(href="/staff/finance/transactions/upload/proofs" class="btn btn-info") Payment Proofs #[i.feather.icon-arrow-right]]
+                                    p #[a(href="/staff/finance/transactions/logs" class="btn btn-info") #[i.feather.icon-aperture] Transaction Logs]
+                                .row
+                                    .col-md-6
+                                        if error
+                                            if error.length != 0
+                                                .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{error}
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
+                                .card
+                                    .card-header
+                                        h5 Upload a Transaction
+                                        span.d-block.m-t-5 You can also check for proof of payments from parents.
+                                    .card-body
+                                        .row
+                                            .col-md-6
+                                                form(method="POST")
+                                                    .form-field
+                                                        .mb-3
+                                                            label Select Proof to Upload (Optional)
+                                                            select(class="form-control custom-select" name="proof" id="proof")
+                                                                option(value="" disabled="disabled" selected) Select one
+                                                                each proof in paymentProof
+                                                                    option(value=proof._id) #{proof._id}
+                                                        .mb-3
+                                                            label Students :
+                                                            select(class="multiple-selecting form-control" name="studentID" id="studentID")
+                                                                each student in students
+                                                                    option(value="" disabled="disabled" selected) Select a Student
+                                                                    option(value=student._id) #{student.lastName} #{student.firstName} #{student.otherName} | #{student.studentID}
+                                                        #replicate
+                                                            .mb-3
+                                                                label Payment For:
+                                                                select(class='form-control custom-select' name="paymentType" id="paymentFor")
+                                                                    option(value="" disabled="disabled" selected) Select one
+                                                                    each payment in paymentType
+                                                                        option(value=payment.paymentFor) #{payment.paymentFor}
+                                                            .mb-3
+                                                                label Amount Paid:
+                                                                input(type="number" class="form-control" name="amountPaid" id="amountPaid")
+                                                        .paste-here
+                                                        a(href="#" class="btn-success" id="add-more") #[i.feather.icon-plus]
+                                                        .d-none
+                                                            a(href="#" id="0" class="red-color trash-it") #[i(class="feather icon-trash")]
+                                                        .text-center
+                                                            input(type="submit" value="Submit" id="submit" class="btn btn-info")
+                                                            p#displayMsg.text-green
+
+                                            .col-md-6.mt-3
+                                                #displayProof.text-green
+                                                        
+        script(src="/javascripts/library/upload-transaction.js" type="module")
+        include includes/footer.pug

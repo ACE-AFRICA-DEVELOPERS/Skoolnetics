@@ -1,0 +1,50 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 #{students.lastName} #{students.firstName} #{students.lastName}
+                                        - let pronoun
+                                        if students.gender == "male"
+                                            - pronoun = "his"
+                                        else
+                                            - pronoun = "her"
+                                        p Access #{pronoun} financial records, view bills and make payments.
+                                    .card-body
+                                        .row
+                                            .col-md-3.mb-3
+                                                - let viewUrl = '/parent/student/' + students._id + '/finance-page/child-fees'
+                                                a(href=viewUrl class="text-dark")
+                                                    .box-field
+                                                        p #[i.feather.icon-eye] View Bills
+                                            .col-md-3.mb-3
+                                                - let payUrl = '/parent/student/' + students._id + '/finance-page/pay-online'
+                                                a(href=payUrl class="text-dark")
+                                                    .box-field
+                                                        p #[i.feather.icon-credit-card] Pay Online
+                                            .col-md-3.mb-3
+                                                - let uploadUrl = '/parent/student/' + students._id + '/finance-page/upload-payment'
+                                                a(href=uploadUrl class="text-dark")
+                                                    .box-field
+                                                        p #[i.feather.icon-upload] Upload Payment Proof
+                                            .col-md-3.mb-3
+                                                - let historyUrl = '/parent/student/' + students._id + '/finance-page/histories'
+                                                a(href=historyUrl class="text-dark")
+                                                    .box-field
+                                                        p #[i.feather.icon-bar-chart] Financial History
+        
+
+
+        include includes/footer.pug

@@ -1,0 +1,43 @@
+include includes/header.pug 
+block content
+    link(rel="stylesheet" href="/stylesheets/dashboard.css")
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                .card
+                                    .card-header
+                                        h5 #{students.lastName} #{students.firstName} #{students.lastName}
+                                        span.d-block.m-t-5 Financial records.
+                                    .card-body
+                                        if transactions.length > 0
+                                            - length = paymentTypes.length
+                                            .card-block.table-border-style
+                                                .table-responsive
+                                                    table.table.table-striped
+                                                        thead.thead-light
+                                                            tr
+                                                                th Date
+                                                                th(colspan=length) Payment Made
+                                                        tbody
+                                                            each trans in transactions
+                                                                tr
+                                                                    - let tdate = trans.paymentDate.getDate() + '/' + (trans.paymentDate.getMonth() + 1) + '/' + trans.paymentDate.getFullYear()
+                                                                    td #{tdate}
+                                                                    each fee in trans.payment
+                                                                        td #{fee.paymentFor} (##{fee.amountPaid.toLocaleString()})
+                                                            
+                                                            
+                                        else
+                                            p No transaction has been made.
+                      
+
+        include includes/footer.pug

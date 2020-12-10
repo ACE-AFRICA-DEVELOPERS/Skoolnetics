@@ -1,0 +1,82 @@
+include includes/header.pug
+block content
+    link(rel='stylesheet' , href='/stylesheets/dashboard.css')
+    body
+        .loader-bg
+            .loader-track
+                .loader-fill
+        include includes/sidenav.pug 
+        include includes/usernav.pug
+        .pcoded-main-container
+            .pcoded-wrapper
+                .pcoded-content
+                    .pcoded-inner-content
+                        .main-body
+                            .page-wrapper
+                                - let profile = '/school/staff/' + staffDB._id
+                                p #[a(href=profile class="btn btn-info") #[i.feather.icon-arrow-left] Back to Profile]
+                                .row
+                                    .col-md-6
+                                        if error
+                                            if error.length != 0
+                                                .alert.alert-danger.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{error}
+                                        if success
+                                            if success.length != 0
+                                                .alert.alert-success.alert-dismissible.fade-in(role="alert")
+                                                    button.close(type="button" data-dismiss="alert" aria-label="close")
+                                                        span(aria-hidden="true") ×
+                                                    span #{success}
+                                .card
+                                    .card-header
+                                        h5 #{staffDB.firstName} #{staffDB.lastName}
+                                        span.d-block.m-t-5 Both fields are compulsory.
+                                    .card-body
+                                        .row
+                                            .col-md-6.mb-3
+                                                .form-field
+                                                    form(method="POST")
+                                                        label(class="label") Class
+                                                        select(name="className" class="form-control mb-3" required)
+                                                            option(value="" selected disabled="disabled") --------
+                                                            each cls in classSchool
+                                                                option(value=cls.name) #{cls.name}
+                                                        label(class="label") Subject
+                                                        select(name="subject" class="form-control mb-3" required)
+                                                            option(value="" selected disabled="disabled") --------
+                                                            each subject in subjects.subjects
+                                                                option(value=subject) #{subject}
+                                                        input(type="submit" value="Assign" class="btn btn-info")
+                                            .col-md-6.mb-3
+                                                if staffDB.teaching
+                                                    if staffDB.teaching.length > 0
+                                                        .row
+                                                            each teach in staffDB.teaching
+                                                                .col-md-6.mb-2
+                                                                    .form-field
+                                                                        .float-left
+                                                                            p #[b #{teach.className}]
+                                                                            p #[i #{teach.subject}]
+                                                                        .float-right
+                                                                            a(href="#" class="red-color" data-toggle="modal" data-target=`#d${teach._id}`) #[i.feather.icon-trash]
+                                                                        .clearfix
+                                                                        div(class="modal fade" id=`d${teach._id}` role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                            div(class="modal-dialog" role="document")
+                                                                                div(class="modal-content")
+                                                                                    div(class="modal-header")
+                                                                                        h5(class="modal-title" id="exampleModalLabel") Are you sure?
+                                                                                        button(class="close" type="button" data-dismiss="modal" aria-label="Close")
+                                                                                            span(aria-hidden="true") ×
+                                                                                    div(class="modal-body") Deleting this will delete the subject and class assigned to this staff.
+                                                                                    div(class="modal-footer")
+                                                                                        - let deleteUrl = "/school/staff/" + staffDB._id + "/assign/delete/" + teach._id
+                                                                                        a(class="btn btn-info" href=deleteUrl) Ok
+                                                                                        button(class="btn btn-light" type="button" data-dismiss="modal") Cancel
+                                                    else
+                                                        p You haven't assigned any class and subject to this teacher.
+                                                else
+                                                    p You haven't assigned any class and subject to this teacher.
+
+        include includes/footer.pug
