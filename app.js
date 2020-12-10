@@ -16,7 +16,7 @@ const MongoDBStore = require('connect-mongodb-session')(session)
 const indexRouter = require('./routes/index');
 const app = express();
 const store = new MongoDBStore({
-  uri :process.env.MONGO_DB, 
+  uri :"mongodb+srv://afolwalex:cometome30@cluster0-acj9f.mongodb.net/skoolnetics?retryWrites=true&w=majority", 
   collection : "sessions"
 }) 
 // view engine setup
@@ -67,7 +67,7 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 const CONFIG = { 
-	uri : process.env.MONGO_DB , 
+	uri : "mongodb+srv://afolwalex:cometome30@cluster0-acj9f.mongodb.net/skoolnetics?retryWrites=true&w=majority" , 
   OPTIONS : { 
     useNewUrlParser : true , 
     useCreateIndex : true , 
