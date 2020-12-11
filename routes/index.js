@@ -95,6 +95,7 @@ router.get('/school/class/:classname/subjects', ClassController.subjectsClass)
 router.post('/school/class/:classname/subjects', ClassController.addSubject)
 router.get('/school/class/:classname/subjects/:subjectname/delete', ClassController.deleteSubject)
 router.get('/school/class/:classname/delete', ClassController.deleteClass)
+router.post('/fetch-class-subjects', ClassController.fetchClassSubjects)
 
 router.get('/school/staff', SchoolAdminController.getStaffs)
 router.get('/school/staff/new', SchoolAdminController.getNewStaff)

@@ -39,15 +39,13 @@ block content
                                                 .form-field
                                                     form(method="POST")
                                                         label(class="label") Class
-                                                        select(name="className" class="form-control mb-3" required)
+                                                        select(name="className" id="className" class="form-control mb-3" required)
                                                             option(value="" selected disabled="disabled") --------
                                                             each cls in classSchool
                                                                 option(value=cls.name) #{cls.name}
                                                         label(class="label") Subject
-                                                        select(name="subject" class="form-control mb-3" required)
-                                                            option(value="" selected disabled="disabled") --------
-                                                            each subject in subjects.subjects
-                                                                option(value=subject) #{subject}
+                                                        select(name="subject" class="form-control mb-3" id="subject" required)
+                                                            
                                                         input(type="submit" value="Assign" class="btn btn-info")
                                             .col-md-6.mb-3
                                                 if staffDB.teaching
@@ -79,4 +77,6 @@ block content
                                                 else
                                                     p You haven't assigned any class and subject to this teacher.
 
+
+        script(src="/javascripts/library/assign.js" type="module")
         include includes/footer.pug

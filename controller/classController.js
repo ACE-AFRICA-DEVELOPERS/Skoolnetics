@@ -300,6 +300,22 @@ class App {
             res.render('error-page', {error : err})
         }
     }
+
+    fetchClassSubjects = async (req, res, next) => {
+        try{
+            if(req.session.schoolCode){ 
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode : req.session.schoolCode})
+                const classchool = await ClassSchool.findOne({name: req.body.className, school : schoolAdmin._id})
+               
+                res.json(classchool.subjects)
+            }
+            else{
+                res.redirect(303, '/school')
+            }
+        }catch(err){
+            res.render('error-page', {error : err})
+        }
+    }
     
 }
 
