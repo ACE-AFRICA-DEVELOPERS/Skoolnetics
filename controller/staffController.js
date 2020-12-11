@@ -10,7 +10,7 @@ const Result = require('../model/result')
 const Student = require('../model/student')
 const Attendance = require('../model/attendance')
 const ClassSchool = require('../model/classchool')
-const Session = require('../model/session')
+const Session = require('../model/session') 
 const Term = require('../model/term')
 const LessonNote = require('../model/lessonNote')
 const ExamCompute = require('../model/exam-settings')
@@ -29,12 +29,15 @@ class App {
             let staff = await Staff.findOne({staffID : code})
             console.log(staff)
             if(staff){
-                console.log(staff)
                 const validStaff = await bcrypt.compare(password , staff.password)
                 console.log(validStaff)
                 if(validStaff){
-                    req.session.staffCode = staff.staffID
-                    res.redirect(303 , '/staff/dashboard')
+                    if(staff.status == "Active") {
+                        req.session.staffCode = staff.staffID
+                        res.redirect(303 , '/staff/dashboard')
+                    } else {
+                        res.render('staff-page' , { error : 'Please contact the Administrator.'})
+                    }
                 }else{
                     res.render('staff-page' , { error : 'Invalid Login details'})
                 }
@@ -84,7 +87,7 @@ class App {
     getSettings = async (req, res, next) => {
         try{
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") {
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     res.render('staff-settings', {title : 'Settings', staff, code : school, 
@@ -104,7 +107,7 @@ class App {
         try{
             if(req.session.staffCode){
                 const {oldPassword, newPassword, cNewPassword} = req.body
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") { 
                     if(newPassword == cNewPassword){
                         let validPassword = await bcrypt.compare(oldPassword , staff.password)
@@ -139,7 +142,7 @@ class App {
     getExams = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") {
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const exam = await Exam.find({school : school._id})
@@ -174,7 +177,7 @@ class App {
     getCourses = async(req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") {
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const exam = await Exam.findOne({examCode : req.params.examname, school : school._id})
@@ -202,7 +205,7 @@ class App {
     getCourseClass = async(req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") {
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const exam = await Exam.findOne({examCode : req.params.examname, school : school._id})
@@ -230,7 +233,7 @@ class App {
     startCourseQuestions = async(req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") {
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const exam = await Exam.findOne({examCode : req.params.examname, school : school._id})
@@ -265,7 +268,7 @@ class App {
     postCourseQuestion = async(req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const examiner = await Staff.findOne({staffID : req.session.staffCode})
+                const examiner = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(examiner.role == "Teacher") { 
                     const school = await SchoolAdmin.findOne({_id : examiner.school})
                     const exam = await Exam.findOne({examCode : req.params.examname, school : school._id})
@@ -305,7 +308,7 @@ class App {
     setQuestions = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") { 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const exam = await Exam.findOne({examCode : req.params.examname, school : school._id})
@@ -330,7 +333,7 @@ class App {
     postSetQuestions =  async ( req , res , next ) => {
         try{ 
 		    if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") { 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const exam = await Exam.findOne({examCode : req.params.examname, school : staff.school})
@@ -473,7 +476,7 @@ class App {
     checkQuestions = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") { 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const exam = await Exam.findOne({examCode : req.params.examname, school : school._id})
@@ -510,7 +513,7 @@ class App {
     deleteQuestion = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") { 
                     const course = await Course.findOne({courseName : req.params.coursename, 
                         className : req.params.classname, examiner : staff._id})
@@ -550,7 +553,7 @@ class App {
     publishQuestions = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                let staff = await Staff.findOne({staffID : req.session.staffCode})
+                let staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") { 
                     let course = await Course.findOne({examiner : staff._id, 
                         courseName : req.params.coursename, className : req.params.classname})
@@ -582,7 +585,7 @@ class App {
     previewQuestions = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if (staff.role == "Teacher") { 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const exam = await Exam.findOne({examCode : req.params.examname, school : staff.school})
@@ -625,7 +628,7 @@ class App {
     checkStudentsResults = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") { 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     let courseName = req.params.coursename
@@ -662,7 +665,7 @@ class App {
     getLessonNoteTerm = async(req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") { 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const session = await Session.findOne({school : school._id, current : true})
@@ -684,7 +687,7 @@ class App {
     getLessonNotePage = async(req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") { 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const session = await Session.findOne({school : school._id, current : true})
@@ -706,7 +709,7 @@ class App {
     makeLessonNote = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                     if(staff.role == "Teacher") { 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const session = await Session.findOne({school : school._id, current : true})
@@ -728,7 +731,7 @@ class App {
     postLessonNote = async(req, res, next) =>{
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 const school = await SchoolAdmin.findOne({_id : staff.school})
                 const session = await Session.findOne({school : school._id, current : true})
                 const term = await Term.findOne({session : session._id, name : req.params.term})
@@ -777,7 +780,7 @@ class App {
     getAllLessonNote = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const session = await Session.findOne({school : school._id, current : true})
@@ -805,7 +808,7 @@ class App {
     getSingleLessonNote = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const session = await Session.findOne({school : school._id, current : true})
@@ -834,7 +837,7 @@ class App {
     getUploadResult = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const session = await Session.findOne({school: school._id, current: true})
@@ -858,7 +861,7 @@ class App {
         try{ 
             if(req.session.staffCode){
                 let title = req.params.subject + ", " + req.params.className
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") { 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const classSchool = await ClassSchool.findOne({school: school._id, name: req.params.className})
@@ -898,7 +901,7 @@ class App {
     fetchGrade = async (req, res, next) => {
         try{
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID: req.session.staffCode})
+                const staff = await Staff.findOne({staffID: req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const school = await SchoolAdmin.findOne({_id: staff.school})
                     const n = req.body.average
@@ -919,7 +922,7 @@ class App {
         try{ 
             if(req.session.staffCode){
                 let title = req.params.subject + ", " + req.params.className
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") { 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const classSchool = await ClassSchool.findOne({school: school._id, name: req.params.className})
@@ -1002,7 +1005,7 @@ class App {
         try{
             if(req.session.staffCode){
                 let title = req.params.subject + ", " + req.params.className
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const classSchool = await ClassSchool.findOne({school: school._id, name: req.params.className})
@@ -1072,7 +1075,7 @@ class App {
     uploadBroadSheet = async (req, res, next) => {
         try{
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const session = await Session.findOne({school : staff.school, current : true})
                     const term = await Term.findOne({session : session._id, current: true})
@@ -1141,7 +1144,7 @@ class App {
     recallResult = async (req, res, next) => {
         try{
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const session = await Session.findOne({school : staff.school, current : true})
                     const term = await Term.findOne({session : session._id, current: true})
@@ -1192,7 +1195,7 @@ class App {
     uploadBroadSheetThird = async (req, res, next) => {
         try{
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const session = await Session.findOne({school : staff.school, current : true})
                     const term = await Term.findOne({session : session._id, current: true})
@@ -1267,7 +1270,7 @@ class App {
     getOneStudentUpload = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const student = await Student.findOne({_id: req.params.studentID})
                     let title = student.firstName + " " + student.lastName
@@ -1335,7 +1338,7 @@ class App {
     fetchTotalExamScore = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const session = await Session.findOne({current: true, school: school._id})
@@ -1361,7 +1364,7 @@ class App {
         try{ 
             if(req.session.staffCode){
                 const {examType, total, score} = req.body
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const student = await Student.findOne({_id: req.params.studentID})
@@ -1433,7 +1436,7 @@ class App {
     deleteStudentResult = async (req, res, next) => {
       try{
           if(req.session.staffCode) {
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const student = await Student.findOne({_id: req.params.studentID})
@@ -1477,7 +1480,7 @@ class App {
     postFirstorSecond = async (req, res, next) => {
         try{ 
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const student = await Student.findOne({_id: req.params.studentID})
@@ -1547,7 +1550,7 @@ class App {
     getBroadSheetClass = async (req, res, next) => {
         try{
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const classHead = await Staff.findOne({_id: staff._id, classHead: {$exists : true}})
@@ -1576,7 +1579,7 @@ class App {
     getBroadSheet = async (req, res, next) => {
         try{
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") { 
                     const school = await SchoolAdmin.findOne({_id: staff.school})
                     const session = await Session.findOne({school : school._id, current: true})
@@ -1625,7 +1628,7 @@ class App {
     getBroadSheetThird = async (req, res, next) => {
         try{
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher") { 
                     const school = await SchoolAdmin.findOne({_id: staff.school})
                     const session = await Session.findOne({school : school._id, current: true})
@@ -1674,7 +1677,7 @@ class App {
     transferReport = async (req, res, next) => {
         try{
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const session = await Session.findOne({school : staff.school, current : true})
                     const term = await Term.findOne({session : session._id, current: true})
@@ -1719,7 +1722,7 @@ class App {
     getStudentReport = async (req, res, next) => {
         try{
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     const school = await SchoolAdmin.findOne({_id : staff.school})
                     const session = await Session.findOne({school: school._id, current: true})
@@ -1769,7 +1772,7 @@ class App {
     settingsPage = async(req, res, next) => {
         try{
             if(req.session.staffCode){
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     res.render('staff-settings', {title : "Settings",
                         staff : staff, success : req.flash('success')})
@@ -1788,7 +1791,7 @@ class App {
         try{
             if(req.session.staffCode){
                 const {oldPassword, newPassword} = req.body
-                const staff = await Staff.findOne({staffID : req.session.staffCode})
+                const staff = await Staff.findOne({staffID : req.session.staffCode , status : "Active"})
                 if(staff.role == "Teacher"){ 
                     let validPassword = await bcrypt.compare(oldPassword , staff.password)
                     if(validPassword){

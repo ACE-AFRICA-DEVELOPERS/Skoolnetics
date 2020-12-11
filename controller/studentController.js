@@ -24,8 +24,12 @@ class App {
                 let validUser = await bcrypt.compare(password , student.password) 
                 console.log(validUser) 
                 if (validUser) {
-                    req.session.regNumber = student.studentID
-                    res.redirect(303 , '/student/dashboard')
+                    if(student.status == "Active") {
+                        req.session.regNumber = student.studentID
+                        res.redirect(303 , '/student/dashboard')
+                    }else {
+                        res.render('student-page' , { error : 'Please contact the Administrator.'})
+                    }
                 }else {
                     res.render('student-page' , { error : 'Invalid Login details'})
                 }
@@ -40,7 +44,7 @@ class App {
     getDashboard = async (req , res , next) => {
         try{ 
             if(req.session.regNumber){
-                const student = await Student.findOne({studentID : req.session.regNumber})
+                const student = await Student.findOne({studentID : req.session.regNumber , status : 'Active'})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const className = await ClassSchool.findOne({_id : student.className})
                 const session = await Session.findOne({school : school._id, current : true})
@@ -76,7 +80,7 @@ class App {
     getSettings = async (req, res, next) => {
         try{
             if(req.session.regNumber){
-                const student = await Student.findOne({studentID : req.session.regNumber})
+                const student = await Student.findOne({studentID : req.session.regNumber , status : 'Active'})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 res.render('student-settings', {title : 'Settings', student, code : school, 
                 error : req.flash('error'), success : req.flash('success')})
@@ -92,7 +96,7 @@ class App {
         try{
             if(req.session.regNumber){
                 const {oldPassword, newPassword, cNewPassword} = req.body
-                const student = await Student.findOne({studentID : req.session.regNumber})
+                const student = await Student.findOne({studentID : req.session.regNumber, status : 'Active'})
                 if(newPassword == cNewPassword){
                     let validPassword = await bcrypt.compare(oldPassword , student.password)
                     if(validPassword){
@@ -123,7 +127,7 @@ class App {
     getExams = async (req, res, next) => {
         try{ 
             if(req.session.regNumber){
-                const student = await Student.findOne({studentID : req.session.regNumber})
+                const student = await Student.findOne({studentID : req.session.regNumber , status : 'Active'})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const className = await ClassSchool.findOne({_id : student.className})
                 const session = await Session.findOne({school: school._id, current: true})
@@ -146,7 +150,7 @@ class App {
     getExamCourses = async(req, res, next) => {
         try{ 
             if(req.session.regNumber){
-                const student = await Student.findOne({studentID : req.session.regNumber})
+                const student = await Student.findOne({studentID : req.session.regNumber , status : 'Active'})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const session = await Session.findOne({school: school._id, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
@@ -180,7 +184,7 @@ class App {
     getVerifyCBT = async (req, res, next) => {
         try{ 
             if(req.session.regNumber){
-                const student = await Student.findOne({studentID : req.session.regNumber})
+                const student = await Student.findOne({studentID : req.session.regNumber, status : 'Active'})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const className = await ClassSchool.findOne({_id : student.className})
                 const session = await Session.findOne({school: school._id, current: true})
@@ -214,7 +218,7 @@ class App {
     postVerifyCBT = async (req, res, next) => {
         try{ 
             if(req.session.regNumber){
-                const student = await Student.findOne({studentID : req.session.regNumber})
+                const student = await Student.findOne({studentID : req.session.regNumber , status : 'Active'})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const className = await ClassSchool.findOne({_id : student.className})
                 const session = await Session.findOne({school: school._id, current: true})
@@ -261,7 +265,7 @@ class App {
     readyExam = async (req, res, next) => {
         try{ 
             if(req.session.regNumber){
-                const student = await Student.findOne({studentID : req.session.regNumber})
+                const student = await Student.findOne({studentID : req.session.regNumber , status : 'Active'})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const className = await ClassSchool.findOne({_id : student.className})
                 const session = await Session.findOne({school: school._id, current: true})
@@ -308,7 +312,7 @@ class App {
     countToExam = async (req, res, next) => {
         try{
             if(req.session.regNumber){
-                const student = await Student.findOne({studentID : req.session.regNumber})
+                const student = await Student.findOne({studentID : req.session.regNumber , status : 'Active'})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const className = await ClassSchool.findOne({_id : student.className})
                 const session = await Session.findOne({school: school._id, current: true})
@@ -349,7 +353,7 @@ class App {
     examRunning =  async (req , res , next ) => {
         try{ 
 		    if(req.session.regNumber){
-                const student = await Student.findOne({studentID : req.session.regNumber})
+                const student = await Student.findOne({studentID : req.session.regNumber , status : 'Active'})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const session = await Session.findOne({school: school._id, current: true})
                 const term = await Term.findOne({current: true, session: session._id})
@@ -424,7 +428,7 @@ class App {
         try{ 
             if(req.session.regNumber){
                 const {response , courseName, className} = req.body 
-                const validStudent = await Student.findOne({studentID: req.session.regNumber})
+                const validStudent = await Student.findOne({studentID: req.session.regNumber , status : 'Active'})
                 const session = await Session.findOne({school: validStudent.school, current: true})
                 const term = await Term.findOne({session: session._id, current: true})
                 const exam = await Exam.findOne({
@@ -519,7 +523,7 @@ class App {
     getCompletePage = async (req, res, next) => {
         try{ 
             if(req.session.regNumber){
-                let student = await Student.findOne({studentID : req.session.regNumber})
+                let student = await Student.findOne({studentID : req.session.regNumber , status : 'Active'})
                 delete req.session.regNumber
                 res.render('complete-exam', {student : student})
             }else{
@@ -533,7 +537,7 @@ class App {
     getResults = async(req, res, next) => {
         try{ 
             if(req.session.regNumber){
-                let student = await Student.findOne({studentID: req.session.regNumber})
+                let student = await Student.findOne({studentID: req.session.regNumber , status : 'Active'})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const className = await ClassSchool.findOne({_id : student.className})
                 const session = await Session.findOne({school: school._id, current: true})
@@ -565,7 +569,7 @@ class App {
     displayResults = async(req, res, next) => {
         try{ 
             if(req.session.regNumber){
-                const student = await Student.findOne({studentID: req.session.regNumber})
+                const student = await Student.findOne({studentID: req.session.regNumber , status : 'Active'})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const className = await ClassSchool.findOne({_id : student.className})
                 const results = await Result.findOne({_id: req.params.resultID})
@@ -588,7 +592,7 @@ class App {
     getReportCard = async (req, res, next) => {
         try{
             if(req.session.regNumber){
-                const student = await Student.findOne({studentID : req.session.regNumber})
+                const student = await Student.findOne({studentID : req.session.regNumber , status : "Active"})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const session = await Session.findOne({school: school._id, current: true})
                 const term = await Term.findOne({current: true, session: session._id})
@@ -615,7 +619,7 @@ class App {
     settingsPage = async(req, res, next) => {
         try{
             if(req.session.regNumber){
-                const student = await Student.findOne({studentID : req.session.regNumber})
+                const student = await Student.findOne({studentID : req.session.regNumber , status : "Active"})
                 const school = await SchoolAdmin.findOne({_id : student.school})
                 const className = await ClassSchool.findOne({_id : student.className})
                 res.render('student-settings', {title : "Settings",
@@ -633,7 +637,7 @@ class App {
         try{
             if(req.session.regNumber){
                 const {oldPassword, newPassword} = req.body
-                const student = await Student.findOne({studentID : req.session.regNumber})
+                const student = await Student.findOne({studentID : req.session.regNumber , status : "Active"})
                 let validPassword = await bcrypt.compare(oldPassword , student.password)
                 if(validPassword){
                     let harshedPassword = await bcrypt.hash(newPassword , 10)

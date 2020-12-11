@@ -20,21 +20,22 @@ block content
                                     .card-body
                                         .row.justify-content-center
                                             .col-md-10
-                                                .row
-                                                    .col-md-4.mb-3
-                                                        if studentDB.profilePhoto
-                                                            - let imageUrl = "/uploads/schools/" + schoolAdmin.schoolCode + '/' + studentClass.name + '/' + studentDB.profilePhoto
-                                                            img(src=imageUrl alt="" width="100%" height="300px")
-                                                        else
-                                                            if studentDB.gender == 'male'
-                                                                img(src="/images/user/avatar-4.jpg" alt="" width="100%" height="300px")
-                                                            else 
-                                                                img(src="/images/user/avatar-3.jpg" alt="" width="100%" height="300px")  
-                                                        label(class="btn-file2 mt-4") #[i(class="fa fa-upload pr-2")] Change Image
-                                                            input(type="file" name='picture' id='picture')
-                                                    div(class="col-md-8")
-                                                        div(class="card-box")
-                                                            form(action="", method="post")
+                                                form(method="post" enctype="multipart/form-data")
+                                                    .row 
+                                                        .col-md-4.mb-3
+                                                            if studentDB.profilePhoto
+                                                                - let imageUrl = "/uploads/schools/" + schoolAdmin.schoolCode + '/' + studentClass.name + '/' + studentDB.profilePhoto
+                                                                img(src=imageUrl alt="" width="100%" height="300px" id="imageU")
+                                                            else
+                                                                if studentDB.gender == 'male'
+                                                                    img(src="/images/user/avatar-4.jpg" alt="" width="100%" height="300px")
+                                                                else 
+                                                                    img(src="/images/user/avatar-3.jpg" alt="" width="100%" height="300px")  
+                                                            label(class="btn-file2 mt-4") #[i(class="fa fa-upload pr-2")] Change Image
+                                                                input(type="file" name='picture' id='picture')
+                                                            p#displayImage
+                                                        div(class="col-md-8")
+                                                            div(class="card-box")
                                                                 .row
                                                                     .col-3
                                                                         label(for="ID" class="label") Student ID:
@@ -66,8 +67,8 @@ block content
                                                                     .col-3
                                                                         label(for="dateOfBirth" class="label") Date of Birth:
                                                                     .col-9
-                                                                        - let age = studentDB.dateOfBirth.getDate() + "/" + (studentDB.dateOfBirth.getMonth() + 1) + "/" + studentDB.dateOfBirth.getFullYear()
-                                                                        input(type="text" value=age class="profile-form mb-4" name="dateOfBirth")
+                                                                        //- - let age = studentDB.dateOfBirth.getDate() + "/" + (studentDB.dateOfBirth.getMonth() + 1) + "/" + studentDB.dateOfBirth.getFullYear()
+                                                                        input(type="text" value=studentDB.dateOfBirth.toDateString() class="profile-form mb-4" name="dateOfBirth")
                                                                     .col-3
                                                                         label(for="pNumber" class="label") Parent's No:
                                                                     .col-9
@@ -78,5 +79,5 @@ block content
                                                                         input(type="text" value= studentDB.status class="profile-form mb-4" name="status" readonly)
                                                                     div(class="col-md-12 mt-3 text-center")
                                                                         input(type="submit" class="btn btn-info" value="Update")
-
+        script(src="/javascripts/library/handleImage.js")
         include includes/footer.pug
