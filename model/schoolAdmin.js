@@ -21,7 +21,8 @@ const SchoolAdminSchema = new Schema({
     demoCode: String,
     expiryDate : Date ,
     creationDate: {type: Date, default: Date.now()},
-    approvedBy: String
+    approvedBy: String,
+    bucketName: String
 })
 
 module.exports = mongoose.model('SchoolAdmin' , SchoolAdminSchema)

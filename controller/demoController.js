@@ -33,7 +33,7 @@ const ExamDay = require('../model/examDay')
 const Payment = require('../model/payment')
 const Period = require('../model/period')
 const StudentResults = require('../model/studentResults')
-
+const Uploader = require('./helper')
 
 class App { 
 
@@ -145,17 +145,22 @@ class App {
                 const code = `${GenerateAccount(totalSchool , "01", "demoCode", 1, 2)}`
                 let date = new Date()
                 date.setDate(date.getDate() + 7)
+                const findSchool = await SchoolAdmin.findOne({_id: req.params.schoolID})
+                let bucketName = (findSchool.schoolName.replace(" " , "")).toLowerCase()
+                Uploader.createBucket(bucketName, 'STANDARD')
+                .then(res => console.log(res))
+                .catch(err => console.log(err))
                 
                 const schoolPass = await bcrypt.hash(demo.schoolNumber , 10)
                 
                 SchoolAdmin.findByIdAndUpdate(req.params.demoSchoolID , {
-                    approved : true, demoCode : code , password : schoolPass, expiryDate: date
+                    approved : true, demoCode : code , password : schoolPass, expiryDate: date, bucketName
                 } ,{new : true, useAndModify : false}, (err , item) => {
                     if(err){
                         res.status(500)
                         return
                     }else{
-                        FileHandler.createDirectory("./public/uploads/schools/" + code)
+                        // FileHandler.createDirectory("./public/uploads/schools/" + code)
 
                         let subjects = new Subject({
                             school : req.params.demoSchoolID,

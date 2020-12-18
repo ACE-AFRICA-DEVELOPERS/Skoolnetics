@@ -1,5 +1,6 @@
 block content
-    include menu.pug
+    if !preview
+        include menu.pug
     script(src="/javascripts/vendor-all.min.js")
     script(src="/plugins/select2/select2.min.js")
     script(src="/javascripts/library/select.js")

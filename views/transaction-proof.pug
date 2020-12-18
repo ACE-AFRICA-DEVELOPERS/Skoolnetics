@@ -45,7 +45,7 @@ block content
                                                             p #[b Class:] #{className[payment.className]}
                                                             p #[b Description: ] #{payment.description}
                                                             p #[b Amount Paid: ] #{payment.amountPaid}
-                                                            - let uploadUrl = '/uploads/schools/' + school.schoolCode + '/transactions/' + payment.proof
+                                                            - let uploadUrl = payment.proof
                                                             a(href=uploadUrl) #[img(src=uploadUrl height="200px" width="200px")]
                                                             if !payment.recorded
                                                                 - let recordUrl = '/staff/finance/transactions/upload/proofs/record/' + payment._id

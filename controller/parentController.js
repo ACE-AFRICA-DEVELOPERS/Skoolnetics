@@ -22,6 +22,7 @@ const Broadsheet = require('../model/broadsheet')
 const PayOnline = require("../model/payOnline")
 
 const FileHandler = require('./file')
+const Uploader = require('./helper')
 
 const Paystack    =  require("paystack-node") 
 const PaystackKey = process.env.PAYSTACK_KEY 
@@ -307,9 +308,12 @@ class App {
                 const session = await Session.findOne({current: true, school: school._id})
                 const term = await Term.findOne({current: true, session: session._id})
 
-                FileHandler.createDirectory("./public/uploads/schools/" + school.schoolCode + "/transactions")
+                // FileHandler.createDirectory("./public/uploads/schools/" + school.schoolCode + "/transactions")
 
                 if(req.file){
+                    let date = new Date()
+                    let addText = 'Transaction' + Date.now()
+                    let upload = await Uploader.uploadImage(req.file, addText, school.bucketName)
                     const paymentProof = new PaymentProof ({
                         school: school._id,
                         student: req.params.studentID,
@@ -317,13 +321,12 @@ class App {
                         term: term._id,
                         className: className._id,
                         amountPaid: amount,
-                        proof: req.file.filename,
+                        proof: upload,
                         description: description
                     })  
                     const saveProof = await paymentProof.save()
                     if(saveProof){
-
-                        FileHandler.moveFile(req.file.filename , "./public/uploads/profile" , "./public/uploads/schools/" + school.schoolCode + "/transactions/") 
+                        // FileHandler.moveFile(req.file.filename , "./public/uploads/profile" , "./public/uploads/schools/" + school.schoolCode + "/transactions/") 
                         
                         req.flash('success', 'Transaction sent! Please wait for approval.')
                         let redirectUrl = '/parent/student/' + req.params.studentID + '/finance-page/upload-payment'

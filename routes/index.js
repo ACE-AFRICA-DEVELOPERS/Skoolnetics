@@ -1,5 +1,12 @@
 const express = require('express');
 const router = express.Router(); 
+const Multer = require('multer')
+const multer = Multer({
+    storage: Multer.memoryStorage(),
+    limits: {
+        fileSize: 10*1024*1024,
+    }
+})
 
 const FileController = require('../controller/fileController')
 const IndexController = require('../controller/indexController')
@@ -70,8 +77,7 @@ router.get('/school/session/:sessionID/current/:termID', SessionController.curre
 router.get('/school/session/:sessionID/end/:termID', SessionController.endTerm)
 
 router.get('/school/logo', BasicSetupController.getLogo)
-router.post('/school/logo', FileController.adminUpload.fields([{name : 'logo', maxCount : 1}, {name : 'stamp', maxCount : 1}]), 
-            BasicSetupController.postLogo)
+router.post('/school/logo', multer.fields([{name : 'logo', maxCount : 1}, {name : 'stamp', maxCount : 1}]), BasicSetupController.postLogo)
 router.get('/school/roles', BasicSetupController.getRoles)
 router.post('/school/assign-roles', BasicSetupController.createRole)
 
@@ -103,9 +109,9 @@ router.post('/school/staff/new', SchoolAdminController.postStaffs)
 router.get('/school/staff/import', SchoolAdminController.getImportStaff)
 router.post('/school/staff/import', SchoolAdminController.importStaff)
 router.get('/school/staff/:staffID/complete', SchoolAdminController.getStaffComplete)
-router.post('/school/staff/:staffID/complete', FileController.staffUpload.single('picture'), SchoolAdminController.completeStaffReg)
+router.post('/school/staff/:staffID/complete', multer.single('picture'), SchoolAdminController.completeStaffReg)
 router.get('/school/staff/:staffID', SchoolAdminController.getSingleStaff)
-router.post('/school/staff/:staffID',  FileController.staffUpload.single('picture'), SchoolAdminController.updateSingleStaff)
+router.post('/school/staff/:staffID',  multer.single('picture'), SchoolAdminController.updateSingleStaff)
 router.get('/school/staff/:staffID/assign', SchoolAdminController.getAssignPage)
 router.post('/school/staff/:staffID/assign', SchoolAdminController.postAssignPage)
 router.get('/school/staff/:staffID/assign/delete/:teach', SchoolAdminController.deleteAssignClass)
@@ -134,15 +140,15 @@ router.post('/school/get-students', SchoolAdminController.fetchClassStudents)
 router.get('/school/new-student', SchoolAdminController.getNewStudent)
 router.post('/school/new-student', SchoolAdminController.postStudents)
 router.get('/school/new-student/:studentID/complete', SchoolAdminController.getComplete)
-router.post('/school/new-student/:studentID/complete', FileController.studentUpload.single('picture'), SchoolAdminController.completeStudentReg)
+router.post('/school/new-student/:studentID/complete', multer.single('picture'), SchoolAdminController.completeStudentReg)
 router.get('/school/new-student/:studentID', SchoolAdminController.getSingleStudent)
-router.post('/school/new-student/:studentID', FileController.studentUpload.single('picture'), SchoolAdminController.updateSingleStudent)
+router.post('/school/new-student/:studentID', multer.single('picture'), SchoolAdminController.updateSingleStudent)
 
 router.get("/school/parent", SchoolAdminController.getParents)
 router.get('/school/parent/new', SchoolAdminController.getNewParent)
 router.post('/school/parent/new', SchoolAdminController.postParents)
 router.get('/school/parent/:parentID', SchoolAdminController.getSingleParent)
-router.post('/school/parent/:parentID',  FileController.parentUpload.single('picture'), SchoolAdminController.updateSingleParent)
+router.post('/school/parent/:parentID',  multer.single('picture'), SchoolAdminController.updateSingleParent)
 
 
 /**---------------School Time Table----------------- */
@@ -280,7 +286,7 @@ router.post('/staff/cbt/quick-one/:subject/:className/:examCode', CbtController.
 router.get('/staff/cbt/quick-one/:subject/:className/:examCode/replicate/:classT', CbtController.addCBTtoClass)
 router.get('/staff/cbt/quick-one/:subject/:className/:examCode/questions', CbtController.getQuestions)
 router.get('/staff/cbt/quick-one/:subject/:className/:examCode/questions/new', CbtController.setQuestions)
-router.post('/staff/cbt/quick-one/:subject/:className/:examCode/questions/new', FileController.questionUpload.single('picture'), CbtController.postQuestions)
+router.post('/staff/cbt/quick-one/:subject/:className/:examCode/questions/new', multer.single('picture'), CbtController.postQuestions)
 router.get('/staff/cbt/quick-one/:subject/:className/:examCode/questions/delete/:questionID', CbtController.deleteQuestion)
 router.get('/staff/cbt/quick-one/:subject/:className/:examCode/preview', CbtController.previewQuestions)
 router.get('/staff/cbt/quick-one/:subject/:className/:examCode/passwords', CbtController.generatePassView)
@@ -298,7 +304,7 @@ router.post('/staff/cbt/school/:examCode/:subject/:className', CbtController.pos
 router.get('/staff/cbt/school/:examCode/:subject/:className/replicate/:classT', CbtController.addCBTtoClassSchool)
 router.get('/staff/cbt/school/:examCode/:subject/:className/questions', CbtController.getSchoolQuestions)
 router.get('/staff/cbt/school/:examCode/:subject/:className/questions/new', CbtController.setSchoolQuestions)
-router.post('/staff/cbt/school/:examCode/:subject/:className/questions/new', FileController.questionUpload.single('picture'), CbtController.postSchoolQuestions)
+router.post('/staff/cbt/school/:examCode/:subject/:className/questions/new', multer.single('picture'), CbtController.postSchoolQuestions)
 router.get('/staff/cbt/school/:examCode/:subject/:className/questions/delete/:questionID', CbtController.deleteSchoolQuestion)
 router.get('/staff/cbt/school/:examCode/:subject/:className/preview', CbtController.previewSchoolQuestions)
 router.get('/staff/cbt/school/:examCode/:subject/:className/passwords', CbtController.generatePassView)
@@ -322,7 +328,7 @@ router.get('/staff/lesson-notes', LessonNoteController.getLessonNotePage)
 router.get('/staff/lesson-note/create', LessonNoteController.makeLessonNote)
 router.post('/staff/lesson-note/create', LessonNoteController.postLessonNote)
 router.get('/staff/lesson-note/upload', LessonNoteController.getUploadNote)
-router.post('/staff/lesson-note/upload', FileController.staffUpload.single("picture"), LessonNoteController.postUploadNote)
+router.post('/staff/lesson-note/upload', multer.single("picture"), LessonNoteController.postUploadNote)
 router.get('/staff/lesson-note/all', LessonNoteController.getAllLessonNote)
 router.get('/staff/lesson-note/:lessonNote', LessonNoteController.getSingleLessonNote)
 router.get("/staff/lesson-note/:id/content" , LessonNoteController.fetchNoteContent)
@@ -331,7 +337,7 @@ router.get('/staff/assignment', AssignmentController.getAssignmentPage)
 router.get('/staff/assignment/create', AssignmentController.makeAssignment)
 router.post('/staff/assignment/create', AssignmentController.postAssignment)
 router.get('/staff/assignment/upload', AssignmentController.uploadAssignment)
-router.post('/staff/assignment/upload', FileController.staffUpload.single("picture"), AssignmentController.postUploadAssignment)
+router.post('/staff/assignment/upload', multer.single("picture"), AssignmentController.postUploadAssignment)
 router.get('/staff/assignment/all', AssignmentController.getAllAssignment)
 router.get('/staff/assignment/:assignment', AssignmentController.getSingleAssignment)
 router.get("/staff/assignment/:id/content", AssignmentController.fetchNoteContent)
@@ -377,7 +383,7 @@ router.get('/staff/school-staffs/:staffId', RoleController.getSinglePrincipalSta
 router.get('/staff/students', RoleController.getStudentsPage)
 router.get('/staff/students/all', RoleController.getAllStudents)
 router.get('/staff/new-student/:studentID', RoleController.getSingleStudent)
-router.post('/staff/new-student/:studentID', FileController.studentUpload.single('picture'), RoleController.updateSingleStudent)
+router.post('/staff/new-student/:studentID', multer.single('picture'), RoleController.updateSingleStudent)
 router.get('/staff/students/suspended', RoleController.getSuspendedStudents)
 router.get('/staff/students/revoked', RoleController.getRevokedStudents)
 //router.get('/staff/students/all-graduates' , RoleController.getAllGraduates)
@@ -417,7 +423,7 @@ router.get('/parent/student/:studentID/finance-page' , ParentController.getFinan
 router.get('/parent/student/:studentID/finance-page/child-fees', ParentController.getFinancialRecords)
 router.get('/parent/student/:studentID/finance-page/pay-online' , ParentController.getPayOnline)
 router.get('/parent/student/:studentID/finance-page/upload-payment' , ParentController.getUploadPayment)
-router.post('/parent/student/:studentID/finance-page/upload-payment', FileController.questionUpload.single('picture'), ParentController.postTransactionProof)
+router.post('/parent/student/:studentID/finance-page/upload-payment', multer.single('picture'), ParentController.postTransactionProof)
 router.get('/parent/student/:studentID/finance-page/histories', ParentController.getFinancialHistory)
 router.get('/parent/student/:studentID/attendance' , ParentController.getAttendance)
 router.get('/parent/student/:studentID/attendance/:week' , ParentController.getEachAttendance)

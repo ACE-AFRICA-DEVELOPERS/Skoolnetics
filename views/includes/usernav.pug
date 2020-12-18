@@ -95,7 +95,7 @@ block content
                             .dropdown-menu.dropdown-menu-right.profile-notification
                                 .pro-head
                                     if staff.profilePhoto
-                                        - let imgUrl = '/uploads/schools/' + code.schoolCode + '/staffs/' + staff.profilePhoto 
+                                        - let imgUrl = `${staff.profilePhoto}`
                                         img.img-radius(src=imgUrl alt='User')
                                     else
                                         if staff.gender == 'male'
@@ -124,7 +124,7 @@ block content
                             .dropdown-menu.dropdown-menu-right.profile-notification
                                 .pro-head
                                     if student.profilePhoto
-                                        - let imgUrl = '/uploads/schools/' + code.schoolCode + '/' + className.name + '/' + student.profilePhoto 
+                                        - let imgUrl = `${student.profilePhoto}`
                                         img.img-radius(src=imgUrl alt='User')
                                     else
                                         if student.gender == 'male'
@@ -153,7 +153,7 @@ block content
                             .dropdown-menu.dropdown-menu-right.profile-notification
                                 .pro-head
                                     if parent.profilePhoto
-                                        - let imgUrl = '/uploads/schools/' + code + '/' + className.name + '/' + parent.profilePhoto 
+                                        - let imgUrl = `${parent.profilePhoto}`
                                         img.img-radius(src=imgUrl alt='User')
                                     else
                                         if parent.gender == 'male'

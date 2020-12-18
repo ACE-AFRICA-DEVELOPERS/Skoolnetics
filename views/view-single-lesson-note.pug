@@ -51,7 +51,7 @@ block content
                                                 p #{singleLessonNote.subject}
                                             if singleLessonNote.image
                                                 .col-md-6
-                                                    -let imageUrl = "/uploads/schools/" + school.schoolCode + "/lesson-note/" + staff.staffID + "/" + singleLessonNote.image
+                                                    -let imageUrl = singleLessonNote.image
                                                     iframe(src=imageUrl frameBorder="0" width="100%" height="300px")
                                             else
                                                 .col-sm-2.text-lg-right

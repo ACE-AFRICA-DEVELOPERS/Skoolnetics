@@ -8,7 +8,7 @@ const ExamCompute = require('../model/exam-settings')
 const Grade = require('../model/grade')
 const Role = require('../model/role')
 const StudentResults = require('../model/studentResults')
-
+const Uploader = require('./helper')
 
 class App {
 
@@ -48,30 +48,30 @@ class App {
                 if(req.files){
                     FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/logo/" + schoolAdmin.logo) 
                     FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/logo/" + schoolAdmin.stamp) 
-                    let logoName, stampName
+                    let uploadLogo, uploadStamp
                     if(req.files.logo){
-                        logoName = req.files.logo[0].filename
+                        let date = new Date()
+                        let addText = 'Logo' + Date.now()
+                        uploadLogo = await Uploader.uploadImage(req.files.logo[0], addText, schoolAdmin.bucketName)
+                        
                     }else{
-                        logoName = schoolAdmin.logo
+                        uploadLogo = schoolAdmin.logo
                     }
                     if(req.files.stamp){
-                        stampName = req.files.stamp[0].filename
+                        let date = new Date()
+                        let addText = 'Stamp' + Date.now()
+                        uploadStamp = await Uploader.uploadImage(req.files.stamp[0], addText, schoolAdmin.bucketName)
                     }else{
-                        stampName = schoolAdmin.stamp
+                        uploadStamp = schoolAdmin.stamp
                     }
                     SchoolAdmin.findByIdAndUpdate(schoolAdmin._id, {
-                        logo : logoName,
-                        stamp: stampName
+                        logo : uploadLogo,
+                        stamp: uploadStamp
                     }, {new : true, useFindAndModify : false}, (err , item) => {
                         if(err){
                             console.log(err)
                         }else{
-                            if(req.files.logo){
-                                FileHandler.moveFile(req.files.logo[0].filename , "./public/uploads/profile" , "./public/uploads/schools/" + req.session.schoolCode + "/logo/") 
-                            }
-                            if(req.files.stamp){
-                                FileHandler.moveFile(req.files.stamp[0].filename , "./public/uploads/profile" , "./public/uploads/schools/" + req.session.schoolCode + "/logo/") 
-                            }
+                            
                             req.flash('success', 'Saved successfully.')
                             res.redirect(303, '/school/logo')
                         }

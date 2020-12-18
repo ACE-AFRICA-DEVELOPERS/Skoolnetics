@@ -52,7 +52,7 @@ block content
                                                 p #{singleAssignment.subject}
                                             if singleAssignment.image
                                                 .col-sm-10
-                                                    -let imageUrl = "/uploads/schools/" + school + "/assignment/" + staff.staffID + "/" + singleAssignment.image
+                                                    -let imageUrl = singleAssignment.image
                                                     embed(src=imageUrl alt="" width="100%" height="600px")
                                             else
                                                 .col-sm-2.text-lg-right

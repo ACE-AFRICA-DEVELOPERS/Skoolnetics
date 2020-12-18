@@ -11,7 +11,7 @@ block content
                     h6.mt-4 Details
                     .text-center
                         if schoolAdmin.logo
-                            - let imageUrl = '/uploads/schools/' + schoolAdmin.schoolCode + '/logo/' + schoolAdmin.logo
+                            - let imageUrl = schoolAdmin.logo
                             img(src=imageUrl width="150px" height="150px")
                         else
                             img(src="/images/logo-stamp/logo.jpeg" height="150px" width="150px")
@@ -27,7 +27,7 @@ block content
                     h6.mt-4 Details
                     .text-center
                         if code.logo
-                            - let imageUrl = '/uploads/schools/' + code.schoolCode + '/logo/' + code.logo
+                            - let imageUrl = code.logo
                             img(src=imageUrl width="150px" height="150px")
                         else
                             img(src="/images/logo-stamp/logo.jpeg" height="150px" width="150px")
@@ -43,7 +43,7 @@ block content
                     h6.mt-4 Details
                     .text-center
                         if code.logo
-                            - let imageUrl = '/uploads/schools/' + code.schoolCode + '/logo/' + code.logo
+                            - let imageUrl = code.logo
                             img(src=imageUrl width="150px" height="150px")
                         else
                             img(src="/images/logo-stamp/logo.jpeg" height="150px" width="150px")
@@ -59,7 +59,7 @@ block content
                     h6.mt-4 Details
                     .text-center
                         if code.logo
-                            - let imageUrl = '/uploads/schools/' + code.schoolCode + '/logo/' + code.logo
+                            - let imageUrl = code.logo
                             img(src=imageUrl width="150px" height="150px")
                         else
                             img(src="/images/logo-stamp/logo.jpeg" height="150px" width="150px")

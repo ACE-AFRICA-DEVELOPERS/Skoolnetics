@@ -6,6 +6,7 @@ const GenerateAccount = require('./accountGenerator')
 const Admin = require('../model/admin')
 const SchoolAdmin = require('../model/schoolAdmin')
 const Subject = require('../model/subject')
+const Uploader = require('./helper')
 
 class App { 
 
@@ -140,6 +141,7 @@ class App {
                 if(req.params.schoolID){
                     const validAdmin = await Admin.findOne({email : req.session.adminEmail})
                     const school = await SchoolAdmin.findOne({_id : req.params.schoolID})
+    
                     res.render('single-school', {admin : validAdmin, title : school.schoolName, 
                         school : school, success : req.flash('success')})
                 }else{
@@ -161,36 +163,40 @@ class App {
                 const admin = await Admin.findOne({email: req.session.adminEmail})
                 const totalSchool = await SchoolAdmin.find({approved : true, demo: false})
                 const code = GenerateAccount(totalSchool, "001", "schoolCode", 1, 3)
-                SchoolAdmin.findByIdAndUpdate(req.params.schoolID , {
-                    approved : true, schoolCode : code, approvedBy: admin.username
-                } ,{new : true, useAndModify : false}, (err , item) => {
-                    if(err){
-                        res.status(500)
-                        return
-                    }else{
-                        FileHandler.createDirectory("./public/uploads/schools/" + code)
+                const findSchool = await SchoolAdmin.findOne({_id: req.params.schoolID})
+                let bucketName = (findSchool.schoolName.replace(" " , "")).toLowerCase()
+                    
+                Uploader.createBucket(bucketName, 'STANDARD')
+                .then(res => console.log(res))
+                .catch(err => console.log(err))
 
-                        let subjects = new Subject({
-                            school : req.params.schoolID,
-                            subjects : [
-                                "English Language", "Mathematics", "Quantitative Reasoning", "Verbal Reasoning",
-                                "Basic Science", "Basic Technology", "History", "Yoruba Language", "French",
-                                "Cultural and creative art", "Business Studies", "Home Economics", "Economics",
-                                "Physical Health Education", "Christian Religious Studies", "Agricultural Science",
-                                "Social Studies", "Literature in English", "Computer Studies", "Civic Education",
-                                "Physics", "Chemistry", "Biology", "Techincal Drawing", "Marketing", "Further Mathematics",
-                                "Commerce", "Government"
-                            ]
-                        })
-                        subjects.save()
+                let updateSchools = await SchoolAdmin.findByIdAndUpdate(req.params.schoolID , {
+                    approved : true, schoolCode : code, approvedBy: admin.username,
+                    bucketName: bucketName
+                } ,{new : true, useAndModify : false}) 
+                if(updateSchools){
+                    
+                    let subjects = new Subject({
+                        school : req.params.schoolID,
+                        subjects : [
+                            "English Language", "Mathematics", "Quantitative Reasoning", "Verbal Reasoning",
+                            "Basic Science", "Basic Technology", "History", "Yoruba Language", "French",
+                            "Cultural and creative art", "Business Studies", "Home Economics", "Economics",
+                            "Physical Health Education", "Christian Religious Studies", "Agricultural Science",
+                            "Social Studies", "Literature in English", "Computer Studies", "Civic Education",
+                            "Physics", "Chemistry", "Biology", "Techincal Drawing", "Marketing", "Further Mathematics",
+                            "Commerce", "Government"
+                        ]
+                    })
+                    subjects.save()
 
-                        req.flash('success', "You have approved this account. School is now free to login.")
-                        let redirectUrl = '/202007/admin/school/' + req.params.schoolID 
-                        res.redirect(303, redirectUrl)
-                    }
-                })
-            
-            }else{
+                    req.flash('success', "You have approved this account. School is now free to login.")
+                    let redirectUrl = '/202007/admin/school/' + req.params.schoolID 
+                    res.redirect(303, redirectUrl)
+                }
+              
+            }
+            else{
                 res.redirect(303, '/202007/admin')
             }
         }catch(err){

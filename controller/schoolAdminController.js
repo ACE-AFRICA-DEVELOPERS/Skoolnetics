@@ -6,7 +6,7 @@ const dirName = path.dirname(fileName)
 const FileHandler = require('./file')
 const GenerateAccount = require('./accountGenerator')
 const bcrypt = require('bcryptjs')
-
+const Uploader = require('./helper')
 const SchoolAdmin = require('../model/schoolAdmin')
 const Session = require('../model/session')
 const Term = require('../model/term')
@@ -833,15 +833,17 @@ class App {
                 let checkClass = await ClassSchool.findOne({_id : confirmStudent.className})
                 if (req.file) { 
                     const ID = req.params.studentID
-                    const originalName = ID + "-" + req.file.originalname 
+                    let date = new Date()
+                    let addText = 'Student' + Date.now()
+                    let upload = await Uploader.uploadImage(req.file, addText, schoolAdmin.bucketName)
+
                     Student.findByIdAndUpdate(ID , {
-                        profilePhoto : originalName
+                        profilePhoto : upload
                     } ,{new : true, useAndModify : false}, (err , item) => {
                         if(err){
                             res.status(500)
                             return
                         }else{
-                            FileHandler.moveFile(originalName , "./public/uploads/profile" , "./public/uploads/schools/" + req.session.schoolCode + "/" + checkClass.name + "/") 
                             
                             req.flash('success', "Successfully created. You can also see this student in the classes page.")
                             let redirectUrl = '/school/new-student/' + req.params.studentID  
@@ -898,10 +900,17 @@ class App {
                 let checkClass = await ClassSchool.findOne({_id : student.className})
                 if(student){	
                     if(req.file){
-                        FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/" + checkClass.name + "/" + student.profilePhoto) 
-                        let originalName = req.params.studentID + "-" + req.file.originalname
+                        
+                        await Uploader.deleteFile(student.profilePhoto)
+
+                        let date = new Date()
+                        let addText = 'Student' + Date.now()
+                        let upload = await Uploader.uploadImage(req.file, addText, schoolAdmin.bucketName)
+                        
+                        // FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/" + checkClass.name + "/" + student.profilePhoto) 
+                        // let originalName = req.params.studentID + "-" + req.file.originalname
                         Student.findByIdAndUpdate(req.params.studentID, {
-                            profilePhoto : originalName,
+                            profilePhoto : upload,
                             firstName : req.body.firstName,
                             lastName : req.body.lastName,
                             gender : req.body.gender,
@@ -917,15 +926,15 @@ class App {
                                 let redirectUrl = "/school/new-student/" + req.params.studentID
                                 res.redirect(303, redirectUrl)
 
-                                const source = "../public/uploads/profile/" + originalName
-                                const destination = "../public/uploads/schools/" + req.session.schoolCode + '/' + checkClass.name + "/" + originalName
-                                fs.rename((path.join(dirName , source)) , (path.join(dirName , destination)), err => {
-                                    if(err){
-                                        console.error(err)
-                                    }else{
-                                        console.log("File Moved")
-                                    }
-                                })
+                                // const source = "../public/uploads/profile/" + originalName
+                                // const destination = "../public/uploads/schools/" + req.session.schoolCode + '/' + checkClass.name + "/" + originalName
+                                // fs.rename((path.join(dirName , source)) , (path.join(dirName , destination)), err => {
+                                //     if(err){
+                                //         console.error(err)
+                                //     }else{
+                                //         console.log("File Moved")
+                                //     }
+                                // })
                             }
                         })	
                     }else{
@@ -1130,17 +1139,20 @@ class App {
         try{
             if(req.session.schoolCode){
                 const confirmStaff= await Staff.findOne({_id : req.params.staffID})
+                const schoolAdmin = await SchoolAdmin.findOne({schoolCode: req.session.schoolCode})
                 if (req.file) {  
-                    const ID = req.params.staffID
-                    const originalName = ID + "-" + req.file.originalname 
-                    Staff.findByIdAndUpdate(ID , {
-                        profilePhoto : originalName
+                    let date = new Date()
+                    let addText = 'Staff' + Date.now()
+                    let upload = await Uploader.uploadImage(req.file, addText, schoolAdmin.bucketName)
+
+                    Staff.findByIdAndUpdate(confirmStaff._id , {
+                        profilePhoto : upload
                     } ,{new : true, useAndModify : false}, (err , item) => {
                         if(err){
                             res.status(500)
                             return
                         }else{
-                            FileHandler.moveFile(originalName , "./public/uploads/profile" , "./public/uploads/schools/" + req.session.schoolCode + "/staffs/") 
+                            // FileHandler.moveFile(originalName , "./public/uploads/profile" , "./public/uploads/schools/" + req.session.schoolCode + "/staffs/") 
                             
                             req.flash('success', "The Staff has been added successfully.")
                             let redirectUrl = '/school/staff/' + req.params.staffID  
@@ -1269,11 +1281,16 @@ class App {
                 console.log(req.file)
                 if(staff){	
                     if(req.file){
-                        FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/staffs/" + staff.profilePhoto) 
+                        await Uploader.deleteFile(staff.profilePhoto)
+
+                        let date = new Date()
+                        let addText = 'Staff' + Date.now()
+                        let upload = await Uploader.uploadImage(req.file, addText, schoolAdmin.bucketName)
+                        // FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/staffs/" + staff.profilePhoto) 
                         
-                        let originalName = req.params.staffID + "-" + req.file.originalname
+                        // let originalName = req.params.staffID + "-" + req.file.originalname
                         Staff.findByIdAndUpdate(req.params.staffID, {
-                            profilePhoto : originalName,
+                            profilePhoto : upload,
                             firstName : req.body.firstName,
                             lastName : req.body.lastName,
                             otherName : req.body.otherName,
@@ -1288,16 +1305,6 @@ class App {
                                 req.flash('success', "Update was successful.")
                                 let redirectUrl = "/school/staff/" + req.params.staffID
                                 res.redirect(303, redirectUrl)
-
-                                const source = "../public/uploads/profile/" + originalName
-                                const destination = "../public/uploads/schools/" + req.session.schoolCode + '/staffs/' + originalName
-                                fs.rename((path.join(dirName , source)) , (path.join(dirName , destination)), err => {
-                                    if(err){
-                                        console.error(err)
-                                    }else{
-                                        console.log("File Moved")
-                                    }
-                                })
                             }
                         })	
                     }else{
@@ -1499,11 +1506,15 @@ class App {
                 if(parent){	
                     if(req.file){
                         
-                        FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/parents/" + parent.profilePhoto) 
-                        
-                        let originalName = req.params.parentID + "-" + req.file.originalname
+                        // FileHandler.deleteFile("./public/uploads/schools/"+ req.session.schoolCode + "/parents/" + parent.profilePhoto) 
+                        await Uploader.deleteFile(parent.profilePhoto)
+
+                        let date = new Date()
+                        let addText = 'Parent' + Date.now()
+                        let upload = await Uploader.uploadImage(req.file, addText, school.bucketName)
+
                         Parent.findByIdAndUpdate(req.params.parentID, {
-                            profilePhoto : originalName,
+                            profilePhoto : upload,
                             name : req.body.name,
                             gender : req.body.gender,
                             email : req.body.email,
@@ -1517,15 +1528,6 @@ class App {
                                 let redirectUrl = "/school/parent/" + req.params.parentID
                                 res.redirect(303, redirectUrl)
 
-                                const source = "../public/uploads/profile/" + originalName
-                                const destination = "../public/uploads/schools/" + req.session.schoolCode + '/parents/' + originalName
-                                fs.rename((path.join(dirName , source)) , (path.join(dirName , destination)), err => {
-                                    if(err){
-                                        console.error(err)
-                                    }else{
-                                        console.log("File Moved")
-                                    }
-                                })
                             }
                         })	
                     }else{

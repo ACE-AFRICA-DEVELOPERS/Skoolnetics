@@ -14,6 +14,7 @@ const ExamPass = require('../model/generate-pass')
 const Random = require('./random')
 const Result = require('../model/result')
 const schoolAdmin = require('../model/schoolAdmin')
+const Uploader = require('./helper')
 
 class App{
 
@@ -358,11 +359,13 @@ class App{
                 } 
                 
                 if(availableQuestion){
-                    let imageFile
+                    let upload
                     if(req.file){
-                        imageFile = req.file.filename
+                        let date = new Date()
+                        let addText = 'Question' + Date.now()
+                        upload = await Uploader.uploadImage(req.file, addText, school.bucketName)
                     }else{
-                        imageFile = null
+                        upload = null
                     }
 
                     let bodywithImage = {
@@ -373,7 +376,7 @@ class App{
                             optionC : optionC , 
                             optionD : optionD 
                         } , 
-                        image : imageFile,
+                        image : upload,
                         correctOption : answer , 
                         mark : mark ,
                         questionNumber : availableQuestion.question.length + 1
@@ -386,18 +389,20 @@ class App{
                             res.status(500)
                             return
                         }else {
-                            FileHandler.moveFile(imageFile , "./public/uploads/profile" , "./public/uploads/schools/" + school.schoolCode + "/exam-" + exam.examCode) 
+                            // FileHandler.moveFile(imageFile , "./public/uploads/profile" , "./public/uploads/schools/" + school.schoolCode + "/exam-" + exam.examCode) 
                             req.flash('success', `Question has been saved successfully`)
                             let redirectUrl = '/staff/cbt/quick-one/' + req.params.subject + '/' + req.params.className + '/' + req.params.examCode + '/questions'
                             res.redirect(redirectUrl)
                         }
                     })
                 }else{
-                    let imageFile
+                    let upload
                     if(req.file){
-                        imageFile = req.file.filename
+                        let date = new Date()
+                        let addText = 'Question' + Date.now()
+                        upload = await Uploader.uploadImage(req.file, addText, school.bucketName)
                     }else{
-                        imageFile = null
+                        upload = null
                     }
                     const que = await new Question({
                         school : school._id,
@@ -410,7 +415,7 @@ class App{
                                 optionC : optionC , 
                                 optionD : optionD 
                             },
-                            image : imageFile,
+                            image : upload,
                             correctOption : answer , 
                             mark : mark ,
                             questionNumber : 1
@@ -418,7 +423,7 @@ class App{
                     })
                     const saveQuestion = await que.save() 
                     if (saveQuestion) {
-                        FileHandler.moveFile(imageFile , "./public/uploads/profile" , "./public/uploads/schools/" + school.schoolCode + "/exam-" + exam.examCode) 
+                        // FileHandler.moveFile(imageFile , "./public/uploads/profile" , "./public/uploads/schools/" + school.schoolCode + "/exam-" + exam.examCode) 
                         req.flash('success', `Question has been saved successfully`)
                         let redirectUrl = '/staff/cbt/quick-one/' + req.params.subject + '/' + req.params.className + '/' + req.params.examCode + '/questions'
                         res.redirect(redirectUrl)
@@ -1227,11 +1232,13 @@ class App{
                 }
                 
                 if(availableQuestion){
-                    let imageFile
+                    let upload
                     if(req.file){
-                        imageFile = req.file.filename
+                        let date = new Date()
+                        let addText = 'Question' + Date.now()
+                        upload = await Uploader.uploadImage(req.file, addText, school.bucketName)
                     }else{
-                        imageFile = null
+                        upload = null
                     }
 
                     let bodywithImage = {
@@ -1242,7 +1249,7 @@ class App{
                             optionC : optionC , 
                             optionD : optionD 
                         } , 
-                        image : imageFile,
+                        image : upload,
                         correctOption : answer , 
                         mark : mark ,
                         questionNumber : availableQuestion.question.length + 1
@@ -1255,18 +1262,20 @@ class App{
                             res.status(500)
                             return
                         }else {
-                            FileHandler.moveFile(imageFile , "./public/uploads/profile" , "./public/uploads/schools/" + school.schoolCode + "/exam-" + exam.examCode) 
+                            // FileHandler.moveFile(imageFile , "./public/uploads/profile" , "./public/uploads/schools/" + school.schoolCode + "/exam-" + exam.examCode) 
                             req.flash('success', `Question has been saved successfully`)
                             let redirectUrl = '/staff/cbt/school/' + req.params.examCode + '/' + req.params.subject + '/' + req.params.className + '/questions'
                             res.redirect(303, redirectUrl)
                         }
                     })
                 }else{
-                    let imageFile
+                    let upload
                     if(req.file){
-                        imageFile = req.file.filename
+                        let date = new Date()
+                        let addText = 'Question' + Date.now()
+                        upload = await Uploader.uploadImage(req.file, addText, school.bucketName)
                     }else{
-                        imageFile = null
+                        upload = null
                     }
                     const que = await new Question({
                         school : school._id,
@@ -1279,7 +1288,7 @@ class App{
                                 optionC : optionC , 
                                 optionD : optionD 
                             },
-                            image : imageFile,
+                            image : upload,
                             correctOption : answer , 
                             mark : mark ,
                             questionNumber : 1
@@ -1287,7 +1296,7 @@ class App{
                     })
                     const saveQuestion = await que.save() 
                     if (saveQuestion) {
-                        FileHandler.moveFile(imageFile , "./public/uploads/profile" , "./public/uploads/schools/" + school.schoolCode + "/exam-" + exam.examCode) 
+                        // FileHandler.moveFile(imageFile , "./public/uploads/profile" , "./public/uploads/schools/" + school.schoolCode + "/exam-" + exam.examCode) 
                         req.flash('success', `Question has been saved successfully`)
                         let redirectUrl = '/staff/cbt/school/' + req.params.examCode + '/' + req.params.subject + '/' + req.params.className + '/questions'
                         res.redirect(redirectUrl)

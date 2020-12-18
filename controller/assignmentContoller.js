@@ -7,6 +7,7 @@ const Term = require('../model/term')
 const Student = require("../model/student")
 
 const FileHandler = require('./file')
+const Uploader = require('./helper')
 
 class App {
 
@@ -118,14 +119,16 @@ class App {
                 const term = await Term.findOne({session : session._id, current: true})
                 const{subject, releaseDate, submissionDate} = req.body
 
-                FileHandler.createDirectory("./public/uploads/schools/" + school.schoolCode + "/assignment/")
-                FileHandler.createDirectory("./public/uploads/schools/" + school.schoolCode + "/assignment/" + staff.staffID)
+                // FileHandler.createDirectory("./public/uploads/schools/" + school.schoolCode + "/assignment/")
+                // FileHandler.createDirectory("./public/uploads/schools/" + school.schoolCode + "/assignment/" + staff.staffID)
 
 
                 if(staff){
                     if(req.file){
                         let findClass = staff.teaching.find(s => s._id == subject)
-                        let originalName = req.file.filename
+                        let date = new Date()
+                        let addText = 'Note' + Date.now()
+                        let upload = await Uploader.uploadImage(req.file, addText, school.bucketName)
                         let lessonNote =await new Assignment({
                             school: school._id,
                             staff: staff._id,
@@ -135,11 +138,11 @@ class App {
                             className: findClass.className,
                             releaseDate : releaseDate,
                             submissionDate : submissionDate,
-                            image : originalName
+                            image : upload
                         })
                         let ret = await lessonNote.save()
                         if(ret){
-                            FileHandler.moveFile(originalName ,  "./public/uploads/profile" , "./public/uploads/schools/" + school.schoolCode + "/assignment/" + staff.staffID + "/")
+                            // FileHandler.moveFile(originalName ,  "./public/uploads/profile" , "./public/uploads/schools/" + school.schoolCode + "/assignment/" + staff.staffID + "/")
                             const redirectUrl = '/staff/assignment/all'
                             res.redirect(303, redirectUrl)
                         }else{

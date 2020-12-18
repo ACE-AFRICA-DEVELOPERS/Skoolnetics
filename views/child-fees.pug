@@ -27,7 +27,7 @@ block content
                                                             tr
                                                                 td
                                                                     if school.logo
-                                                                        - let logoUrl = '/uploads/schools/' + schoo.schoolCode + '/logo/' + school.logo
+                                                                        - let logoUrl = school.logo
                                                                         img(src=logoUrl height="100px" width="100px")
                                                                     else
                                                                         img(src='/images/logo-stamp/logo.jpeg' height="100px" width="100px")
@@ -93,7 +93,7 @@ block content
                                                         .col-sm-12
                                                             .float-right
                                                                 if school.stamp
-                                                                    - let stampUrl = '/uploads/schools/' + school.schoolCode + '/logo/' + school.stamp
+                                                                    - let stampUrl = school.stamp
                                                                     img(src=stampUrl height="100px" width="100px")
                                                                 else
                                                                     img(src='/images/logo-stamp/stamp.jpg' height="100px" width="100px")

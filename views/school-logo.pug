@@ -32,7 +32,7 @@ block content
                                                         .col-md-6.mb-3
                                                             p #[b School Logo]
                                                             if schoolAdmin.logo
-                                                                - let logoUrl = '/uploads/schools/' + schoolAdmin.schoolCode + '/logo/' + schoolAdmin.logo
+                                                                - let logoUrl = schoolAdmin.logo
                                                                 img(src=logoUrl height="200px" width="200px")
                                                             else
                                                                 p Default Logo
@@ -40,7 +40,7 @@ block content
                                                         .col-md-6.mb-3
                                                             p #[b School Stamp]
                                                             if schoolAdmin.stamp
-                                                                - let stampUrl = '/uploads/schools/' + schoolAdmin.schoolCode + '/logo/' + schoolAdmin.stamp
+                                                                - let stampUrl = schoolAdmin.stamp
                                                                 img(src=stampUrl height="200px" width="200px")
                                                             else
                                                                 p Default Stamp
