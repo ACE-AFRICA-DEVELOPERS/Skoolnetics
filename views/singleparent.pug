@@ -34,35 +34,36 @@ block content
                                                             input(type="file" name='picture' id='picture')
                                                     div(class="col-md-8")
                                                         div(class="card-box")
-                                                            .row
-                                                                .col-3
-                                                                    label(for="ID" class="label") Parent ID:
-                                                                .col-9
-                                                                    input(type="text" value= parentDB.parentID class="profile-form mb-4" readonly)
-                                                                .col-3
-                                                                    label(for="name" class="label") Name:
-                                                                .col-9
-                                                                    input(type="text" value= parentDB.name class="profile-form mb-4" name="name")
-                                                                .col-3
-                                                                    label(for="email" class="label") Email:
-                                                                .col-9
-                                                                    input(type="email" value= parentDB.email class="profile-form mb-4" name="otherName")
-                                                                .col-3
-                                                                    label(for="number" class="label") Number:
-                                                                .col-9
-                                                                    input(type="tel" value= parentDB.number class="profile-form mb-4" name="number")
-                                                                .col-3
-                                                                    label(for="gender" class="label") Relationship:
-                                                                .col-9
-                                                                    input(type="text" value= parentDB.relationship class="profile-form mb-4" name="relationship" readonly)
-                                                                .col-3
-                                                                    label(for="gender" class="label") Children:
-                                                                .col-9
-                                                                    each ward in parentDB.ward
-                                                                        span.mr-1 #{studentName[ward]} |
-                                                                
-                                                    div(class="col-md-12 mt-3 text-center")
-                                                        input(type="submit" class="btn btn-info"  value="Update")
+                                                            form(action="", method="post")
+                                                                .row
+                                                                    .col-3
+                                                                        label(for="ID" class="label") Parent ID:
+                                                                    .col-9
+                                                                        input(type="text" value= parentDB.parentID class="profile-form mb-4" readonly)
+                                                                    .col-3
+                                                                        label(for="name" class="label") Name:
+                                                                    .col-9
+                                                                        input(type="text" value= parentDB.name class="profile-form mb-4" name="name")
+                                                                    .col-3
+                                                                        label(for="email" class="label") Email:
+                                                                    .col-9
+                                                                        input(type="email" value= parentDB.email class="profile-form mb-4" name="email")
+                                                                    .col-3
+                                                                        label(for="number" class="label") Number:
+                                                                    .col-9
+                                                                        input(type="tel" value= parentDB.number class="profile-form mb-4" name="number")
+                                                                    .col-3
+                                                                        label(for="gender" class="label") Relationship:
+                                                                    .col-9
+                                                                        input(type="text" value= parentDB.relationship class="profile-form mb-4" name="relationship" readonly)
+                                                                    .col-3
+                                                                        label(for="gender" class="label") Children:
+                                                                    .col-9
+                                                                        each ward in parentDB.ward
+                                                                            span.mr-1 #{studentName[ward]} |
+                                                                    
+                                                                    div(class="col-md-12 mt-3 text-center")
+                                                                        input(type="submit" class="btn btn-info"  value="Update")
 
         
 

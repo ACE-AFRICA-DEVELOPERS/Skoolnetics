@@ -72,9 +72,9 @@ block content
                                                                 tr
                                                                     td #{periodnum}
                                                                     td #{timedur}
-                                                                    td #[a(href="#" data-toggle="modal" class="red-color" data-target="#payment") #[i(class="red-color feather icon-trash")]]
+                                                                    td #[a(href="#" data-toggle="modal" class="red-color" data-target=`#P${week._id}`) #[i(class="red-color feather icon-trash")]]
 
-                                                                div(class="modal fade" id="payment" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+                                                                div(class="modal fade" id=`P${week._id}` role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
                                                                     div(class="modal-dialog" role="document")
                                                                         div(class="modal-content")
                                                                             div(class="modal-header")
